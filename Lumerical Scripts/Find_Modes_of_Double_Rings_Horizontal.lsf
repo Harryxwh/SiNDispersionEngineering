@@ -22,7 +22,7 @@ Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 8*um;
 Lz_Buried_Oxide = 50*um;
 
-Lx_FDE = 30*um;
+Lx_FDE = 40*um;
 Ly_FDE = 10*um;
 
 mesh_step = 200e-9;
@@ -43,9 +43,9 @@ Max_Mode_Idx = 1;
 folder_name = "RingXYZ" + "\\";
 
 # Define wavelength of simulation
-wavelength_min = 1500*nm;
-wavelength_max = 1600*nm;
-num_sweep_pt = 11;
+wavelength_min = 1565*nm;
+wavelength_max = 1565*nm;
+num_sweep_pt = 1;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -126,6 +126,12 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
+set("bent waveguide",1);
+set("bend location x", 0);
+set("bend location y", 0);
+set("bend location z", 0);
+set("bend radius",bend_radius);
+
 addmesh;
 set("name","mesh_waveguide");
 set("x min",-gap/2 - Lx_WG1);
@@ -138,6 +144,7 @@ set("override z mesh",0);
 set("set maximum mesh step",1);
 set("dx",10*nm);
 set("dy",10*nm);
+
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
@@ -201,4 +208,3 @@ for(wavl_idx=1:num_sweep_pt){
 
     }
 }
-
