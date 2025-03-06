@@ -20,8 +20,8 @@ Lx_FDE = 20*um;
 Ly_FDE = 10*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 800;
-mesh_cells_y = 400;
+mesh_cells_x = 200;
+mesh_cells_y = 100;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;
@@ -58,7 +58,6 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 addrect;
 set("name","WG");
 set("x",0);
-#set("x",0);
 set("x span",Lx_WG);
 set("y min",0);
 set("y max",Ly_WG);
@@ -103,10 +102,6 @@ set("y",0);
 set("x span",Lx_FDE);
 set("y min",-Ly_FDE/2);
 set("y max",Ly_FDE/2);
-#set("y min bc","PML");
-#set("y max bc","PML");
-#set("z min bc","PML");
-#set("z max bc","PML");
 set("x min bc","Metal");
 set("x max bc","Metal");
 set("y min bc","Metal");
@@ -116,14 +111,11 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
-
-#setnamed("FDE","bent waveguide",false);
 set("bent waveguide",1);
-set("bend location x", -gap/2-Lx_WG/2);
+set("bend location x", 0);
 set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
-
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
