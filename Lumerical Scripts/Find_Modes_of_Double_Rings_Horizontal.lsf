@@ -33,19 +33,20 @@ gap = 5*um;
 
 bend_radius_inner = 1000*um;
 bend_radius =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5 ;
+#bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
-Max_Mode_Idx = 1;
+Max_Mode_Idx = 2;
 
-folder_name = "RingXYZ" + "\\";
+folder_name = "DoubleRingSuperModes" + "\\";
 
 # Define wavelength of simulation
-wavelength_min = 1565*nm;
-wavelength_max = 1565*nm;
-num_sweep_pt = 1;
+wavelength_min = 1500*nm;
+wavelength_max = 1600*nm;
+num_sweep_pt = 21;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -132,23 +133,32 @@ set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
 
-addmesh;
-set("name","mesh_waveguide");
-set("x min",-gap/2 - Lx_WG1);
-set("x max", gap/2 + Lx_WG2);
-set("y min",0);
-set("y max",Ly_WG1);
-set("override x mesh",1);
-set("override y mesh",1);
-set("override z mesh",0);
-set("set maximum mesh step",1);
-set("dx",10*nm);
-set("dy",10*nm);
+#addmesh;
+#set("name","mesh_waveguide");
+#set("x min",-gap/2 - Lx_WG1 -0.2*um);
+#set("x max", gap/2 + Lx_WG2 +0.2*um );
+#set("y min",0-0.1*um);
+#set("y max",Ly_WG1+0.1*um);
+#set("override x mesh",1);
+#set("override y mesh",1);
+#set("override z mesh",0);
+#set("set maximum mesh step",1);
+#set("dx",10*nm);
+#set("dy",10*nm);
 
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+
+format short;
+#folder_path = folder_name + num2str(wavelength*1e9);
+#info_filename = folder_path+ "\Mode_info.txt";
+info_filename  = "Lumerical_supermodes_results.txt";
+if(fileexists(info_filename)){rm(info_filename);}
+
+#print header
+write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -159,52 +169,49 @@ for(wavl_idx=1:num_sweep_pt){
 
     findmodes;
 
-    format short;
-    folder_path = folder_name + num2str(wavelength*1e9);
-    info_filename = folder_path+ "\Mode_info.txt";
-    if(fileexists(info_filename)){rm(info_filename);}
-
-    #print header
-    write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
-
     for (mode_idx=1:Max_Mode_Idx){
 
-        neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+        neff =real(pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff")));
         ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
         loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
         polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
 
         beta_ang = real(2*pi/wavelength * bend_radius * neff);
 
-        Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
-        Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
-        Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
-        Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
-        Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
-        Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
+        #Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
+        #Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
+        #Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
+        #Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
+        #Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
+        #Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
 
-        format long;
+        
         Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
-        info = num2str(mode_idx) +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
+        format short;
+        info = num2str(wavelength*1e9) +","+ num2str(mode_idx);
+        format long;
+        info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
         write(info_filename,info);
 
         #Fundamental mode
-        if(mode_idx == 1){
-            neff_array(mode_idx) = real(neff);
+        if(mode_idx < 3){
+            neff_array(mode_idx) = neff;
             ?"Wavelength: " + num2str(wavelength*1e6) + " um";
+            ?"ModeIdx: " + num2str(mode_idx);
             ?"Effective index: " + num2str(real(neff));
             ?"beta_ang: " + num2str(beta_ang);
+            ?"\n";
         }
         #write mode profile matrix
-        for (j=1:6){
-            format short;
-            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
-            if(fileexists(filename)){
-                rm(filename);
-            }
-        format long; # set num2str() to return 16 digits of precision
-        write(filename,num2str(Comp_list{j}));
-        }
+        #for (j=1:6){
+            #format short;
+            #filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            #if(fileexists(filename)){
+                #rm(filename);
+            #}
+            #format long; # set num2str() to return 16 digits of precision
+            #write(filename,num2str(Comp_list{j}));
+        #}
 
     }
 }
