@@ -3,8 +3,8 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-Lx_WG = 8*um; #width of the 
-#Lx_WG = 8*um; #width of the WG
+#Lx_WG = 2.43*um; #width of the 
+Lx_WG = 8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
 
@@ -16,12 +16,13 @@ Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 8*um;
 Lz_Buried_Oxide = 50*um;
 
-Lx_FDE = 20*um;
-Ly_FDE = 10*um;
+Lx_FDE = 30*um;
+Ly_FDE_min = 4*um;
+Ly_FDE_max = -8*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 200;
-mesh_cells_y = 100;
+mesh_cells_x = 1000;
+mesh_cells_y = 400;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;
@@ -41,7 +42,7 @@ Max_Mode_Idx = 1;
 # Define wavelength of simulation
 wavelength_min = 1500*nm;
 wavelength_max = 1600*nm;
-num_sweep_pt = 21;
+num_sweep_pt = 1;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -100,8 +101,8 @@ set("solver type","2D Z normal");
 set("x",0*um);
 set("y",0);
 set("x span",Lx_FDE);
-set("y min",-Ly_FDE/2);
-set("y max",Ly_FDE/2);
+set("y min",Ly_FDE_min);
+set("y max",Ly_FDE_max);
 set("x min bc","Metal");
 set("x max bc","Metal");
 set("y min bc","Metal");
