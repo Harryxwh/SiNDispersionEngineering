@@ -15,11 +15,12 @@ Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 8*um;
 Lz_Buried_Oxide = 50*um;
 
-Lx_FDE = 20*um;
-Ly_FDE = 10*um;
+Lx_FDE = 30*um;
+Ly_FDE_min = -8*um;
+Ly_FDE_max = 4*um;
 
-mesh_cells_x = 1000;
-mesh_cells_y = 500;
+mesh_cells_x = 500;
+mesh_cells_y = 200;
 
 wavelength  = 1550*nm;
 
@@ -31,8 +32,8 @@ Lx_inner_ring = 8*um;
 bend_radius_inner = 1000*um;
 
 #Parameter sweep of radius of outer ring
-Lx_start    = 2.4*um;
-Lx_end      = 2.5*um;
+Lx_start    = 2.435*um;
+Lx_end      = 2.445*um;
 num_of_pts_Lx  = 11;
 Lx_arr      = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
@@ -99,11 +100,11 @@ for (Lx_idx = 1:num_of_pts_Lx)
 
     addfde;
     set("solver type","2D Z normal");
-    set("x",0);
+    set("x",0*um);
     set("y",0);
     set("x span",Lx_FDE);
-    set("y min",-Ly_FDE/2);
-    set("y max",Ly_FDE/2);
+    set("y min",Ly_FDE_min);
+    set("y max",Ly_FDE_max);
     set("x min bc","Metal");
     set("x max bc","Metal");
     set("y min bc","Metal");
@@ -119,6 +120,19 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("bend location z", 0);
     set("bend radius",bend_radius);
 
+    addmesh;
+    set("name","mesh_waveguide");
+    set("x min",-1.2*um - 0.3*um);
+    set("x max",1.2*um + 0.3*um );
+    set("y min",0-0.3*um);
+    set("y max",Ly_WG + 0.3*um);
+    set("override x mesh",1);
+    set("override y mesh",1);
+    set("override z mesh",0);
+    set("set maximum mesh step",1);
+    set("dx",10*nm);
+    set("dy",10*nm);
+    
     findmodes;
 
     mode_idx    = 1;    #fundamental mode

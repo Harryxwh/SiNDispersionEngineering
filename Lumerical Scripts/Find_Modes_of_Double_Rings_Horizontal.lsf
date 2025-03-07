@@ -10,7 +10,7 @@ Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 2.44324393*um; #width of the WG
+Lx_WG2 = 2.4392*um; #width of the WG
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -23,12 +23,12 @@ Ly_Buried_Oxide = 8*um;
 Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 40*um;
-Ly_FDE_min = 4*um;
-Ly_FDE_max = -8*um;
+Ly_FDE_min = -8*um;
+Ly_FDE_max = 4*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 200;
-mesh_cells_y = 100;
+mesh_cells_x = 400;
+mesh_cells_y = 120;
 
 gap = 5*um;
 
@@ -45,9 +45,9 @@ Max_Mode_Idx = 2;
 folder_name = "DoubleRingSuperModes" + "\\";
 
 # Define wavelength of simulation
-wavelength_min = 1565*nm;
-wavelength_max = 1565*nm;
-num_sweep_pt = 1;
+wavelength_min = 1545*nm;
+wavelength_max = 1555*nm;
+num_sweep_pt = 11;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -136,16 +136,16 @@ set("bend radius",bend_radius);
 
 addmesh;
 set("name","mesh_waveguide");
-set("x min",-gap/2 - Lx_WG1 -0.2*um);
-set("x max", gap/2 + Lx_WG2 +0.2*um );
-set("y min",0-0.1*um);
-set("y max",Ly_WG1+0.1*um);
+set("x min",-gap/2 - Lx_WG1 -0.5*um);
+set("x max", gap/2 + Lx_WG2 +0.5*um );
+set("y min",0-0.3*um);
+set("y max",Ly_WG1+0.3*um);
 set("override x mesh",1);
 set("override y mesh",1);
 set("override z mesh",0);
 set("set maximum mesh step",1);
-set("dx",20*nm);
-set("dy",20*nm);
+set("dx",10*nm);
+set("dy",10*nm);
 
 
 # Create arrays to store results
@@ -153,13 +153,15 @@ neff_array = zeros(num_sweep_pt);
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
 format short;
-#folder_path = folder_name + num2str(wavelength*1e9);
-#info_filename = folder_path+ "\Mode_info.txt";
-info_filename  = "Lumerical_supermodes_results.txt";
+folder_path = folder_name + num2str(wavelength*1e9);
+info_filename = folder_path+ "\Mode_info.txt";
+info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt";
 if(fileexists(info_filename)){rm(info_filename);}
+if(fileexists(info_total_filename)){rm(info_total_filename);}
 
 #print header
 write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -179,12 +181,12 @@ for(wavl_idx=1:num_sweep_pt){
 
         beta_ang = real(2*pi/wavelength * bend_radius * neff);
 
-        #Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
-        #Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
-        #Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
-        #Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
-        #Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
-        #Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
+        Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
+        Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
+        Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
+        Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
+        Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
+        Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
 
         
         #Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
@@ -192,7 +194,7 @@ for(wavl_idx=1:num_sweep_pt){
         info = num2str(wavelength*1e9) +","+ num2str(mode_idx);
         format long;
         info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
-        write(info_filename,info);
+        write(info_total_filename,info);
 
         #Fundamental mode
         if(mode_idx < 3){
@@ -204,15 +206,15 @@ for(wavl_idx=1:num_sweep_pt){
         }
         
         #write mode profile matrix
-        #for (j=1:6){
-            #format short;
-            #filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
-            #if(fileexists(filename)){
-                #rm(filename);
-            #}
-            #format long; # set num2str() to return 16 digits of precision
-            #write(filename,num2str(Comp_list{j}));
-        #}
+        for (j=1:6){
+            format short;
+            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            if(fileexists(filename)){
+                rm(filename);
+            }
+            format long; # set num2str() to return 16 digits of precision
+            write(filename,num2str(Comp_list{j}));
+        }
 
     }
 }
