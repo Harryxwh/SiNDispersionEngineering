@@ -29,7 +29,7 @@ class Coupled_Waveguides():
         # self.neff_1 = self.WG1.Modes_info_list[self.WG1.ModeIdx-1].neff
         # self.neff_2 = self.WG2.Modes_info_list[self.WG2.ModeIdx-1].neff
 
-        #beta unit: rad/rad
+        # unit: rad/rad.
         self.beta_ang_1 = self.WG1.Modes_info_list[self.WG1.ModeIdx-1].beta_ang
         self.beta_ang_2 = self.WG2.Modes_info_list[self.WG2.ModeIdx-1].beta_ang
         self.beta_ave   = (self.beta_ang_2 + self.beta_ang_1)/2
@@ -40,6 +40,7 @@ class Coupled_Waveguides():
             self.Plot_index_profile()
         self.Field_dict_uncoupled = self.Shifted_field()
 
+    # Load the class variables from Param.csv
     def load_param(self,param_file_name):
         dtype = [('key', str), ('value', str),('dtype', str), ('comments', str)]
         data = np.loadtxt(param_file_name, delimiter=',', dtype=str,skiprows=1)
@@ -49,14 +50,23 @@ class Coupled_Waveguides():
             # print(param[3])
             # print("---------------------------")
 
+    # Convert the unit from "um" to "num of cells"
     def Convert_to_num_of_cells(self,len_in_um,axis):
         if axis=='x':
             return int(len_in_um * self.Num_of_cells_x/self.FDE_width)
         else:
             return int(len_in_um * self.Num_of_cells_y/self.FDE_height)
+
+    # Average bend radius. (unit: m)
+    @property
+    def Bend_radius_ave(self):
+        return (self.bend_radius_outer + self.bend_radius_inner) /2 *1e-6
+
+    # Wavenumber in vacuum. (unit: rad/m)
     @property
     def k0(self):
         return 2*np.pi / self.wavelength  * 1e6
+
     #shift_x: (unit: # of data points) Distance between the centers of two waveguides in x axis
     #shift_y: (unit: # of data points) Distance between the centers of two waveguides in y axis
     #shift_x * shift_y = 0
@@ -171,13 +181,15 @@ class Coupled_Waveguides():
     def Kappa(self,p_,q_,Nq):
         p = p_ - 1
         q = q_ - 1
-        K = np.sum((self.N*self.N-Nq*Nq) * (np.conj(self.Field_dict_uncoupled['Ex'][p] * \
+        K = np.sum((self.N*self.N-Nq*Nq) * (np.conj(self.Field_dict_uncoupled['Ex'][p]) * \
                                                     self.Field_dict_uncoupled['Ex'][q] + \
                                             np.conj(self.Field_dict_uncoupled['Ey'][p]) * \
                                                     self.Field_dict_uncoupled['Ey'][q] + \
                                             np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
-                                                    self.Field_dict_uncoupled['Ez'][q]) ))
+                                                    self.Field_dict_uncoupled['Ez'][q] ))
+
         K  = K * self.k0 / (self.c * self.u0)
+
         return K
 
     def C(self,p_,q_):
@@ -201,6 +213,7 @@ class Coupled_Waveguides():
                                                     self.Field_dict_uncoupled['Ey'][p] + \
                                             np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
                                                     self.Field_dict_uncoupled['Ez'][p]) ))
+        print(self.k0 / (self.c * self.u0))
         Chi  = Chi * self.k0 / (self.c * self.u0)
         return Chi
 
@@ -249,12 +262,15 @@ class Coupled_Waveguides():
         K_21 = self.Kappa(2,1,self.N1)
         Chi_1 = self.Chi(1,self.N1)
         Chi_2 = self.Chi(2,self.N2)
-        Alpha_a = (K_21 * C_12 - Chi_1)/(1-np.abs(C_12)**2)
-        Alpha_b = (K_12 * C_21 - Chi_2)/(1-np.abs(C_12)**2)
-        Kappa_a = (K_12 - C_12 * Chi_2)/(1-np.abs(C_12)**2)
-        Kappa_b = (K_21 - C_21 * Chi_1)/(1-np.abs(C_12)**2)
-        F = np.array([[Alpha_a+self.delta_beta, -Kappa_a],
-                      [-Kappa_b, Alpha_b-self.delta_beta]])
+
+        # delta_beta is in the unit of rad/rad
+        # The unit of the rest of the elements should also be converted to rad/rad
+        Alpha_a = (K_21 * C_12 - Chi_1)/(1-np.abs(C_12)**2) * self.Bend_radius_ave
+        Alpha_b = (K_12 * C_21 - Chi_2)/(1-np.abs(C_12)**2) * self.Bend_radius_ave
+        Kappa_a = (K_12 - C_12 * Chi_2)/(1-np.abs(C_12)**2) * self.Bend_radius_ave
+        Kappa_b = (K_21 - C_21 * Chi_1)/(1-np.abs(C_12)**2) * self.Bend_radius_ave
+        F = np.array([[Alpha_a + self.delta_beta, -Kappa_a],
+                      [-Kappa_b, Alpha_b - self.delta_beta]])
 
         F = F
         return F
@@ -263,14 +279,13 @@ class Coupled_Waveguides():
         F = self.F_Matrix
         F_sym =  np.diag(np.ones(2))*((F[0][0] + F[1][1])) /2
         F_antisym = F - F_sym
-        # Calculate the angular propagation constant (unit:rad/rad)
-        # Note: self.bend_radius is in the unit of um.
-        Eigenvalues = np.array(np.linalg.eig(F_antisym)[0]) *\
-                        (self.bend_radius_outer + self.bend_radius_inner) /2 *1e-6
+
+        Eigenvalues = np.array(np.linalg.eig(F_antisym)[0])
         Eigenvectors = np.array(np.linalg.eig(F_antisym)[1])
 
         Rabi_freq = Eigenvalues.reshape((1,2))
-        beta_minus_ave = Rabi_freq + np.array([1,-1]) * self.delta_beta
+        beta_minus_ave = Rabi_freq #+ np.array([1,-1]) * self.delta_beta
+
         print("wavelength = ",self.wavelength)
         print("F = ",F)
         print("F_sym = ",F_sym)

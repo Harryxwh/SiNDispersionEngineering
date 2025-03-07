@@ -131,19 +131,21 @@ class Waveguide():
 
 
     def Plot_all_field_profile(self,component_list,
-                               save_name='./results/all_field_profile.png',dpi=150):
+                               save_name='./results/all_field_profile.png',dpi=300):
         #Plot parameters
         font = {'family': 'serif',
                 'serif': 'Helvetica',
                 'weight': 'normal',
-                'size': 4}
+                'size': 10}
         plt.rc('font', **font)
         grid_linewidth = 1
+        colormap = 'inferno'
 
-        fig, ax = plt.subplots(4,3,figsize=(4,5),dpi=dpi)
-
+        fig, ax = plt.subplots(4,3,figsize=(20,10),dpi=dpi)
         ax = ax.flatten()
-        plt.subplots_adjust(wspace =1, hspace =0.8)   #调整子图间距
+        plt.subplots_adjust(left=0.05, right=0.99,
+                            bottom=0.01,top=0.99,
+                            wspace =0.05, hspace =0.01)   #调整子图间距
         plt.ylabel('Y')
         plt.xlabel('X')
         plt.grid(linewidth=grid_linewidth, alpha=0.3)
@@ -158,12 +160,14 @@ class Waveguide():
             for j in range(3):
                 if i%2 == 0:
                     im = ax[i*3+j].imshow(np.real(component_list[j if i<2 else j+3]))
-                    fig.colorbar(im,orientation='vertical')
+                    cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
+                            label='', shrink=0.6, pad=0.02)
                     ax[i*3+j].set_title('Re('+self.component_name_list[j if i<2 else j+3]+')')
 
                 else:
                     im = ax[i*3+j].imshow(np.imag(component_list[j if i<2 else j+3]))
-                    fig.colorbar(im,orientation='vertical')
+                    cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
+                            label='', shrink=0.6, pad=0.02)
                     ax[i*3+j].set_title('Im('+self.component_name_list[j if i<2 else j+3]+')')
 
                 ax[i*3+j].set_xlabel("X")
@@ -174,7 +178,7 @@ class Waveguide():
 
 
         plt.savefig(save_name, dpi=dpi)
-        plt.show()
+        #plt.show()
         return
 
     # The optical power carried by the eigen mode in the waveguide
