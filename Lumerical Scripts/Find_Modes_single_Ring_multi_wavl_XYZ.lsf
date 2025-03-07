@@ -142,7 +142,8 @@ for(wavl_idx=1:num_sweep_pt){
     write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
 
     for (mode_idx=1:Max_Mode_Idx){
-
+        
+        format short;
         neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
         ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
         loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
@@ -156,10 +157,12 @@ for(wavl_idx=1:num_sweep_pt){
         Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
         Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
         Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
-
-        format long;
+        
         Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
-        info = num2str(mode_idx) +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
+        info = num2str(mode_idx) +",";
+        
+        format long;
+        info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
         write(info_filename,info);
 
         #Fundamental mode
