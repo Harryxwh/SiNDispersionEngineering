@@ -19,8 +19,8 @@ Lx_FDE = 30*um;
 Ly_FDE_min = -8*um;
 Ly_FDE_max = 4*um;
 
-mesh_cells_x = 500;
-mesh_cells_y = 200;
+mesh_cells_x = 2000;
+mesh_cells_y = 800;
 
 wavelength  = 1550*nm;
 
@@ -43,7 +43,7 @@ gap = 5*um;
 #results
 beta_ang_array  = zeros(num_of_pts_Lx);
 format short;
-filename = "Scanning_Lx_and_r.txt";
+filename = "Scanning_Lx.txt";
 if(fileexists(filename)){rm(filename);}
 write(filename,"Lx,beta_ang");
 
@@ -120,18 +120,18 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("bend location z", 0);
     set("bend radius",bend_radius);
 
-    addmesh;
-    set("name","mesh_waveguide");
-    set("x min",-1.2*um - 0.3*um);
-    set("x max",1.2*um + 0.3*um );
-    set("y min",0-0.3*um);
-    set("y max",Ly_WG + 0.3*um);
-    set("override x mesh",1);
-    set("override y mesh",1);
-    set("override z mesh",0);
-    set("set maximum mesh step",1);
-    set("dx",10*nm);
-    set("dy",10*nm);
+    #addmesh;
+    #set("name","mesh_waveguide");
+    #set("x min",-1.2*um - 0.5*um);
+    #set("x max",1.2*um + 0.5*um );
+    #set("y min",0-0.5*um);
+    #set("y max",Ly_WG + 0.5*um);
+    #set("override x mesh",1);
+    #set("override y mesh",1);
+    #set("override z mesh",0);
+    #set("set maximum mesh step",1);
+    #set("dx",5*nm);
+    #set("dy",5*nm);
     
     findmodes;
 
