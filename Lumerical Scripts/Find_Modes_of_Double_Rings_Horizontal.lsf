@@ -10,7 +10,7 @@ Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 2.4392*um; #width of the WG
+Lx_WG2 = 2.437*um; #width of the WG
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -45,9 +45,9 @@ Max_Mode_Idx = 2;
 folder_name = "DoubleRingSuperModes" + "\\";
 
 # Define wavelength of simulation
-wavelength_min = 1545*nm;
-wavelength_max = 1555*nm;
-num_sweep_pt = 11;
+wavelength_min = 1540*nm;
+wavelength_max = 1560*nm;
+num_sweep_pt = 21;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -147,20 +147,13 @@ set("set maximum mesh step",1);
 set("dx",10*nm);
 set("dy",10*nm);
 
-
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
-format short;
-folder_path = folder_name + num2str(wavelength*1e9);
-info_filename = folder_path+ "\Mode_info.txt";
-info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt";
-if(fileexists(info_filename)){rm(info_filename);}
+info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt";     # results combined in one file
 if(fileexists(info_total_filename)){rm(info_total_filename);}
-
 #print header
-write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
 for(wavl_idx=1:num_sweep_pt){
@@ -169,6 +162,15 @@ for(wavl_idx=1:num_sweep_pt){
 
     wavelength = wavelength_array(wavl_idx);
     setnamed("FDE","wavelength",wavelength);
+    
+    format short;
+    folder_path = folder_name + num2str(wavelength*1e9);
+    #folder_path = folder_name +"15505";
+    info_filename = folder_path+ "\Mode_info.txt";          # result for one wavl within folder for each wavelength
+    if(fileexists(info_filename)){rm(info_filename);}
+    #print header
+    write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+  
 
     findmodes;
 
@@ -194,7 +196,9 @@ for(wavl_idx=1:num_sweep_pt){
         info = num2str(wavelength*1e9) +","+ num2str(mode_idx);
         format long;
         info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
+        write(info_filename,info);
         write(info_total_filename,info);
+        
 
         #Fundamental mode
         if(mode_idx < 3){

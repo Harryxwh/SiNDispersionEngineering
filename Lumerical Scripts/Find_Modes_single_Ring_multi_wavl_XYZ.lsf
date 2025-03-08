@@ -3,7 +3,7 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-Lx_WG = 2.4392*um; #width of the 
+Lx_WG = 2.4375*um; #width of the 
 #Lx_WG = 8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
