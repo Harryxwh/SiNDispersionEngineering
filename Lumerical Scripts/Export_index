@@ -1,0 +1,11 @@
+wavelength=linspace(1500,1600,100);  #设定选取波段，采样数量
+
+f = c/(wavelength*1e-9); # 计算频率，国际单位制
+
+n = getindex("Si3N4 (Silicon Nitride) - Luke", f); #读取折射率
+n_real = real(n);
+n_imag = imag(n);
+
+file_name = "./Si3N4_index.txt";
+write(file_name, num2str(wavelength), num2str(n_real),num2str(n_imag));
+
