@@ -1,19 +1,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import namedtuple
-
-
+MIN_VALUE = np.complex128(10**(-20),0)
 '''
 class Waveguide()
 
 Parameters:
-width       : width of the waveguide. (unit:um)
-height      : height the waveguide. (unit:um)
-bendradius  : bend radius of the waveguide. (unit:um)
-PML_len     : Width of the boundary PML layer (unit: num of data points)
-name        : foldername of the mode profile
-ModeIdx     : Eigen mode index
-Plot        : True or False. Whether to plot all the mode profiles.
+width               : width of the waveguide. (unit:um)
+height              : height the waveguide. (unit:um)
+bendradius          : bend radius of the waveguide. (unit:um)
+PML_len             : Width of the boundary PML layer (unit: num of data points)
+name                : foldername of the mode profile
+ModeIdx             : Eigen mode index
+FDE_shape_padded    : Shape of the field matrix afer zero padding (unit: um)
+Plot                : True or False. Whether to plot all the mode profiles.
+
+Methods:
 
 '''
 
@@ -30,20 +32,37 @@ class Waveguide():
 
     #width:  num of data points for |x|<a
     #height: num of data points for |y|<b
-    def __init__(self, width, height, bendradius, PML_len,
-                 foldername, ModeIdx, Field_shape_padded, Plot):
+    def __init__(self, width, height, bendradius,           # geometry of the WG
+                 FDE_x, FDE_y, PML_len, Num_of_cells,        # geometry of the FDE region
+                 foldername, ModeIdx, FDE_shape_padded,     # parameters of the mode profile
+                 Plot):
+        # geometry of the WG
         self.width  = width                 # unit :um
         self.height = height                # unit :um
-        self.bend_radius = bendradius      # unit :um
-        self.PML_len = PML_len              # unit: num of data points
+        self.bend_radius = bendradius       # unit :um
+        # geometry of the FDE region
+        self.FDE_x_min,self.FDE_x_max = FDE_x   # format:(x_min,x_max), unit: um
+        self.FDE_y_min,self.FDE_y_max = FDE_y   # format:(y_min,y_max), unit: um
+        self.FDE_width = self.FDE_x_max - self.FDE_x_min
+        self.FDE_height = self.FDE_y_max - self.FDE_y_min
+        self.PML_len = PML_len                  # unit: num of data points
+        self.Num_of_cells_x,self.Num_of_cells_y = Num_of_cells
+        # parameters of the mode profile
+        self.name = foldername
         self.ModeIdx = ModeIdx
         self.Modes_info_list = self.Load_modes_info(foldername)
+        self.FDE_width_padded,self.FDE_height_padded = FDE_shape_padded # unit: um
 
-        self.Field_dict= self.Load_all_field_profile(
+        # unit: num of cells
+        self.Field_shape_padded = np.array([self.Convert_to_num_of_cells(
+                                            self.FDE_height_padded,axis='y'),
+                                            self.Convert_to_num_of_cells(
+                                            self.FDE_width_padded,axis='x')])
+        self.Load_all_field_profile(
             foldername = foldername,ModeIdx = ModeIdx,
             Field_shape_padded=Field_shape_padded,plot= Plot,PML_len=self.PML_len)
         # print("shape of loaded field matrix:",self.Field_shape)
-        self.Field_dict_normalize()     # normalize the fields to let P_total = 1
+
 
 
     def str2complex(self,s):
@@ -83,8 +102,6 @@ class Waveguide():
             for line in lines[1:]:
                 line_arr = line.split('\t')
                 Field = np.c_[Field,np.array([self.str2complex(s) for s in line_arr])]
-            #print("# of lines:",len(lines))
-            #print("# of columns:",len(lines[0].split('\t')))
 
         Field = Field[int((PML_len)/2):np.shape(Field)[0]-int((PML_len)/2),
                       int((PML_len)/2):np.shape(Field)[1]-int((PML_len)/2)]
@@ -93,20 +110,40 @@ class Waveguide():
         return Field
 
     # Pad zero. Lx_padded and Ly_padded in unit of num of points
+    # shape_padded : format:(Ly_padded, Lx_padded)
     def Zero_Padding_of_Field_Profile(self,Field,shape_padded):
         Ly_padded, Lx_padded = shape_padded
-        Field_padded = np.zeros(shape_padded,dtype=np.complex64)
         Ly_unpad, Lx_unpad = np.shape(Field)
-        idx_y_start = int(Ly_padded/2-Ly_unpad/2)
-        idx_y_end   = int(Ly_padded/2+Ly_unpad/2)
-        idx_x_start = int(Lx_padded/2-Lx_unpad/2)
-        idx_x_end   = int(Lx_padded/2+Lx_unpad/2)
+
+        if Ly_padded <= Ly_unpad:
+            # No need to pad zero
+            idx_y_start = 0
+            idx_y_end   = Ly_unpad
+            Ly_padded   = Ly_unpad
+        else:
+            idx_y_start = int(Ly_padded/2-Ly_unpad/2)
+            idx_y_end   = int(Ly_padded/2+Ly_unpad/2)
+        if Lx_padded <= Lx_unpad:
+            # No need to pad zero
+            idx_x_start = 0
+            idx_x_end   = Lx_unpad
+            Lx_padded   = Lx_unpad
+        else:
+            idx_x_start = int(Lx_padded/2-Lx_unpad/2)
+            idx_x_end   = int(Lx_padded/2+Lx_unpad/2)
+
+        Field_padded = np.ones((Ly_padded, Lx_padded),
+                               dtype=np.complex128) * np.max([MIN_VALUE,np.min(Field)])
+
         if not idx_y_end-idx_y_start == Ly_unpad:
             idx_y_end   = idx_y_end + 1
+            print("Y Warning when padding zero!")
         if not idx_x_end-idx_x_start == Lx_unpad:
             idx_x_end   = idx_x_end + 1
+            print("X Warning when padding zero!")
         assert idx_y_end-idx_y_start == Ly_unpad
         assert idx_x_end-idx_x_start == Lx_unpad
+
         Field_padded[idx_y_start:idx_y_end,
                      idx_x_start:idx_x_end] = Field
         return Field_padded
@@ -123,69 +160,97 @@ class Waveguide():
 
         component_list = [Ex,Ey,Ez,Hx,Hy,Hz]
         component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
-        Field_dict = dict(zip(component_name_list,component_list))
+        self.Field_dict = dict(zip(component_name_list,component_list))
+        self.Field_dict_normalize()     # normalize the fields to let P_total = 1
+
         if plot ==True:
-            self.Plot_all_field_profile(component_list)
-
-        return Field_dict
-
-
-    def Plot_all_field_profile(self,component_list,
+            component_list = list(self.Field_dict.values())
+            self.Plot_all_field_profile(component_list,
+                                        save_name='./results/'+foldername[19:25]+'_all_field_profile.png')
+        return
+    plt.gca().invert_yaxis()
+    def Plot_all_field_profile(self,component_list, Plot_Log = False,
                                save_name='./results/all_field_profile.png',dpi=300):
         #Plot parameters
+        # save_name='./results/All_field_profile_'+self.name+'.png'
         font = {'family': 'serif',
                 'serif': 'Helvetica',
                 'weight': 'normal',
                 'size': 10}
         plt.rc('font', **font)
         grid_linewidth = 1
-        colormap = 'inferno'
+        colormap = "jet"
+        figsize = (30,15)
 
-        fig, ax = plt.subplots(4,3,figsize=(20,10),dpi=dpi)
+        fig, ax = plt.subplots(4,3,figsize=figsize,dpi=dpi)
         ax = ax.flatten()
-        plt.subplots_adjust(left=0.05, right=0.99,
-                            bottom=0.01,top=0.99,
-                            wspace =0.05, hspace =0.01)   #调整子图间距
-        plt.ylabel('Y')
-        plt.xlabel('X')
+        plt.subplots_adjust(left=0.05, right=0.95,
+                            bottom=0.05,top=0.95,
+                            wspace =0.1, hspace =0.2)   #调整子图间距
+
         plt.grid(linewidth=grid_linewidth, alpha=0.3)
-        # plt.yticks(fontproperties = font["type"], size = font["size"])
-        # plt.xticks(fontproperties = font["type"], size = font["size"])
-        # plt.rcParams["font.family"] = font["type"]
-        # plt.rcParams.update({'font.size': fontsize})
-        # plt.ylabel('Y', fontdict={'family' : fonttype, 'size' : fontsize})
-        # plt.xlabel('X', fontdict={'family' : fonttype, 'size' : fontsize})
 
         for i in range(4):
             for j in range(3):
+                field = component_list[j if i<2 else j+3]
+                if Plot_Log:
+                    field = np.log(np.abs(field))
+                yticks_prev = np.arange(0,np.shape(field)[0],
+                                        int(np.shape(field)[0]/figsize[1]))
+                xticks_prev = np.arange(0,np.shape(field)[1],
+                                        int(np.shape(field)[1]/figsize[0]))
+                xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
                 if i%2 == 0:
-                    im = ax[i*3+j].imshow(np.real(component_list[j if i<2 else j+3]))
-                    cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
-                            label='', shrink=0.6, pad=0.02)
+                    im = ax[i*3+j].imshow(np.real(field),cmap=colormap)
                     ax[i*3+j].set_title('Re('+self.component_name_list[j if i<2 else j+3]+')')
-
                 else:
-                    im = ax[i*3+j].imshow(np.imag(component_list[j if i<2 else j+3]))
-                    cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
-                            label='', shrink=0.6, pad=0.02)
+                    im = ax[i*3+j].imshow(np.imag(field),cmap=colormap)
                     ax[i*3+j].set_title('Im('+self.component_name_list[j if i<2 else j+3]+')')
-
-                ax[i*3+j].set_xlabel("X")
-                ax[i*3+j].set_ylabel("Y")
-
+                cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
+                            label='', shrink=0.6, pad=0.02)
+                ax[i*3+j].set_xticks(xticks_prev)
+                ax[i*3+j].set_xticklabels(xticks)
+                ax[i*3+j].set_yticks(yticks_prev)
+                ax[i*3+j].set_yticklabels(yticks)
+                ax[i*3+j].set_xlabel("X(um)",fontsize=4)
+                ax[i*3+j].set_ylabel("Y(um)",fontsize=4)
                 ax[i*3+j].invert_yaxis()
                 ax[i*3+j].tick_params(axis='both',labelsize=5)
 
-
         plt.savefig(save_name, dpi=dpi)
-        #plt.show()
+        # plt.show()
         return
+
+    # Converting the unit of ticks to um
+    def Convert_ticks(self,xticks_prev,yticks_prev,shift_tuple=(0,0)):
+
+        shift_x,shift_y = shift_tuple
+        yticks      = self.Convert_to_um(yticks_prev+ shift_y,axis='y')+\
+                        self.FDE_y_min - (self.FDE_height_padded-self.FDE_height)/2
+        yticks      = np.round(yticks, 2)
+        xticks      = self.Convert_to_um(xticks_prev+ shift_x,axis='x')+\
+                        self.FDE_x_min - (self.FDE_width_padded-self.FDE_width)/2
+        xticks      = np.round(xticks, 2)
+        return xticks,yticks
+
+    def Convert_to_num_of_cells(self,len_in_um,axis):
+        if axis=='x':
+            return int(len_in_um * self.Num_of_cells_x / self.FDE_width)
+        else:
+            return int(len_in_um * self.Num_of_cells_y / self.FDE_height)
+
+    def Convert_to_um(self,num_cells,axis):
+        if axis=='x':
+            return self.FDE_width * num_cells / self.Num_of_cells_x
+        else:
+            return self.FDE_height * num_cells / self.Num_of_cells_y
 
     # The optical power carried by the eigen mode in the waveguide
     def P_total(self):
         Field_dict = self.Field_dict
         P_total = 2*np.real(np.sum(np.conj(Field_dict['Ex']) * Field_dict['Hy'] -
                            np.conj(Field_dict['Ey']) * Field_dict['Hx']))
+        pass
         return P_total
 
     # Normalize fields to make P_total = 1
