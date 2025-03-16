@@ -3,7 +3,7 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-Lx_WG = 2.4375*um; #width of the 
+#Lx_WG = 2.591*um; #width of the WG
 #Lx_WG = 8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
@@ -29,11 +29,14 @@ bend_radius_inner = 1000*um;
 gap = 5*um;
 
 folder_name = "RingXYZ" + "\\";
-log_file_name = "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
+log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
+if(fileexists(log_filename)){rm(log_filename);}
 
-bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
-#bend_radius =  bend_radius_inner;
+#bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
+bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
+write(log_filename,"Lx_WG = "+Lx_WG);
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
@@ -50,7 +53,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 #for(wavl_idx=1:num_sweep_pt){
     #format short;
     #wavelength = wavelength_array(wavl_idx);
-    
+
     #folder_path = folder_name + num2str(wavelength*1e9);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
@@ -128,28 +131,28 @@ for(wavl_idx=1:num_sweep_pt){
 
     switchtolayout;
     wavelength = wavelength_array(wavl_idx);
-    
+
     setnamed("FDE","wavelength",wavelength);
 
     findmodes;
 
     format short;
-    
+
     folder_path = folder_name + num2str(wavelength*1e9);
     info_filename = folder_path+ "\Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
-    
+
     #print header
     write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
 
     for (mode_idx=1:Max_Mode_Idx){
-        
+
         format short;
         neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
         ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
         loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
         polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
-        
+
         beta_ang = real(2*pi/wavelength * bend_radius * neff);
 
         Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
@@ -158,12 +161,13 @@ for(wavl_idx=1:num_sweep_pt){
         Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
         Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
         Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
-        
+
         Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
         info = num2str(mode_idx) +",";
-        
+
         format long;
         info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
+        write(info_filename,info);
         write(info_filename,info);
 
         #Fundamental mode
