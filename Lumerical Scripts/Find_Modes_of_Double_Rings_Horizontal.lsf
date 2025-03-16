@@ -10,7 +10,7 @@ Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 2.437*um; #width of the WG
+Lx_WG2 = 2.591*um; #width of the WG
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -22,15 +22,15 @@ Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 8*um;
 Lz_Buried_Oxide = 50*um;
 
-Lx_FDE = 40*um;
+Lx_FDE = 42*um;
 Ly_FDE_min = -8*um;
 Ly_FDE_max = 4*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 400;
-mesh_cells_y = 120;
+mesh_cells_x = 2800;
+mesh_cells_y = 800;
 
-gap = 5*um;
+gap = 4*um;
 
 bend_radius_inner = 1000*um;
 bend_radius =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5 ;
@@ -46,8 +46,8 @@ folder_name = "DoubleRingSuperModes" + "\\";
 
 # Define wavelength of simulation
 wavelength_min = 1540*nm;
-wavelength_max = 1560*nm;
-num_sweep_pt = 21;
+wavelength_max = 1540*nm;
+num_sweep_pt = 1;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -59,6 +59,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
+
 
 #Inner Ring
 addrect;
@@ -134,18 +135,19 @@ set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
 
-addmesh;
-set("name","mesh_waveguide");
-set("x min",-gap/2 - Lx_WG1 -0.5*um);
-set("x max", gap/2 + Lx_WG2 +0.5*um );
-set("y min",0-0.3*um);
-set("y max",Ly_WG1+0.3*um);
-set("override x mesh",1);
-set("override y mesh",1);
-set("override z mesh",0);
-set("set maximum mesh step",1);
-set("dx",10*nm);
-set("dy",10*nm);
+#addmesh;
+#set("name","mesh_waveguide");
+#set("x min",-gap/2 - Lx_WG1 -0.5*um);
+#set("x max", gap/2 + Lx_WG2 +0.5*um );
+#set("y min",0-0.3*um);
+#set("y max",Ly_WG1+0.3*um);
+#set("override x mesh",1);
+#set("override y mesh",1);
+#set("override z mesh",0);
+#set("set maximum mesh step",1);
+#set("dx",10*nm);
+#set("dy",10*nm);
+
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
@@ -155,6 +157,7 @@ info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt"; 
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 #print header
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+",gap_x = " + num2str(gap));
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -191,7 +194,7 @@ for(wavl_idx=1:num_sweep_pt){
         Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
 
         
-        #Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
+        Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
         format short;
         info = num2str(wavelength*1e9) +","+ num2str(mode_idx);
         format long;
