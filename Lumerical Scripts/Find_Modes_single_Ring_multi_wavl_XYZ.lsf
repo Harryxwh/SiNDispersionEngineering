@@ -3,7 +3,7 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-#Lx_WG = 2.591*um; #width of the WG
+Lx_WG = 2.8*um; #width of the WG
 #Lx_WG = 8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
@@ -21,12 +21,12 @@ Ly_FDE_min = -8*um;
 Ly_FDE_max = 4*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 200;
-mesh_cells_y = 80;
+mesh_cells_x = 2000;
+mesh_cells_y = 800;
 
-Lx_inner = 8*um;
+Lx_inner = 2.8*um;
 bend_radius_inner = 1000*um;
-gap = 5*um;
+gap = 3*um;
 
 folder_name = "Single_Ring" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
@@ -37,7 +37,7 @@ bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG));
+write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
