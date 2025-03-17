@@ -21,22 +21,23 @@ Ly_FDE_min = -8*um;
 Ly_FDE_max = 4*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 2000;
-mesh_cells_y = 800;
+mesh_cells_x = 200;
+mesh_cells_y = 80;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;
 gap = 5*um;
 
-folder_name = "RingXYZ" + "\\";
+folder_name = "Single_Ring" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
 #bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
 bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+Lx_WG);
+write(log_filename,"Lx_WG = "+num2str(Lx_WG));
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
@@ -167,7 +168,6 @@ for(wavl_idx=1:num_sweep_pt){
 
         format long;
         info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
-        write(info_filename,info);
         write(info_filename,info);
 
         #Fundamental mode
