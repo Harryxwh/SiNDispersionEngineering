@@ -12,7 +12,7 @@ Ly_Cladding = 2*um; #width of the WG
 Lz_Cladding = 50*um; #height of the WG
 
 Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 8*um;
+Ly_Buried_Oxide = 14.5*um;
 Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 30*um;
@@ -28,17 +28,17 @@ material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
 #Parameter of the inner ring is fixed
-Lx_inner_ring = 8*um;
+Lx_inner_ring = 2.8*um;
 bend_radius_inner = 1000*um;
 
 #Parameter sweep of radius of outer ring
-Lx_start    = 2.435*um;
-Lx_end      = 2.445*um;
-num_of_pts_Lx  = 11;
+Lx_start    = 1.2*um;
+Lx_end      = 1.8*um;
+num_of_pts_Lx  = 7;
 Lx_arr      = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
 # The distance between two rings is fixed
-gap = 5*um;
+gap = 8*um;
 
 #results
 beta_ang_array  = zeros(num_of_pts_Lx);
@@ -105,10 +105,14 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("x span",Lx_FDE);
     set("y min",Ly_FDE_min);
     set("y max",Ly_FDE_max);
-    set("x min bc","Metal");
-    set("x max bc","Metal");
-    set("y min bc","Metal");
-    set("y max bc","Metal");
+    #set("x min bc","Metal");
+    #set("x max bc","Metal");
+    #set("y min bc","Metal");
+    #set("y max bc","Metal");
+    set("x min bc","PML");
+    set("x max bc","PML");
+    set("y min bc","PML");
+    set("y max bc","PML");
     set("define x mesh by","number of mesh cells");
     set("define y mesh by","number of mesh cells");
     set("mesh cells x",mesh_cells_x);

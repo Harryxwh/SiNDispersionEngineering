@@ -5,12 +5,15 @@ um = 1e-6;
 nm = 1e-9;
 
 #Inner Ring
-Lx_WG1 = 8*um; #width of the WG
+Lx_WG1 = 2.8*um; #width of the WG
 Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 2.591*um; #width of the WG
+#Lx_WG = 1.912*um; #width of the WG     #gap_x = 4um
+#Lx_WG = 1.793*um; #width of the WG     #gap_x = 5um
+Lx_WG = 1.558*um; #width of the WG       #gap_x = 8um
+
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -19,18 +22,18 @@ Ly_Cladding = 2*um; #height of the WG
 Lz_Cladding = 50*um; #length of the WG
 
 Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 8*um;
+Ly_Buried_Oxide = 14.5*um;
 Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 42*um;
-Ly_FDE_min = -8*um;
-Ly_FDE_max = 4*um;
+Ly_FDE_min = -10*um;
+Ly_FDE_max = 5*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 2800;
-mesh_cells_y = 800;
+mesh_cells_x = 350;
+mesh_cells_y = 125;
 
-gap = 4*um;
+gap = 8*um;
 
 bend_radius_inner = 1000*um;
 bend_radius =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5 ;
@@ -46,8 +49,8 @@ folder_name = "DoubleRingSuperModes" + "\\";
 
 # Define wavelength of simulation
 wavelength_min = 1540*nm;
-wavelength_max = 1540*nm;
-num_sweep_pt = 1;
+wavelength_max = 1560*nm;
+num_sweep_pt = 21;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create folders if they do not yet exist
@@ -120,10 +123,14 @@ set("y",0);
 set("x span",Lx_FDE);
 set("y min",Ly_FDE_min);
 set("y max",Ly_FDE_max);
-set("x min bc","Metal");
-set("x max bc","Metal");
-set("y min bc","Metal");
-set("y max bc","Metal");
+#set("x min bc","Metal");
+#set("x max bc","Metal");
+#set("y min bc","Metal");
+#set("y max bc","Metal");
+set("x min bc","PML");
+set("x max bc","PML");
+set("y min bc","PML");
+set("y max bc","PML");
 set("define x mesh by","number of mesh cells");
 set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
@@ -137,8 +144,8 @@ set("bend radius",bend_radius);
 
 #addmesh;
 #set("name","mesh_waveguide");
-#set("x min",-gap/2 - Lx_WG1 -0.5*um);
-#set("x max", gap/2 + Lx_WG2 +0.5*um );
+#set("x min",-gap/2 - Lx_WG1 -1*um);
+#set("x max", gap/2 + Lx_WG2 +1*um );
 #set("y min",0-0.3*um);
 #set("y max",Ly_WG1+0.3*um);
 #set("override x mesh",1);

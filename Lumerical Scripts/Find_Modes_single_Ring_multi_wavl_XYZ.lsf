@@ -3,8 +3,10 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-Lx_WG = 2.8*um; #width of the WG
-#Lx_WG = 8*um; #width of the WG
+#Lx_WG = 2.8*um; #width of the WG
+#Lx_WG = 1.989*um; #width of the WG     #gap_x = 4um
+#Lx_WG = 1.793*um; #width of the WG     #gap_x = 5um
+Lx_WG = 1.558*um; #width of the WG       #gap_x = 8um
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
 
@@ -13,7 +15,7 @@ Ly_Cladding = 2*um; #height of the WG
 Lz_Cladding = 50*um; #length of the WG
 
 Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 8*um;
+Ly_Buried_Oxide = 14.5*um;
 Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 30*um;
@@ -26,14 +28,14 @@ mesh_cells_y = 800;
 
 Lx_inner = 2.8*um;
 bend_radius_inner = 1000*um;
-gap = 3*um;
+gap = 8*um;
 
 folder_name = "Single_Ring" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
-#bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
-bend_radius =  bend_radius_inner;
+bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
+#bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
@@ -59,6 +61,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
+
 
 #WG
 addrect;
@@ -108,10 +111,14 @@ set("y",0);
 set("x span",Lx_FDE);
 set("y min",Ly_FDE_min);
 set("y max",Ly_FDE_max);
-set("x min bc","Metal");
-set("x max bc","Metal");
-set("y min bc","Metal");
-set("y max bc","Metal");
+#set("x min bc","Metal");
+#set("x max bc","Metal");
+#set("y min bc","Metal");
+#set("y max bc","Metal");
+set("x min bc","PML");
+set("x max bc","PML");
+set("y min bc","PML");
+set("y max bc","PML");
 set("define x mesh by","number of mesh cells");
 set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
@@ -178,7 +185,7 @@ for(wavl_idx=1:num_sweep_pt){
             ?wave_log;
             ?neff_log;
             ?beta_log;
-            write(log_file_name,wave_log + "\n" + neff_log + "\n" + beta_log + "\n");
+            write(log_filename,wave_log + "\n" + neff_log + "\n" + beta_log + "\n");
         }
         #write mode profile matrix
         for (j=1:6){
