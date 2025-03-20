@@ -50,7 +50,9 @@ Max_Mode_Idx = 1;
 wavelength_min = 1550*nm;
 wavelength_max = 1550*nm;
 num_sweep_pt = 1;
+
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength_array = (1.54,1.542,1.544,1.546,1.547,1.548,1.549,1.550,1.551,1.552,1.553,1.554,1.556,1.558,1.56);
 
 # Create folders if they do not yet exist
 #for(wavl_idx=1:num_sweep_pt){
