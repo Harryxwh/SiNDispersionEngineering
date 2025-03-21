@@ -2,7 +2,7 @@
 # making empty folders
 ################################################
 
-folder_name = "Single_Ring_L_inner_8um" + "\\";
+folder_name = "DoubleRingSuperModes_L_inner_8_gap_5um_1540_1560_21wavls" + "\\";
 
 # Define wavelength of simulation
 #num_sweep_pt = 10;
@@ -10,7 +10,7 @@ folder_name = "Single_Ring_L_inner_8um" + "\\";
 
 wavelength_min      = 1540*nm;
 wavelength_max      = 1560*nm;
-num_sweep_pt        = 11;
+num_sweep_pt        = 21;
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 

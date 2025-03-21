@@ -12,7 +12,7 @@ Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 2.437*um; #width of the WG      #gap_x = 5um
+Lx_WG2 = 2.452*um; #width of the WG      #gap_x = 5um
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -29,23 +29,21 @@ Ly_FDE_min = -10*um;
 Ly_FDE_max = 5*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 2800;
-mesh_cells_y = 1000;
+mesh_cells_x = 280;
+mesh_cells_y = 100;
 
 ########## Slightly changing the gap ##########
 gap                 = 3.5*um;
 folder_name         = "DoubleRingSuperModes_L_inner_8um_gap_3_5" + "\\";
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-?"bend_radius       = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "   + num2str(bend_radius*1e6) +" um";
 ################################################
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 2;
-
-folder_name = "DoubleRingSuperModes_L_inner_8um_gap_3_5" + "\\";
 
 # Define wavelength of simulation
 wavelength_min = 1540*nm;
@@ -64,7 +62,7 @@ gap                 = 3*um;
 folder_name         = "DoubleRingSuperModes_L_inner_8um_gap_3" + "\\";
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-?"bend_radius       = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "   + num2str(bend_radius*1e6) +" um";
 ################################################
 
 ################################################
@@ -79,7 +77,7 @@ gap                 = 4.5*um;
 folder_name         = "DoubleRingSuperModes_L_inner_8um_gap_4_5" + "\\";
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-?"bend_radius       = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "   + num2str(bend_radius*1e6) +" um";
 ################################################
 
 ################################################
@@ -93,10 +91,10 @@ gap                 = 5*um;
 folder_name         = "DoubleRingSuperModes_L_inner_8um_gap_5" + "\\";
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-?"bend_radius       = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "   + num2str(bend_radius*1e6) +" um";
 ################################################
 
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_of_Double_Rings_Horizontal_func;
+#Find_Modes_of_Double_Rings_Horizontal_func;

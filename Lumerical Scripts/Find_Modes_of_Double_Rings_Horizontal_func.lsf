@@ -89,24 +89,24 @@ set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
 
-addmesh;
-set("name","mesh_waveguide");
-set("x min",-gap/2 - Lx_WG1 -1*um);
-set("x max", gap/2 + Lx_WG2 +1*um );
-set("y min",0-0.3*um);
-set("y max",Ly_WG1+0.3*um);
-set("override x mesh",1);
-set("override y mesh",1);
-set("override z mesh",0);
-set("set maximum mesh step",1);
-set("dx",10*nm);
-set("dy",10*nm);
+#addmesh;
+#set("name","mesh_waveguide");
+#set("x min",-gap/2 - Lx_WG1 -1*um);
+#set("x max", gap/2 + Lx_WG2 +1*um );
+#set("y min",0-0.3*um);
+#set("y max",Ly_WG1+0.3*um);
+#set("override x mesh",1);
+#set("override y mesh",1);
+#set("override z mesh",0);
+#set("set maximum mesh step",1);
+#set("dx",10*nm);
+#set("dy",10*nm);
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
-info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt";     # results combined in one file
+info_total_filename  = folder_name + "\Lumerical_supermodes_results.txt";     # results combined in one file
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 #print header
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
