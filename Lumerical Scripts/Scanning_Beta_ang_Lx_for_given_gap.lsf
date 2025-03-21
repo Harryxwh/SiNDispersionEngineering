@@ -19,8 +19,8 @@ Lx_FDE = 30*um;
 Ly_FDE_min = -8*um;
 Ly_FDE_max = 4*um;
 
-mesh_cells_x = 2000;
-mesh_cells_y = 800;
+mesh_cells_x = 1000;
+mesh_cells_y = 400;
 
 wavelength  = 1550*nm;
 
@@ -32,13 +32,13 @@ Lx_inner_ring = 2.8*um;
 bend_radius_inner = 1000*um;
 
 #Parameter sweep of radius of outer ring
-Lx_start    = 1.2*um;
-Lx_end      = 1.8*um;
-num_of_pts_Lx  = 7;
+Lx_start    = 1.5*um;
+Lx_end      = 2*um;
+num_of_pts_Lx  = 6;
 Lx_arr      = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
 # The distance between two rings is fixed
-gap = 8*um;
+gap = 5*um;
 
 #results
 beta_ang_array  = zeros(num_of_pts_Lx);

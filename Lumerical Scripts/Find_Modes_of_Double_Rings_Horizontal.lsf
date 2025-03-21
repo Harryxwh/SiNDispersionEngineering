@@ -10,9 +10,10 @@ Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-#Lx_WG = 1.912*um; #width of the WG     #gap_x = 4um
-#Lx_WG = 1.793*um; #width of the WG     #gap_x = 5um
-Lx_WG = 1.558*um; #width of the WG       #gap_x = 8um
+#Lx_WG2 = 1.912*um; #width of the WG     #gap_x = 4um
+Lx_WG2 = 1.798*um; #width of the WG     #gap_x = 5um
+#Lx_WG2 = 1.547*um; #width of the WG       #gap_x = 8um
+#Lx_WG2 = 1.410*um; #width of the WG       #gap_x = 8um
 
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
@@ -30,10 +31,10 @@ Ly_FDE_min = -10*um;
 Ly_FDE_max = 5*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 350;
-mesh_cells_y = 125;
+mesh_cells_x = 1400;
+mesh_cells_y = 500;
 
-gap = 8*um;
+gap = 5*um;
 
 bend_radius_inner = 1000*um;
 bend_radius =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5 ;
@@ -50,9 +51,8 @@ folder_name = "DoubleRingSuperModes" + "\\";
 # Define wavelength of simulation
 wavelength_min = 1540*nm;
 wavelength_max = 1560*nm;
-num_sweep_pt = 21;
+num_sweep_pt = 11;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
-wavelength_array = (1.54,1.542,1.544,1.546,1.547,1.548,1.549,1.550,1.551,1.552,1.553,1.554,1.556,1.558,1.56);
 
 # Create folders if they do not yet exist
 #for(wavl_idx=1:num_sweep_pt){
@@ -143,18 +143,18 @@ set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
 
-#addmesh;
-#set("name","mesh_waveguide");
-#set("x min",-gap/2 - Lx_WG1 -1*um);
-#set("x max", gap/2 + Lx_WG2 +1*um );
-#set("y min",0-0.3*um);
-#set("y max",Ly_WG1+0.3*um);
-#set("override x mesh",1);
-#set("override y mesh",1);
-#set("override z mesh",0);
-#set("set maximum mesh step",1);
-#set("dx",10*nm);
-#set("dy",10*nm);
+addmesh;
+set("name","mesh_waveguide");
+set("x min",-gap/2 - Lx_WG1 -1*um);
+set("x max", gap/2 + Lx_WG2 +1*um );
+set("y min",0-0.3*um);
+set("y max",Ly_WG1+0.3*um);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",0);
+set("set maximum mesh step",1);
+set("dx",20*nm);
+set("dy",20*nm);
 
 
 # Create arrays to store results
@@ -164,8 +164,8 @@ Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 info_total_filename  = "DoubleRingSuperModes\Lumerical_supermodes_results.txt";     # results combined in one file
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 #print header
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+ ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
-write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+",gap_x = " + num2str(gap));
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -173,7 +173,7 @@ for(wavl_idx=1:num_sweep_pt){
 
     wavelength = wavelength_array(wavl_idx);
     setnamed("FDE","wavelength",wavelength);
-
+    
     format short;
     folder_path = folder_name + num2str(wavelength*1e9);
     #folder_path = folder_name +"15505";
@@ -181,7 +181,7 @@ for(wavl_idx=1:num_sweep_pt){
     if(fileexists(info_filename)){rm(info_filename);}
     #print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
-
+  
 
     findmodes;
 
@@ -201,7 +201,7 @@ for(wavl_idx=1:num_sweep_pt){
         Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
         Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
 
-
+        
         Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
         format short;
         info = num2str(wavelength*1e9) +","+ num2str(mode_idx);
@@ -209,7 +209,7 @@ for(wavl_idx=1:num_sweep_pt){
         info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
         write(info_filename,info);
         write(info_total_filename,info);
-
+        
 
         #Fundamental mode
         if(mode_idx < 3){
@@ -219,7 +219,7 @@ for(wavl_idx=1:num_sweep_pt){
             ?"beta_ang: " + num2str(beta_ang);
             ?"\n";
         }
-
+        
         #write mode profile matrix
         for (j=1:6){
             format short;
@@ -233,3 +233,5 @@ for(wavl_idx=1:num_sweep_pt){
 
     }
 }
+
+
