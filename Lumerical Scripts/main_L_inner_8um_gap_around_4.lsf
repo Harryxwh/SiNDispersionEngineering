@@ -29,8 +29,8 @@ Ly_FDE_min = -10*um;
 Ly_FDE_max = 5*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 280;
-mesh_cells_y = 100;
+mesh_cells_x = 2800;
+mesh_cells_y = 1000;
 
 ########## Slightly changing the gap ##########
 gap                 = 3.5*um;
