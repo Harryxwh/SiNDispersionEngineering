@@ -107,7 +107,7 @@ write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
 ################################################
@@ -227,14 +227,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 # conduct simulation
 ################################################
 # Still Need Lx_WG2
-Find_Modes_of_Double_Rings_Horizontal_func;
-
-
-
-#main_L_inner_8um_gap_around_4;
-
-
-
+# Find_Modes_of_Double_Rings_Horizontal_func;
 
 
 ################################################
@@ -359,7 +352,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 #Find_Modes_of_Double_Rings_Horizontal_func;
 
 
-main_L_inner_8um_gap_around_4;
+# main_L_inner_8um_gap_around_4;
 
 
 
