@@ -20,8 +20,8 @@ addrect;
 set("name","WG");
 set("x",0);
 set("x span",Lx_WG);
-set("y min",0);
-set("y max",Ly_WG);
+set("y min",y_min);
+set("y max",y_min+Ly_WG);
 #set("z",0);
 #set("z span",Lz_WG);
 set("override mesh order from material database",true);
@@ -76,11 +76,13 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
-set("bent waveguide",1);
-set("bend location x", 0);
-set("bend location y", 0);
-set("bend location z", 0);
-set("bend radius",bend_radius);
+set("bent waveguide",bend_waveguide);
+if (bend_waveguide == 1){
+    set("bend location x", 0);
+    set("bend location y", 0);
+    set("bend location z", 0);
+    set("bend radius",bend_radius);
+}
 
 # Create arrays to store results
 neff_array = zeros(num_sweep_pt);
