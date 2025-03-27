@@ -1,12 +1,9 @@
-import numpy as np
-from Waveguide import *
-
 '''
-class Coupled_Waveguides()
+class Coupled_Waveguides: Represent two coupled waveguides.
 
 Parameters:
-n1              : refractive index of the waveguide core
-n0              : refractive index of the waveguide cladding
+n_core              : refractive index of the waveguide core
+n_cladding              : refractive index of the waveguide cladding
 gap_x           : gap between to waveguides in x direction
 gap_y           : gap between to waveguides in y direction
 wavelength      : wavelength in vacuum of light
@@ -18,24 +15,33 @@ param_file_name : file name of the parameters
 Plot_field      : True or False. whether to plot all the mode profiles.
 Plot_index      : True or False. Whether to plot all the index profiles.
 '''
-
+import numpy as np
+from Waveguide import *
 class Coupled_Waveguides():
 
     c           =   299792458
     u0          =   4 * np.pi * 1e-7
+    n_air       =   1
+    n_si        =   3.48
     component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
 
-    def __init__(self, n1, n0, gap_x, gap_y, wavelength,
+    def __init__(self, n_core, n_cladding, gap_x, gap_y, wavelength,
                  name1,name2, ModeIdx1, ModeIdx2, param_file_name,Plot_field,Plot_index):
         self.load_param(param_file_name)
 
-        self.n1 = n1
-        self.n0 = n0
+        self.n_core = n_core
+        self.n_cladding = n_cladding
         self.gap_x = gap_x                  # unit :um
         self.gap_y = gap_y                  # unit :um
-        self.bend_radius_outer = self.bend_radius_inner +\
-                                 self.gap_x + (self.WG1_width + self.WG2_width)/2
-        self.wavelength = wavelength        # unit :um
+        if gap_x > 0:
+            self.bend_radius_outer = self.bend_radius_inner +\
+                self.gap_x + (self.WG1_width + self.WG2_width)/2       # unit :um
+        else:
+            self.bend_radius_outer = self.bend_radius_inner
+        self.wavelength = wavelength        # unit :nm
+        self.FDE_width = self.FDE_x_max - self.FDE_x_min
+        self.FDE_height = self.FDE_y_max - self.FDE_y_min
+
         FDE_shape_padded = (self.FDE_width_padded,self.FDE_height_padded)
         Num_of_cells     = (self.Num_of_cells_x,self.Num_of_cells_y)
         self.WG1 = Waveguide(self.WG1_width,self.WG1_height,self.bend_radius_inner,
@@ -52,8 +58,6 @@ class Coupled_Waveguides():
                              Num_of_cells= Num_of_cells,
                              foldername=name2,ModeIdx=1,
                              FDE_shape_padded=FDE_shape_padded,Plot=Plot_field)
-        # self.neff_1 = self.WG1.Modes_info_list[self.WG1.ModeIdx-1].neff
-        # self.neff_2 = self.WG2.Modes_info_list[self.WG2.ModeIdx-1].neff
 
         # unit: rad/rad.
         self.beta_ang_1 = self.WG1.Modes_info_list[self.WG1.ModeIdx-1].beta_ang
@@ -78,33 +82,27 @@ class Coupled_Waveguides():
 
     # Convert the unit from "um" to "num of cells"
     def Convert_to_num_of_cells(self,len_in_um,axis):
-        FDE_width = self.FDE_x_max - self.FDE_x_min
-        FDE_height = self.FDE_y_max - self.FDE_y_min
         if axis=='x':
-            return int(len_in_um * self.Num_of_cells_x/ FDE_width)
+            return int(len_in_um * self.Num_of_cells_x/ self.FDE_width)
         else:
-            return int(len_in_um * self.Num_of_cells_y/ FDE_height)
-
+            return int(len_in_um * self.Num_of_cells_y/ self.FDE_height)
+    # Convert the unit from "num of cells" to "um"
     def Convert_to_um(self,num_cells,axis):
-        FDE_width = self.FDE_x_max - self.FDE_x_min
-        FDE_height = self.FDE_y_max - self.FDE_y_min
         if axis=='x':
-            return FDE_width * num_cells / self.Num_of_cells_x
+            return self.FDE_width * num_cells / self.Num_of_cells_x
         else:
-            return FDE_height * num_cells / self.Num_of_cells_y
-
+            return self.FDE_height * num_cells / self.Num_of_cells_y
+    # Convert the unit of ticks of plots from "num of cells" to "um"
     def Convert_ticks(self,xticks_prev,yticks_prev):
-        FDE_width = self.FDE_x_max - self.FDE_x_min
-        FDE_height = self.FDE_y_max - self.FDE_y_min
         shift_x,shift_y = self.Calculate_shift
-        yticks      = self.Convert_to_um(yticks_prev,axis='y') + self.FDE_y_min
+        yticks      = self.Convert_to_um(yticks_prev,axis='y') + self.FDE_y_min \
+                        - (self.FDE_height_padded - self.FDE_height)/2
         yticks      = np.round(yticks, 2)
         xticks      = self.Convert_to_um(xticks_prev - np.max(xticks_prev)/2
                                          ,axis='x') -\
-                                        (self.WG1.width - self.WG2.width)/2
+                                        (self.WG1.width - self.WG2.width)/4
         xticks      = np.round(xticks, 2)
         return xticks,yticks
-
 
     # Average bend radius. (unit: m)
     @property
@@ -114,7 +112,7 @@ class Coupled_Waveguides():
     # Wavenumber in vacuum. (unit: rad/m)
     @property
     def k0(self):
-        return 2*np.pi / self.wavelength  * 1e6
+        return 2*np.pi / self.wavelength  * 1e9
 
     #shift_x: (unit: # of data points) Distance between the centers of two waveguides in x axis
     #shift_y: (unit: # of data points) Distance between the centers of two waveguides in y axis
@@ -133,7 +131,6 @@ class Coupled_Waveguides():
             shift_y = self.Convert_to_num_of_cells(self.gap_y +
                                                    (self.WG1.height+self.WG2.height)/2,axis='y')
         return (shift_x,shift_y)
-
     #Compressed_shape=(len_y,len_x)
     #The largest possible shape of shifted field profile w/o zero padding
     @property
@@ -154,24 +151,20 @@ class Coupled_Waveguides():
         compressed_len_y = int(compressed_len_y_max * self.Shrink_ratio)
         compressed_len_x = int(compressed_len_x_max * self.Shrink_ratio)
         return np.array([compressed_len_y,compressed_len_x])
+
+    # The coordinate of WGs (unit: num of cells)
     @property
-    def WG_coordinates(self):
-        FDE_width = self.FDE_x_max - self.FDE_x_min
-        FDE_height = self.FDE_y_max - self.FDE_y_min
-        WG1_y = self.Convert_to_num_of_cells(self.WG1_y - self.FDE_y_min
-                                             +(self.FDE_height_padded-FDE_height)/2,
-                                             axis='y')
-        WG2_y = self.Convert_to_num_of_cells(self.WG2_y - self.FDE_y_min
-                                             +(self.FDE_height_padded-FDE_height)/2
-                                             ,axis='y')
-        WG1_x = self.Convert_to_num_of_cells(self.WG1_x - self.FDE_x_min
-                                             +(self.FDE_width_padded-FDE_width)/2
-                                             ,axis='x')
-        WG2_x = self.Convert_to_num_of_cells(self.WG2_x - self.FDE_x_min
-                                             +(self.FDE_width_padded-FDE_width)/2,
-                                             axis='x')
-        return (WG1_x,WG1_y,WG2_x,WG2_y)
-    #Return N, N1, N2
+    def Structure_coordinates(self):
+        x_min_padded = self.FDE_x_min - (self.FDE_width_padded - self.FDE_width)/2
+        y_min_padded = self.FDE_y_min - (self.FDE_height_padded - self.FDE_height)/2
+        WG1_y = self.Convert_to_num_of_cells(self.WG1_y - y_min_padded,axis='y')
+        WG2_y = self.Convert_to_num_of_cells(self.WG2_y - y_min_padded,axis='y')
+        WG1_x = self.Convert_to_num_of_cells(self.WG1_x - x_min_padded,axis='x')
+        WG2_x = self.Convert_to_num_of_cells(self.WG2_x - x_min_padded,axis='x')
+        Ly_cladding = self.Convert_to_num_of_cells(self.Ly_cladding - y_min_padded, axis='y')
+        Ly_BOX = max(self.Convert_to_num_of_cells(self.Ly_BOX - y_min_padded , axis='y'), 0)
+        return (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX)
+
     @property
     def WG_geometry_in_num_of_cells(self):
         WG1_width = self.Convert_to_num_of_cells(self.WG1.width,axis='x')
@@ -191,36 +184,47 @@ class Coupled_Waveguides():
         assert compressed_len_x > max(WG1_width+shift_x, WG2_width+shift_x)
 
         # The coordinate of WGs (unit: num of cells)
-        WG1_x,WG1_y,WG2_x,WG2_y  = self.WG_coordinates
+        (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX)  = self.Structure_coordinates
+
         # N(x,y):The overall index matrix
-        self.N = np.ones(self.Compressed_shape) * self.n0
-        self.N[int(WG1_y - WG1_height/2 -shift_y) :
+        self.N = np.ones(self.Compressed_shape) * self.n_cladding
+        self.N[Ly_cladding:,:] = self.n_air
+        self.N[:Ly_BOX,:] = self.n_si
+        self.N[ int(WG1_y - WG1_height/2 -shift_y) :
                 int(WG1_y + WG1_height/2 -shift_y),
                 int(WG1_x - WG1_width/2  -shift_x) :
-                int(WG1_x + WG1_width/2  -shift_x)] = self.n1
-        self.N[int(WG2_y - WG2_height/2) :
+                int(WG1_x + WG1_width/2  -shift_x)] = self.n_core
+        self.N[ int(WG2_y - WG2_height/2):
                 int(WG2_y + WG2_height/2),
                 int(WG2_x - WG2_width/2) :
-                int(WG2_x + WG2_width/2)] = self.n1
+                int(WG2_x + WG2_width/2)] = self.n_core
+
         # N1(x,y):The index matrix of WG1 in the absence of WG2
-        self.N1 = np.ones(self.Compressed_shape) * self.n0
+        self.N1 = np.ones(self.Compressed_shape) * self.n_cladding
+        self.N1[Ly_cladding:,:] = self.n_air
         self.N1[int(WG1_y - WG1_height/2 -shift_y) :
                 int(WG1_y + WG1_height/2 -shift_y),
                 int(WG1_x - WG1_width/2  -shift_x) :
-                int(WG1_x + WG1_width/2  -shift_x)] = self.n1
+                int(WG1_x + WG1_width/2  -shift_x)] = self.n_core
 
         # N2(x,y):The index matrix of WG2 in the absence of WG1
-        self.N2 = np.ones(self.Compressed_shape) * self.n0
-        self.N2[int(WG2_y - WG2_height/2) :
+        self.N2 = np.ones(self.Compressed_shape) * self.n_cladding
+        self.N2[Ly_cladding:,:] = self.n_air
+        self.N2[int(WG2_y - WG2_height/2):
                 int(WG2_y + WG2_height/2),
                 int(WG2_x - WG2_width/2) :
-                int(WG2_x + WG2_width/2)] = self.n1
+                int(WG2_x + WG2_width/2)] = self.n_core
 
     def Plot_index_profile(self,label='N',
-                           save_name='./results/index_profile.png',dpi=200):
-        figsize = (8,6)
-        fig = plt.figure(figsize=figsize)
+                           save_name='./results/index_profile.jpg',dpi=300):
+
+        colormap = "YlOrRd"
+        WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX  = self.Structure_coordinates
+        WG1_width,WG1_height,WG2_width,WG2_height = self.WG_geometry_in_num_of_cells
         shift_x,shift_y = self.Calculate_shift
+
+        figsize = (10,6)
+        fig = plt.figure(figsize=figsize)
         if label == 'N':
             image = self.N
         elif label == 'N1':
@@ -228,86 +232,129 @@ class Coupled_Waveguides():
         else:
             image = self.N2
 
-        plt.imshow(image)
+        im = plt.imshow(image,cmap= colormap)
         plt.gca().invert_yaxis()
-        yticks_prev = np.linspace(0,np.shape(image)[0],figsize[1])
-        xticks_prev = np.linspace(0,np.shape(image)[1],figsize[0])
+        # yticks_prev = np.linspace(0,np.shape(image)[0],figsize[1])
+        # xticks_prev = np.linspace(0,np.shape(image)[1],figsize[0])
+        xticks_prev = np.array([0,
+                                int(WG1_x - WG1_width/2-shift_x),
+                                int(WG1_x + WG1_width/2-shift_x),
+                                int(WG2_x - WG2_width/2),
+                                int(WG2_x + WG2_width/2),
+                                np.shape(image)[1]])
+        yticks_prev = np.linspace(0,np.shape(image)[0],figsize[1]*2)
         xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
         plt.xticks(xticks_prev, xticks, rotation=0)
         plt.yticks(yticks_prev, yticks, rotation=0)
-        plt.ylabel('Y(um)')
-        plt.xlabel('X(um)')
+        plt.ylabel(r'Y($\mu m$)')
+        plt.xlabel(r'X($\mu m$)')
+        plt.title("Refractive index distribution "+label+"(x,y)")
+        cbar = plt.colorbar(im, orientation='vertical', shrink=0.4, pad=0.05)
+        # cbar.set_label('Refrative Index', fontsize=10)
+        cbar.set_ticks(np.linspace(np.min(image),np.max(image),5))  # 自定义刻度
+        cbar.ax.tick_params(labelsize=10)  # 设置刻度字体大小
         plt.savefig(save_name,dpi=dpi)
-        #plt.show()
+        plt.close()
+        plt.show()
 
     # field_coefficients = [A,B]     E_supermode = A * E_1 + B * E_2
     # E_1,E_2 are the eigenmodes of separate WGs. A,B are the coefficients
-    def Plot_field_profile(self,field_coefficients,field_name,Plot_log = False,
-                        save_name='./results/field_profile.png',dpi=600):
+    def Plot_field_profile(self,field_coefficients,
+                           field_name, title,
+                           Plot_log = False,
+                           save_name='./results/field_profile.jpg',
+                           dpi=400):
         fonttype = "Helvetica"
-        fontsize = 4
-        grid_linewidth = 1
-        colormap = "jet"
-        figsize =  (15,5)
+        fontsize = 12
+        linewidth = 0.3
+        # colormap = "jet"
+        colormap = "gnuplot"
+        cbar_num_of_pts = 5
+        num_of_plots = len(field_coefficients)
+        figsize =  (30, 8*num_of_plots)
 
-        fig, ax = plt.subplots(1,3,figsize=figsize,dpi=dpi)
+        fig, ax = plt.subplots(num_of_plots,3,figsize=figsize,dpi=dpi)
         plt.subplots_adjust(left=0.05, right=0.95, wspace =0.1, hspace =0.2)   #调整子图间距
 
         name_list = ['Abs','Re','Im']
-        field = field_coefficients[0]*self.Field_dict_uncoupled[field_name][0] +\
-                field_coefficients[1]*self.Field_dict_uncoupled[field_name][1]
+        for plot_idx in range(num_of_plots):
 
-        field_list = [np.abs(field),np.real(field),np.imag(field)]
-        if Plot_log:
-            field_list[0] = np.log(field_list[0])
-        # Converting the unit of ticks to um
-        yticks_prev = np.linspace(0,np.shape(field)[0],10)
-        xticks_prev = np.linspace(0,np.shape(field)[1],10)
-        xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
+            coeffis =   field_coefficients[plot_idx]
+            field   =   coeffis[0]*self.Field_dict_uncoupled[field_name][0] +\
+                        coeffis[1]*self.Field_dict_uncoupled[field_name][1]
 
-        shift_x,shift_y = self.Calculate_shift
-        (WG1_x,WG1_y,WG2_x,WG2_y) = self.WG_coordinates
-        WG1_width,WG1_height,WG2_width,WG2_height = self.WG_geometry_in_num_of_cells
-        # ll,lr,ul,ur
-        WG1_x_arr = [WG1_x - 0.5*WG1_width - shift_x,
-                     WG1_x + 0.5*WG1_width - shift_x,
-                     WG1_x - 0.5*WG1_width - shift_x,
-                     WG1_x + 0.5*WG1_width - shift_x]
-        WG1_y_arr = [WG1_y - 0.5*WG1_height - shift_y,
-                     WG1_y - 0.5*WG1_height - shift_y,
-                     WG1_y + 0.5*WG1_height - shift_y,
-                     WG1_y + 0.5*WG1_height - shift_y]
-        WG2_x_arr = [WG2_x - 0.5*WG2_width ,
-                     WG2_x + 0.5*WG2_width ,
-                     WG2_x - 0.5*WG2_width ,
-                     WG2_x + 0.5*WG2_width ]
-        WG2_y_arr = [WG2_y - 0.5*WG2_height ,
-                     WG2_y - 0.5*WG2_height ,
-                     WG2_y + 0.5*WG2_height ,
-                     WG2_y + 0.5*WG2_height ]
-        for idx in range(3):
-            # Plot the field profile
-            im = ax[idx].imshow(field_list[idx], cmap=colormap)
-            # Plot the boundaries of the WGs
-            ax[idx].plot(WG1_x_arr,WG1_y_arr,color='black', linewidth=0.1)
-            ax[idx].plot(WG2_x_arr,WG2_y_arr,color='black', linewidth=0.1)
+            field_list = [np.abs(field),np.real(field),np.imag(field)]
+            if Plot_log:
+                # Only calculate log for nonzero terms
 
-            ax[idx].set_title(name_list[idx]+'('+field_name+')')
-            cbar = fig.colorbar(im, ax=ax[idx], orientation='vertical',
-                                label='', shrink=0.3, pad=0.02)
-            ax[idx].set_xticks(xticks_prev)
-            ax[idx].set_xticklabels(xticks)
-            ax[idx].set_yticks(yticks_prev)
-            ax[idx].set_yticklabels(yticks)
-            ax[idx].set_xlabel("X(um)",fontsize=4)
-            ax[idx].set_ylabel("Y(um)",fontsize=4)
-            ax[idx].invert_yaxis()
-            ax[idx].tick_params(axis='both',labelsize=5)
+                field_abs = field_list[0]
+                non_zero_mask = field_abs != 0
+                log_arr = np.full_like(field_abs,
+                                       fill_value=np.min(field_abs[non_zero_mask]),
+                                       dtype=float)
+                log_arr[non_zero_mask] = np.log(field_abs[non_zero_mask])
+                print(np.min(field_abs[non_zero_mask]))
+                field_list[0] = log_arr
+            # Converting the unit of ticks to um
+            yticks_prev = np.linspace(0,np.shape(field)[0],10)
+            xticks_prev = np.linspace(0,np.shape(field)[1],10)
+            xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
 
-        plt.rcParams["font.family"] = fonttype
-        plt.rcParams.update({'font.size': fontsize})
-        plt.legend()
+            shift_x,shift_y = self.Calculate_shift
+            (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX) = self.Structure_coordinates
+            WG1_width,WG1_height,WG2_width,WG2_height = self.WG_geometry_in_num_of_cells
+
+            # coordinates of WGs (unit: num of cells)
+            WG1_x_arr = [WG1_x - 0.5*WG1_width - shift_x,
+                        WG1_x + 0.5*WG1_width - shift_x,
+                        WG1_x + 0.5*WG1_width - shift_x,
+                        WG1_x - 0.5*WG1_width - shift_x,
+                        WG1_x - 0.5*WG1_width - shift_x,]
+            WG1_y_arr = [WG1_y - 0.5*WG1_height - shift_y,
+                        WG1_y - 0.5*WG1_height - shift_y,
+                        WG1_y + 0.5*WG1_height - shift_y,
+                        WG1_y + 0.5*WG1_height - shift_y,
+                        WG1_y - 0.5*WG1_height - shift_y,]
+            WG2_x_arr = [WG2_x - 0.5*WG2_width ,
+                        WG2_x + 0.5*WG2_width ,
+                        WG2_x + 0.5*WG2_width ,
+                        WG2_x - 0.5*WG2_width ,
+                        WG2_x - 0.5*WG2_width ]
+            WG2_y_arr = [WG2_y - 0.5*WG2_height ,
+                        WG2_y - 0.5*WG2_height ,
+                        WG2_y + 0.5*WG2_height ,
+                        WG2_y + 0.5*WG2_height ,
+                        WG2_y - 0.5*WG2_height ]
+
+            for idx in range(0,3):
+                # Plot the field profile
+                im = ax[plot_idx,idx].imshow(field_list[idx], cmap=colormap)
+                # Plot the boundaries of the WGs
+                ax[plot_idx,idx].plot(WG1_x_arr,WG1_y_arr,color='black', linewidth=linewidth)
+                ax[plot_idx,idx].plot(WG2_x_arr,WG2_y_arr,color='black', linewidth=linewidth)
+
+                ax[plot_idx,idx].set_title(name_list[idx]+'('+field_name+')',fontsize=fontsize*1.5)
+                cbar = fig.colorbar(im, ax=ax[plot_idx,idx], orientation='vertical',
+                                    label='', shrink=0.3, pad=0.02)
+                cbar.set_ticks(np.linspace(np.max(field_list[idx]),
+                                        np.min(field_list[idx]),
+                                        cbar_num_of_pts))  # 自定义刻度
+                cbar.ax.tick_params(labelsize=10)  # 设置刻度字体大小
+                ax[plot_idx,idx].set_xticks(xticks_prev)
+                ax[plot_idx,idx].set_xticklabels(xticks,fontsize=fontsize)
+                ax[plot_idx,idx].set_yticks(yticks_prev)
+                ax[plot_idx,idx].set_yticklabels(yticks,fontsize=fontsize)
+                ax[plot_idx,idx].set_xlabel(r'X($\mu m$)',fontsize=fontsize)
+                ax[plot_idx,idx].set_ylabel(r'Y($\mu m$)',fontsize=fontsize)
+                ax[plot_idx,idx].invert_yaxis()
+                ax[plot_idx,idx].tick_params(axis='both',labelsize=fontsize)
+
+            # plt.rcParams["font.family"] = fonttype
+            # plt.rcParams.update({'font.size': fontsize})
+            # plt.legend()
+        plt.title(title)
         plt.savefig(save_name,dpi=dpi)
+        plt.close()
         plt.show()
         return
 
@@ -322,8 +369,8 @@ class Coupled_Waveguides():
                 Field_profile_1 = self.WG1.Field_dict[component][:,shift_x:]   #Left part of E_1y
                 Field_profile_2 = self.WG2.Field_dict[component][:,:-shift_x]  #Right part of E_2y
             elif shift_x == 0:
-                Field_profile_1 = self.WG1.Field_dict[component][shift_y:,:]   #Left part of E_1y
-                Field_profile_2 = self.WG2.Field_dict[component][:-shift_y,:]  #Right part of E_2y
+                Field_profile_1 = self.WG1.Field_dict[component][shift_y:,:]   #Higher part of E_1y
+                Field_profile_2 = self.WG2.Field_dict[component][:-shift_y,:]  #Lower part of E_2y
             else:
                 Field_profile_1 = self.WG1.Field_dict[component][shift_y:,shift_x:]   #Left part of E_1y
                 Field_profile_2 = self.WG2.Field_dict[component][:-shift_y,:-shift_x]  #Right part of E_2y
@@ -336,7 +383,7 @@ class Coupled_Waveguides():
     def Kappa(self,p_,q_,Nq):
         p = p_ - 1
         q = q_ - 1
-        plt.imshow(self.N*self.N-Nq*Nq)
+        # plt.imshow(self.N*self.N-Nq*Nq)
         plt.gca().invert_yaxis()
         K = np.sum((self.N*self.N-Nq*Nq) * (np.conj(self.Field_dict_uncoupled['Ex'][p]) * \
                                                     self.Field_dict_uncoupled['Ex'][q] + \
@@ -364,12 +411,13 @@ class Coupled_Waveguides():
 
     def Chi(self,p_,Np):
         p = p_ - 1
-        Chi = np.sum((self.N*self.N-Np*Np)*(np.conj(self.Field_dict_uncoupled['Ex'][p]) * \
-                                                    self.Field_dict_uncoupled['Ex'][p] + \
-                                            np.conj(self.Field_dict_uncoupled['Ey'][p]) * \
-                                                    self.Field_dict_uncoupled['Ey'][p] + \
-                                            np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
-                                                    self.Field_dict_uncoupled['Ez'][p] ))
+        Chi = np.sum((self.N*self.N-Np*Np)*
+                    (np.conj(self.Field_dict_uncoupled['Ex'][p]) * \
+                            self.Field_dict_uncoupled['Ex'][p] + \
+                    np.conj(self.Field_dict_uncoupled['Ey'][p]) * \
+                            self.Field_dict_uncoupled['Ey'][p] + \
+                    np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
+                            self.Field_dict_uncoupled['Ez'][p] ))
         Chi  = Chi * self.k0 / (self.c * self.u0)
         return Chi
 
@@ -423,18 +471,17 @@ class Coupled_Waveguides():
         F_sym =  np.diag(np.ones(2))*((F[0][0] + F[1][1])) /2
         F_antisym = F - F_sym
 
-        Eigenvalues = np.array(np.linalg.eig(F_antisym)[0])
+        Eigenvalues = np.array(np.linalg.eig(F_antisym)[0]).reshape((1,2))
         Eigenvectors = np.array(np.linalg.eig(F_antisym)[1])
 
-        Rabi_freq = Eigenvalues.reshape((1,2))
-
-        print("wavelength = ",self.wavelength)
+        print("wavelength = {:.1f} nm".format(self.wavelength))
         print("F = ",F)
         print("F_sym = ",F_sym)
         print("F_antisym = ",F_antisym)
         print("beta_ave = ",self.beta_ave)
         print("delta_beta = ",self.delta_beta)
-        print("S = ",Rabi_freq)
+        print("S = ",Eigenvalues)
         print("EigenVec = ",Eigenvectors)
         print("\n")
-        return Rabi_freq
+        return Eigenvalues, Eigenvectors
+

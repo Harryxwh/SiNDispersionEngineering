@@ -1,15 +1,14 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from collections import namedtuple
-MIN_VALUE = np.complex128(10**(-20),0)
 '''
-class Waveguide()
+class Waveguide: Represent a single waveguide.
 
 Parameters:
 width               : width of the waveguide. (unit:um)
 height              : height the waveguide. (unit:um)
 bendradius          : bend radius of the waveguide. (unit:um)
+FDE_x               : geometry of the FDE region. format:(x_min,x_max), unit: um
+FDE_y               : geometry of the FDE region. format:(y_min,y_max), unit: um
 PML_len             : Width of the boundary PML layer (unit: num of data points)
+Num_of_cells        : num of data points in the FDE region. format:(Num_of_cells_x,Num_of_cells_y)
 name                : foldername of the mode profile
 ModeIdx             : Eigen mode index
 FDE_shape_padded    : Shape of the field matrix afer zero padding (unit: um)
@@ -18,6 +17,12 @@ Plot                : True or False. Whether to plot all the mode profiles.
 Methods:
 
 '''
+
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import namedtuple
+MIN_VALUE = np.complex128(10**(-20),0)      # value used as zero when padding the field profile
+
 
 class Waveguide():
 
@@ -33,20 +38,22 @@ class Waveguide():
     #width:  num of data points for |x|<a
     #height: num of data points for |y|<b
     def __init__(self, width, height, bendradius,           # geometry of the WG
-                 FDE_x, FDE_y, PML_len, Num_of_cells,        # geometry of the FDE region
+                 FDE_x, FDE_y, PML_len, Num_of_cells,       # geometry of the FDE region
                  foldername, ModeIdx, FDE_shape_padded,     # parameters of the mode profile
                  Plot):
         # geometry of the WG
         self.width  = width                 # unit :um
         self.height = height                # unit :um
         self.bend_radius = bendradius       # unit :um
+
         # geometry of the FDE region
         self.FDE_x_min,self.FDE_x_max = FDE_x   # format:(x_min,x_max), unit: um
         self.FDE_y_min,self.FDE_y_max = FDE_y   # format:(y_min,y_max), unit: um
-        self.FDE_width = self.FDE_x_max - self.FDE_x_min
-        self.FDE_height = self.FDE_y_max - self.FDE_y_min
-        self.PML_len = PML_len                  # unit: num of data points
-        self.Num_of_cells_x,self.Num_of_cells_y = Num_of_cells
+        self.FDE_width = self.FDE_x_max - self.FDE_x_min    # unit: um
+        self.FDE_height = self.FDE_y_max - self.FDE_y_min   # unit: um
+        self.PML_len = PML_len                              # unit: num of data points
+        self.Num_of_cells_x,self.Num_of_cells_y = Num_of_cells  # unit: num of data points
+
         # parameters of the mode profile
         self.name = foldername
         self.ModeIdx = ModeIdx
@@ -54,16 +61,14 @@ class Waveguide():
         self.FDE_width_padded,self.FDE_height_padded = FDE_shape_padded # unit: um
 
         # unit: num of cells
-        self.Field_shape_padded = np.array([self.Convert_to_num_of_cells(
-                                            self.FDE_height_padded,axis='y'),
-                                            self.Convert_to_num_of_cells(
-                                            self.FDE_width_padded,axis='x')])
+        Field_shape_padded = np.array([self.Convert_to_num_of_cells(
+                                        self.FDE_height_padded,axis='y'),
+                                        self.Convert_to_num_of_cells(
+                                        self.FDE_width_padded,axis='x')])
         self.Load_all_field_profile(
-            foldername = foldername,ModeIdx = ModeIdx,
+            foldername = foldername, ModeIdx = ModeIdx,
             Field_shape_padded=Field_shape_padded,plot= Plot,PML_len=self.PML_len)
         # print("shape of loaded field matrix:",self.Field_shape)
-
-
 
     def str2complex(self,s):
         str = s.replace(" ","").replace("i","j")
@@ -165,14 +170,16 @@ class Waveguide():
 
         if plot ==True:
             component_list = list(self.Field_dict.values())
-            self.Plot_all_field_profile(component_list,
-                                        save_name='./results/'+foldername[19:25]+'_all_field_profile.png')
+            self.Plot_all_field_profile(component_list,(self.FDE_width*0.8,self.FDE_height*0.8),
+                                        save_name='./results/'+foldername[19:25]+'_all_field_profile.jpg')
         return
-    plt.gca().invert_yaxis()
-    def Plot_all_field_profile(self,component_list, Plot_Log = False,
-                               save_name='./results/all_field_profile.png',dpi=300):
+
+    # plot_Log        : Whether to plot Log(E)
+    # plot_field_size : Size of the region to be plotted (unit: um)
+    def Plot_all_field_profile(self,component_list, plot_field_size ,plot_log = False,
+                               save_name='./results/all_field_profile.jpg',dpi=300):
         #Plot parameters
-        # save_name='./results/All_field_profile_'+self.name+'.png'
+        # save_name='./results/All_field_profile_'+self.name+'.jpg'
         font = {'family': 'serif',
                 'serif': 'Helvetica',
                 'weight': 'normal',
@@ -192,14 +199,21 @@ class Waveguide():
 
         for i in range(4):
             for j in range(3):
+                x_size = self.Convert_to_num_of_cells(plot_field_size[0],axis='x')
+                y_size = self.Convert_to_num_of_cells(plot_field_size[1],axis='y')
+
                 field = component_list[j if i<2 else j+3]
-                if Plot_Log:
+                field = field[int(np.shape(field)[0]/2-y_size/2) : int(np.shape(field)[0]/2+y_size/2),
+                              int(np.shape(field)[1]/2-x_size/2) : int(np.shape(field)[1]/2+x_size/2)]
+                if plot_log:
                     field = np.log(np.abs(field))
+
                 yticks_prev = np.arange(0,np.shape(field)[0],
                                         int(np.shape(field)[0]/figsize[1]))
                 xticks_prev = np.arange(0,np.shape(field)[1],
                                         int(np.shape(field)[1]/figsize[0]))
-                xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
+                xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev,plot_field_size)
+
                 if i%2 == 0:
                     im = ax[i*3+j].imshow(np.real(field),cmap=colormap)
                     ax[i*3+j].set_title('Re('+self.component_name_list[j if i<2 else j+3]+')')
@@ -208,28 +222,30 @@ class Waveguide():
                     ax[i*3+j].set_title('Im('+self.component_name_list[j if i<2 else j+3]+')')
                 cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
                             label='', shrink=0.6, pad=0.02)
+
                 ax[i*3+j].set_xticks(xticks_prev)
                 ax[i*3+j].set_xticklabels(xticks)
                 ax[i*3+j].set_yticks(yticks_prev)
                 ax[i*3+j].set_yticklabels(yticks)
-                ax[i*3+j].set_xlabel("X(um)",fontsize=4)
-                ax[i*3+j].set_ylabel("Y(um)",fontsize=4)
+                ax[i*3+j].set_xlabel(r'X($\mu m$)',fontsize=4)
+                ax[i*3+j].set_ylabel(r'Y($\mu m$)',fontsize=4)
                 ax[i*3+j].invert_yaxis()
                 ax[i*3+j].tick_params(axis='both',labelsize=5)
 
         plt.savefig(save_name, dpi=dpi)
+        plt.close()
         # plt.show()
         return
 
     # Converting the unit of ticks to um
-    def Convert_ticks(self,xticks_prev,yticks_prev,shift_tuple=(0,0)):
+    def Convert_ticks(self,xticks_prev,yticks_prev,plot_field_size,shift_tuple=(0,0)):
 
         shift_x,shift_y = shift_tuple
-        yticks      = self.Convert_to_um(yticks_prev+ shift_y,axis='y')+\
-                        self.FDE_y_min - (self.FDE_height_padded-self.FDE_height)/2
+        yticks      = self.Convert_to_um(yticks_prev+ shift_y,axis='y') - plot_field_size[1]/2
+                        #self.FDE_y_min - (self.FDE_height_padded-self.FDE_height)/2
         yticks      = np.round(yticks, 2)
-        xticks      = self.Convert_to_um(xticks_prev+ shift_x,axis='x')+\
-                        self.FDE_x_min - (self.FDE_width_padded-self.FDE_width)/2
+        xticks      = self.Convert_to_um(xticks_prev+ shift_x,axis='x') - plot_field_size[0]/2
+                        #self.FDE_x_min - (self.FDE_width_padded-self.FDE_width)/2
         xticks      = np.round(xticks, 2)
         return xticks,yticks
 
