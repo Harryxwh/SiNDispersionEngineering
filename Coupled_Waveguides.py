@@ -255,7 +255,7 @@ class Coupled_Waveguides():
         cbar.ax.tick_params(labelsize=10)  # 设置刻度字体大小
         plt.savefig(save_name,dpi=dpi)
         plt.close()
-        plt.show()
+        # plt.show()
 
     # field_coefficients = [A,B]     E_supermode = A * E_1 + B * E_2
     # E_1,E_2 are the eigenmodes of separate WGs. A,B are the coefficients
@@ -268,10 +268,10 @@ class Coupled_Waveguides():
         fontsize = 12
         linewidth = 0.3
         # colormap = "jet"
-        colormap = "gnuplot"
+        colormap = "turbo"
         cbar_num_of_pts = 5
         num_of_plots = len(field_coefficients)
-        figsize =  (30, 8*num_of_plots)
+        figsize =  (40, 8*num_of_plots)
 
         fig, ax = plt.subplots(num_of_plots,3,figsize=figsize,dpi=dpi)
         plt.subplots_adjust(left=0.05, right=0.95, wspace =0.1, hspace =0.2)   #调整子图间距
@@ -338,8 +338,8 @@ class Coupled_Waveguides():
                                     label='', shrink=0.3, pad=0.02)
                 cbar.set_ticks(np.linspace(np.max(field_list[idx]),
                                         np.min(field_list[idx]),
-                                        cbar_num_of_pts))  # 自定义刻度
-                cbar.ax.tick_params(labelsize=10)  # 设置刻度字体大小
+                                        cbar_num_of_pts))
+                cbar.ax.tick_params(labelsize=10)
                 ax[plot_idx,idx].set_xticks(xticks_prev)
                 ax[plot_idx,idx].set_xticklabels(xticks,fontsize=fontsize)
                 ax[plot_idx,idx].set_yticks(yticks_prev)
@@ -355,7 +355,7 @@ class Coupled_Waveguides():
         plt.title(title)
         plt.savefig(save_name,dpi=dpi)
         plt.close()
-        plt.show()
+        # plt.show()
         return
 
     # Calculate the shifted fields; Return Field_dict_uncoupled

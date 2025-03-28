@@ -77,6 +77,9 @@ class Parameter_sweeper():
         gap_x, gap_y = self.gap[gap_idx]
         path_1 = self.foldername_1 +'/'+ "{:.0f}".format(wavl)
         path_2 = self.foldername_2 +'/'+ "{:.0f}".format(wavl)
+        print("#################")
+        print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um")
+        print("#################\n")
         Coupled_WG = Coupled_Waveguides(n1, n0, gap_x = gap_x, gap_y = gap_y,
                                         wavelength = wavl,
                                         name1 = path_1,
@@ -182,20 +185,21 @@ class Parameter_sweeper():
     def Scan_gap(self):
         for gap_idx in range(len(self.gap)):
             gap_x, gap_y = self.gap[gap_idx]
-            print("#################")
-            print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um")
-            print("#################\n")
-            filename_uncoupled = "data/beta_uncoupled_gap_"\
-                                + str(gap_x) +"_" + str(gap_y) + ".txt"
-            filename_coupled   = "data/beta_coupled_gap_" \
-                                + str(gap_x) +"_" + str(gap_y) + ".txt"
 
+            filename_uncoupled = "data/beta_uncoupled_gap_"\
+                                + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
+            filename_coupled   = "data/beta_coupled_gap_" \
+                                + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
+            filename_coupled = filename_coupled.replace(".","_")+ ".txt"
+            filename_uncoupled = filename_uncoupled.replace(".","_") + ".txt"
             beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
                                                     filename_uncoupled=filename_uncoupled,
                                                     filename_coupled=filename_coupled,
                                                     plot = False)
+            # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
-                                     filename_uncoupled, filename_coupled, self.param_filename)
+                                     filename_uncoupled, filename_coupled,
+                                     self.param_filename)
 
 
 
