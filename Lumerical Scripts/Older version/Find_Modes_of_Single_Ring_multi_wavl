@@ -1,0 +1,164 @@
+switchtolayout;
+deleteall;
+
+um = 1e-6;
+nm = 1e-9;
+
+Lx_WG = 10*um; #length of the WG
+Ly_WG = 2.690*um; #width of the WG
+Lz_WG = 0.1*um; #height of the WG
+
+Lx_Cladding = 10*um; #length of the WG
+Ly_Cladding = 30*um; #width of the WG
+Lz_Cladding = 2*um; #height of the WG
+
+Lx_Buried_Oxide = 10*um;
+Ly_Buried_Oxide = 30*um;
+Lz_Buried_Oxide = 8*um;
+
+Ly_FDE = 20*um;
+Lz_FDE = 10*um;
+
+mesh_cells_y = 800;
+mesh_cells_z = 400;
+
+bend_radius = 1000.3*um;
+
+material_core = "Si3N4 (Silicon Nitride) - Phillip";
+
+material_cladding = "SiO2 (Glass) - Palik";
+
+Max_Mode_Idx = 3;
+
+#WG
+addrect;
+set("x",0);
+set("x span",Lx_WG);
+set("y",0);
+set("y span",Ly_WG);
+set("z min",0);
+set("z max",Lz_WG);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
+
+
+#BOX
+addrect;
+set("x",0);
+set("x span",Lx_Buried_Oxide);
+set("y",0);
+set("y span",Ly_Buried_Oxide);
+set("z min",-Lz_Buried_Oxide);
+set("z max",0);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+#Cladding
+addrect;
+set("x",0);
+set("x span",Lx_Cladding);
+set("y",0);
+set("y span",Ly_Cladding);
+set("z min",0);
+set("z max",Lz_Cladding);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+
+addfde;
+set("solver type","2D X normal");
+set("x",0);
+set("y",0);
+set("y span",Ly_FDE);
+set("z min",-Lz_FDE/2);
+set("z max",Lz_FDE/2);
+set("y min bc","PML");
+set("y max bc","PML");
+set("z min bc","PML");
+set("z max bc","PML");
+set("mesh cells y",mesh_cells_y);
+set("mesh cells z",mesh_cells_z);
+#setnamed("FDE","bent waveguide",false);
+set("bent waveguide",1);
+set("bend radius",bend_radius);
+set("bend location x", 0);
+set("bend location y", 0);
+set("bend location z", 0);
+
+# Define wavelength of simulation
+wavelength_min = 1500*nm;
+wavelength_max = 1600*nm;
+num_sweep_pt = 11;
+
+# Create arrays to store results
+neff_array = zeros(num_sweep_pt);
+wavelength_array = zeros(num_sweep_pt);
+Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+
+for(wavl_idx=1:num_sweep_pt){
+
+    switchtolayout;
+    wavelength = wavelength_min + (wavelength_max - wavelength_min) * (wavl_idx-1) / (num_sweep_pt-1);
+    wavelength_array(wavl_idx) = wavelength;
+    setnamed("FDE","wavelength",wavelength);
+
+    findmodes;
+
+    format short;
+    folder_path = "ModeProfile"+num2str(wavelength);
+    if  exist(folder_path){
+        ? "Folder already exists: " + folder_path;
+    }
+    else{
+        system("mkdir "+folder_path);
+        ? "Folder created: " + folder_path;
+    }
+
+    info_filename = folder_path+\Mode_info.txt";
+    if(fileexists(info_filename)){rm(info_filename);}
+    #print header
+    write(info_filename,"modeidx,neff,ng,loss,polarization");
+
+    for (mode_idx=1:Max_Mode_Idx){
+
+        neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+        ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
+        loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
+        polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
+
+        Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
+        Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
+        Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
+        Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
+        Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
+        Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
+
+        Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
+        info = num2str(mode_idx) +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization);
+        write(info_filename,info);
+
+        #Fundamental mode
+        if(mode_idx == 1){
+            neff_array(mode_idx) = real(neff);
+            ?"Wavelength: " + num2str(wavelength*1e6) + " um";
+            ?"Effective index: " + num2str(real(neff));
+        }
+        #write mode profile matrix
+        for (j=1:6){
+            format short;
+            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            if(fileexists(filename)){
+                rm(filename);
+            }
+        format long; # set num2str() to return 16 digits of precision
+        write(filename,num2str(Comp_list{j}));
+        }
+
+    }
+}
+
+# Plot results
+plot(wavelength_array*1e9, real(neff_array), "Wavelength (nm)", "Effective Index");

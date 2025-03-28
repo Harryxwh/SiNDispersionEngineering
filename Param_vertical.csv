@@ -1,0 +1,22 @@
+key,value,dtype,comments
+FDE_x_max,15,np.float64,unit:um
+FDE_x_min,-15,np.float64,unit:um
+FDE_y_max,4,np.float64,unit:um
+FDE_y_min,-8,np.float64,unit:um
+FDE_width_padded,30,np.float64,unit:um
+FDE_height_padded,24,np.float64,unit:um
+WG1_x,0,np.float64,unit:um
+WG1_width,8,np.float64,unit:um
+WG1_y,0.05,np.float64,unit:um
+WG1_height,0.1,np.float64,unit:um
+bend_radius_inner,1000,np.float64,unit:um
+WG2_x,0,np.float64,unit:um
+WG2_width,8,np.float64,unit:um
+WG2_y,0.05,np.float64,unit:um
+WG2_height,0.1,np.float64,unit:um
+Ly_cladding,2,np.float64,unit:um
+Ly_BOX,-14.5,np.float64,unit:um
+Num_of_cells_x,2000,np.int32,num of cells in x axis
+Num_of_cells_y,800,np.int32,num of cells in y axis
+PML_len,23,np.int32,width of the boundary PML layer (unit : num of data points)
+Shrink_ratio,1,np.float64,ratio between the size of the region and the maximum possible size

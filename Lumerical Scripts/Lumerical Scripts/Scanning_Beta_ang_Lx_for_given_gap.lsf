@@ -1,0 +1,158 @@
+switchtolayout;
+deleteall;
+
+wavelength  = 1550*nm;
+
+#Geometry
+um = 1e-6;
+nm = 1e-9;
+
+Ly_WG = 0.1*um; #height of the WG
+Lz_WG = 50*um; #length of the WG
+
+Lx_Cladding = 50*um; #length of the WG
+Ly_Cladding = 2*um; #width of the WG
+Lz_Cladding = 50*um; #height of the WG
+
+Lx_Buried_Oxide = 50*um;
+Ly_Buried_Oxide = 14.5*um;
+Lz_Buried_Oxide = 50*um;
+
+Lx_FDE = 30*um;
+Ly_FDE_min = -8*um;
+Ly_FDE_max = 4*um;
+
+mesh_cells_x = 2000;
+mesh_cells_y = 800;
+
+# Parameter of the inner ring is fixed
+Lx_inner_ring = 2.8*um;
+bend_radius_inner = 1000*um;
+
+# Parameter sweep of width of outer ring
+Lx_start    = 1.5*um;
+Lx_end      = 2*um;
+num_of_pts_Lx  = 6;
+Lx_arr      = linspace(Lx_start,Lx_end,num_of_pts_Lx);
+
+# The distance between two rings is fixed
+gap = 5*um;
+
+# Material
+material_core = "Si3N4 (Silicon Nitride) - Luke";
+material_cladding = "SiO2 (Glass) - Palik";
+
+# Results array and file
+beta_ang_array  = zeros(num_of_pts_Lx);
+format short;
+filename = "Scanning_Lx.txt";
+if(fileexists(filename)){rm(filename);}
+write(filename,"Lx,beta_ang");
+
+for (Lx_idx = 1:num_of_pts_Lx)
+{
+    Lx_WG = Lx_arr(Lx_idx);
+    ?"Lx_WG = " + num2str(Lx_WG*1e6)+" um";
+
+    # Decide the bending radius based on the waveguide width, for a given gap
+    bend_radius = Lx_WG/2 + bend_radius_inner + gap + Lx_inner_ring/2;
+    ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+
+    switchtolayout;
+    deleteall;
+
+    #WG
+    addrect;
+    set("name","WG");
+    set("x",0);
+    set("x span",Lx_WG);
+    set("y min",0);
+    set("y max",Ly_WG);
+    #set("z",0);
+    #set("z span",Lz_WG);
+    set("override mesh order from material database",true);
+    set("mesh order",2);
+    set("material",material_core);
+
+    #BOX
+    addrect;
+    set("name","BOX");
+    set("x",0);
+    set("x span",Lx_Buried_Oxide);
+    set("y max",0);
+    set("y min",-Ly_Buried_Oxide);
+    #set("z",0);
+    #set("z span",Lz_Buried_Oxide);
+    set("override mesh order from material database",true);
+    set("mesh order",3);
+    set("material",material_cladding);
+
+    #Cladding
+    addrect;
+    set("name","Cladding");
+    set("x",0);
+    set("x span",Lx_Cladding);
+    set("y min",0);
+    set("y max",Ly_Cladding);
+    #set("z",0);
+    #set("z span",Lz_Cladding);
+    set("override mesh order from material database",true);
+    set("mesh order",3);
+    set("material",material_cladding);
+
+    addfde;
+    set("solver type","2D Z normal");
+    set("x",0*um);
+    set("y",0);
+    set("x span",Lx_FDE);
+    set("y min",Ly_FDE_min);
+    set("y max",Ly_FDE_max);
+    #set("x min bc","Metal");
+    #set("x max bc","Metal");
+    #set("y min bc","Metal");
+    #set("y max bc","Metal");
+    set("x min bc","PML");
+    set("x max bc","PML");
+    set("y min bc","PML");
+    set("y max bc","PML");
+    set("define x mesh by","number of mesh cells");
+    set("define y mesh by","number of mesh cells");
+    set("mesh cells x",mesh_cells_x);
+    set("mesh cells y",mesh_cells_y);
+
+    set("bent waveguide",1);
+    set("bend location x", 0);
+    set("bend location y", 0);
+    set("bend location z", 0);
+    set("bend radius",bend_radius);
+
+    #addmesh;
+    #set("name","mesh_waveguide");
+    #set("x min",-1.2*um - 0.5*um);
+    #set("x max",1.2*um + 0.5*um );
+    #set("y min",0-0.5*um);
+    #set("y max",Ly_WG + 0.5*um);
+    #set("override x mesh",1);
+    #set("override y mesh",1);
+    #set("override z mesh",0);
+    #set("set maximum mesh step",1);
+    #set("dx",5*nm);
+    #set("dy",5*nm);
+
+    findmodes;
+
+    mode_idx    = 1;    #fundamental mode
+    neff        = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+
+    #NOTE: Angular propagation constant is the value with physical meaning. It is important to note that this definition of neff here is dependent on the bending radius R.
+    Beta_ang    = real(2*pi/wavelength * neff * bend_radius);
+    beta_ang_array(Lx_idx) = Beta_ang;
+
+    format long;
+    ?"Beta_ang = " + num2str(real(Beta_ang));
+
+    Beta_ang_given_Lx = num2str(Lx_WG * 1e6)+","+ num2str(Beta_ang);
+    write(filename,Beta_ang_given_Lx);
+    ?"\n";
+}
+plot(Lx_arr*1e6,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");
