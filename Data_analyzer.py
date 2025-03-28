@@ -19,17 +19,26 @@ class Data_analyzer(Coupled_Waveguides):
 
     def __init__(self, wavl_arr, gap_arr,
                  filename_uncoupled, filename_coupled,
-                 param_filename, filename_result = "data/AD_range_res.txt",
-                 plot_curve=True, num_of_pts = 100):
+                 param_filename,
+                 filename_result = "../data/AD_range_res.txt",
+                 plot_curve=True,
+                 Lumerical_data_exist = False,
+                 filename_lumerical = "",
+                 num_of_pts = 100):
         self.load_param(param_filename)
-        self.wavl_arr = wavl_arr/1000
+        self.wavl_arr = wavl_arr/1000   #unit: um
         self.wavl_arr_intp = np.linspace(np.min(self.wavl_arr),np.max(self.wavl_arr),num_of_pts)
         self.gap_arr = gap_arr
         self.plot_curve = plot_curve
+        self.Lumerical_data_exist = Lumerical_data_exist
+        self.num_of_pts = num_of_pts
 
-        beta_uncoupled_arr = self.Load_uncoupled_data(filename_uncoupled)
-        beta_coupled_arr = self.Load_coupled_data_CMT(filename_coupled)
-        # beta_coupled_lumerical_arr, beta_ave_arr = self.Load_coupled_data_Lumerical(filename_lumerical)
+        # beta_uncoupled_arr: shape = (?,4)   format: (wavl(unit:um),beta_WG1, beta_WG2, beta_ave(unit:rad/rad))
+        self.beta_uncoupled_arr = self.Load_uncoupled_data(filename_uncoupled)
+        # beta_coupled_arr:   shape = (?,3)   format: (wavl(unit:um),beta_supermode1, beta_supermode2(unit:rad/rad))
+        self.beta_coupled_arr = self.Load_coupled_data_CMT(filename_coupled)
+        if self.Lumerical_data_exist:
+            self.beta_coupled_lumerical_arr, self.beta_ave_lumerical_arr = self.Load_coupled_data_Lumerical(filename_lumerical)
 
         gap_x, gap_y = self.gap_arr
         if gap_x > 0:
@@ -38,7 +47,7 @@ class Data_analyzer(Coupled_Waveguides):
         else:
             self.bend_radius_outer = self.bend_radius_inner
 
-        AD_range = self.Calc_Dispersion_curve(beta_uncoupled_arr,beta_coupled_arr)
+        AD_range = self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
         with open(filename_result,"a") as f:
             f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) + ",{:.6f}".format(AD_range) + "\n")
 
@@ -89,7 +98,7 @@ class Data_analyzer(Coupled_Waveguides):
 
         return beta_coupled_arr
 
-    def Load_coupled_data_Lumerical(filename_lumerical):
+    def Load_coupled_data_Lumerical(self, filename_lumerical):
         beta_coupled_lumerical_arr_ori = []
         with open(filename_lumerical,'r') as f:
             data_lumerical = f.readlines()
@@ -120,7 +129,6 @@ class Data_analyzer(Coupled_Waveguides):
         return beta_coupled_lumerical_arr, beta_ave_arr
 
     def Plot_curve(self,data_arr,Y_legends,
-
                     X_label,Y_label,title,
                     marker_list,linestyle_list,
                     colors_list=['green','mediumblue','tomato','orange',
@@ -162,10 +170,10 @@ class Data_analyzer(Coupled_Waveguides):
             savename = "results/"+str(title)+".jpg"
             plt.savefig(savename,dpi=dpi)
             plt.tight_layout()
-            if plot_show:
-                plt.show()
+            # if plot_show:
+            #     plt.show()
 
-    def Polynomial_fit(self,x,y_arr,order = 1, num_of_fit_pts  = 100):
+    def Polynomial_fit(self,x, y_arr, x_fit, order = 1, num_of_fit_pts  = 100):
         num_of_columns  = np.shape(y_arr)[1]
         coeffi_array    = np.zeros((order+1,num_of_columns))
         y_fit_arr       = np.zeros((num_of_fit_pts,num_of_columns))
@@ -173,7 +181,6 @@ class Data_analyzer(Coupled_Waveguides):
             y = y_arr[:,idx]
             coefficients = np.polyfit(x, y, order)
             coeffi_array[:,idx] = coefficients
-            x_fit = np.linspace(min(x), max(x), num_of_fit_pts)
             y_fit = np.polyval(coefficients, x_fit)
             y_fit_arr[:,idx] = y_fit
 
@@ -214,9 +221,10 @@ class Data_analyzer(Coupled_Waveguides):
                 # print("left wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
         return (right_zero-left_zero)*1e3   # nm
 
+    # Beta      : unit: rad/m
+    # wavl_arr  : unit: um
     def Calculate_dispersion_D(self,Beta,wavl_arr_):
-        # Beta      : unit: rad/m
-        # wavl_arr  : unit: um
+
         wavl_arr    = wavl_arr_ * 1e-6
         fre_arr     = 3*10**8 / (wavl_arr)
         Beta_1      = First_derivative_central_diff(Beta, fre_arr)
@@ -225,66 +233,116 @@ class Data_analyzer(Coupled_Waveguides):
         D           = D * 10**(-9)                          # unit: ps/km/nm
         return D, Beta_1
 
-
     # Interpolate the propagation constant curve and calc the dispersion profile
-    # Parameters:
-    # beta_uncoupled_arr       shape = (?,4)      format: (wavl(unit:um),beta_WG1, beta_WG2, beta_ave)
-    # beta_coupled_arr         shape = (?,3)      format: (wavl(unit:um),beta_supermode1, beta_supermode2)
-    def Calc_Dispersion_curve(self,beta_uncoupled_arr,beta_coupled_arr,num_of_pts = 100):
+    def Calc_Dispersion_curve(self,num_of_pts = 100):
 
-        R_WG1       = self.bend_radius_inner
-        R_WG2       = self.bend_radius_outer
+        # unit: m
+        R_WG1       = self.bend_radius_inner / 1e6
+        R_WG2       = self.bend_radius_outer / 1e6
         R_ave       = (R_WG1+R_WG2)/2
 
-        beta_coupled_arr_intp  = self.Interpolation(self.wavl_arr,
-                                                beta_coupled_arr[:,1:],
+        # Interpolate the propagation constant data
+        self.beta_coupled_arr_intp  = self.Interpolation(self.wavl_arr,
+                                                self.beta_coupled_arr[:,1:],
                                                 self.wavl_arr_intp,num_of_pts)
-        coeffi_array, beta_uncoupled_arr_intp = self.Polynomial_fit(self.wavl_arr,
-                                                        beta_uncoupled_arr[:,1:],
+        coeffi_array, self.beta_uncoupled_arr_intp = self.Polynomial_fit(self.wavl_arr,
+                                                        self.beta_uncoupled_arr[:,1:],
+                                                        self.wavl_arr_intp,
                                                         2, num_of_pts)
-
-        beta_uncoupled_WG1 = (beta_uncoupled_arr[:,1]+beta_uncoupled_arr[:,3])  / R_WG1     # unit: rad/m
-        beta_uncoupled_WG2 = (beta_uncoupled_arr[:,2]+beta_uncoupled_arr[:,3])  / R_WG2     # unit: rad/m
-        beta_uncoupled_WG1_intp = (beta_uncoupled_arr_intp[:,0]+
-                                beta_uncoupled_arr_intp[:,2])  / R_WG1     # unit: rad/m
-        beta_uncoupled_WG2_intp = (beta_uncoupled_arr_intp[:,1]+
-                                beta_uncoupled_arr_intp[:,2])  / R_WG2     # unit: rad/m
+        # Dispersion of Isolated WGs
+        beta_uncoupled_WG1 = (self.beta_uncoupled_arr[:,1]+self.beta_uncoupled_arr[:,3])  / R_WG1     # unit: rad/m
+        beta_uncoupled_WG2 = (self.beta_uncoupled_arr[:,2]+self.beta_uncoupled_arr[:,3])  / R_WG2     # unit: rad/m
+        beta_uncoupled_WG1_intp = (self.beta_uncoupled_arr_intp[:,0]+
+                                self.beta_uncoupled_arr_intp[:,2])  / R_WG1     # unit: rad/m
+        beta_uncoupled_WG2_intp = (self.beta_uncoupled_arr_intp[:,1]+
+                                self.beta_uncoupled_arr_intp[:,2])  / R_WG2     # unit: rad/m
 
         D_WG1, Beta_1_WG1 = self.Calculate_dispersion_D(beta_uncoupled_WG1,self.wavl_arr)
         D_WG1_intp, Beta_1_WG1_intp = self.Calculate_dispersion_D(beta_uncoupled_WG1_intp,self.wavl_arr_intp)
         D_WG2, Beta_1_WG2 = self.Calculate_dispersion_D(beta_uncoupled_WG2,self.wavl_arr)
         D_WG2_intp, Beta_1_WG2_intp= self.Calculate_dispersion_D(beta_uncoupled_WG2_intp,self.wavl_arr_intp)
 
-
-        beta_CMT_supermode1      = (beta_coupled_arr[:,1] +
-                                    beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
-        beta_CMT_supermode2      = (beta_coupled_arr[:,2] +
-                                    beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
-        beta_CMT_supermode1_intp = (beta_coupled_arr_intp[:,0] +
-                                    beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
-        beta_CMT_supermode2_intp = (beta_coupled_arr_intp[:,1] +
-                                    beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
+        # Dispersion of coupled WGs using CMT
+        beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
+                                    self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
+        beta_CMT_supermode2      = (self.beta_coupled_arr[:,2] +
+                                    self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
+        beta_CMT_supermode1_intp = (self.beta_coupled_arr_intp[:,0] +
+                                    self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
+        beta_CMT_supermode2_intp = (self.beta_coupled_arr_intp[:,1] +
+                                    self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
 
         D_supermode_1, Beta_1_supermode_1 = self.Calculate_dispersion_D(beta_CMT_supermode1,self.wavl_arr)
         D_supermode_2, Beta_1_supermode_2 = self.Calculate_dispersion_D(beta_CMT_supermode2,self.wavl_arr)
-        D_supermode_1_intp, Beta_1_supermode_1_intp = self.Calculate_dispersion_D(beta_CMT_supermode1_intp,
-                                                                            self.wavl_arr_intp)
-        D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,
-                                                                            self.wavl_arr_intp)
+        D_supermode_1_intp, Beta_1_supermode_1_intp = self.Calculate_dispersion_D(beta_CMT_supermode1_intp,self.wavl_arr_intp)
+        D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,self.wavl_arr_intp)
 
-        # wavelength range of anomalous dispersion (unit: nm)
+        Y_data = (np.c_[self.wavl_arr,
+                        self.beta_uncoupled_arr[:,1:3],
+                        self.beta_coupled_arr[:,1:]],
+                  np.c_[self.wavl_arr_intp,
+                        self.beta_coupled_arr_intp[:,:]],)
+        if self.Lumerical_data_exist:
+            Y_data = Y_data + (self.beta_coupled_lumerical_arr,)
+
+        # Plot propagation const curve
+        if self.plot_curve:
+            self.Plot_curve(Y_data,
+                    Y_legends=['Uncoupled inner ring','Uncoupled outer ring',
+                                'Supermode 1 (CMT)','Supermode 2 (CMT)',
+                                'Supermode 1 (CMT) Interpolation','Supermode 2 (CMT) Interpolation',
+                                'Supermode 1 (FDE)','Supermode 2 (FDE)',
+                                'beta_iso_inner','beta_iso_outer'],
+                        X_label='wavelength(um)',
+                        Y_label=r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
+                        title = r"Propagation constant of coupled modes calculated using different methods",
+                        marker_list=["","",".",".","","","o","o"],
+                        linestyle_list=["--","--","","","-","-","",""])
+
+        # Wavelength range of anomalous dispersion (unit: nm)
         AD_range = self.Anomalous_D_bandwidth(self.wavl_arr_intp[2:-2], D_supermode_2_intp)
         AD_range_text = "AD range = "+"{:.4f}".format(AD_range) +" nm"
 
         Y_data = (np.c_[ self.wavl_arr_intp[2:-2],
-                        D_WG1_intp, D_WG2_intp, D_supermode_1_intp, D_supermode_2_intp],)
-            #    np.c_[ self.wavl_arr_3_intp[2:-2],
-            #           D_lumerical_supermode_1_intp,D_lumerical_supermode_2_intp])
+                        D_WG1_intp, D_WG2_intp,
+                        D_supermode_1_intp, D_supermode_2_intp],)
+
+        # Dispersion of coupled WGs using FDE (if exist)
+        if self.Lumerical_data_exist:
+            wavl_arr_lumerical = self.beta_coupled_lumerical_arr[:,0]    # unit: um
+            wavl_arr_lumerical_intp = np.linspace(np.min(wavl_arr_lumerical),
+                                                  np.max(wavl_arr_lumerical),
+                                                  num_of_pts)
+            # Interpolating beta_ave in the range of wavl_arr_lumerical
+            wavl_arr_lumerical_mask = np.where((self.wavl_arr >= np.min(wavl_arr_lumerical))\
+                                            & (self.wavl_arr <= np.max(wavl_arr_lumerical)))
+            coeffi_array, beta_ave_intp =  self.Polynomial_fit(wavl_arr_lumerical,
+                                        self.beta_ave_lumerical_arr.reshape(-1,1),
+                                        wavl_arr_lumerical_intp, order=2, num_of_fit_pts=num_of_pts)
+            # plt.figure()
+            # plt.plot(wavl_arr_lumerical_intp,beta_ave_intp,marker = "")
+            # plt.plot(wavl_arr_lumerical,
+            #          self.beta_ave_lumerical_arr.reshape(-1,1),
+            #          marker = "o")
+            beta_coupled_lumerical_arr_intp  = self.Interpolation(wavl_arr_lumerical,
+                                                self.beta_coupled_lumerical_arr[:,1:],
+                                                wavl_arr_lumerical_intp,num_of_pts)
+            beta_coupled_lumerical_arr_intp += \
+                beta_ave_intp.reshape(-1,1) # adding beta_ave
+            beta_coupled_lumerical_arr_intp = \
+                beta_coupled_lumerical_arr_intp / R_ave   # now unit: 1/m
+
+            D_lumerical_supermode_1_intp, Beta_1_lumerical_supermode_1_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,0],wavl_arr_lumerical_intp)
+            D_lumerical_supermode_2_intp, Beta_1_lumerical_supermode_2_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,1],wavl_arr_lumerical_intp)
+
+            Y_data = Y_data + (np.c_[wavl_arr_lumerical_intp[2:-2],
+                      D_lumerical_supermode_1_intp,D_lumerical_supermode_2_intp],)
 
         gap_info = "gap_"+"{:.1f}".format(self.gap_arr[0])+\
                     ","+"{:.1f}".format(self.gap_arr[1])
         gap_info = gap_info.replace(".","_")
 
+        # Plot dispersion curve
         if self.plot_curve:
             self.Plot_curve(Y_data,
                     Y_legends=['Inner Ring','Outer Ring',

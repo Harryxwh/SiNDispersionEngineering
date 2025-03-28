@@ -171,7 +171,7 @@ class Waveguide():
         if plot ==True:
             component_list = list(self.Field_dict.values())
             self.Plot_all_field_profile(component_list,(self.FDE_width*0.8,self.FDE_height*0.8),
-                                        save_name='./results/'+foldername[19:25]+'_all_field_profile.jpg')
+                                        save_name='./results/'+foldername[22:27]+'_all_field_profile.jpg')
         return
 
     # plot_Log        : Whether to plot Log(E)
@@ -181,9 +181,9 @@ class Waveguide():
         #Plot parameters
         # save_name='./results/All_field_profile_'+self.name+'.jpg'
         font = {'family': 'serif',
-                'serif': 'Helvetica',
+                'serif' : 'Helvetica',
                 'weight': 'normal',
-                'size': 10}
+                'size'  : 10}
         plt.rc('font', **font)
         grid_linewidth = 1
         colormap = "jet"

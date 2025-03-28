@@ -120,8 +120,8 @@ class Parameter_sweeper():
         # plt.show()
 
     def Scan_wavl(self, gap_idx,
-                  filename_uncoupled = "data/beta_uncoupled.txt",
-                  filename_coupled   = "data/beta_coupled.txt",
+                  filename_uncoupled = "../data/beta_uncoupled.txt",
+                  filename_coupled   = "../data/beta_coupled.txt",
                   plot = False):
 
         beta_uncoupled_arr     = [] # beta of eigenmodes of two separate WGs
@@ -145,6 +145,7 @@ class Parameter_sweeper():
             beta_uncoupled = np.array([[Coupled_WG.beta_ang_1,
                                         Coupled_WG.beta_ang_2]]) - Coupled_WG.beta_ave
             beta_coupled, coeff_of_supermodes = Coupled_WG.Find_supermodes()
+            # For anti-sym modes, delta beta is always positive
             if beta_coupled[0,0] < 0:
                 beta_coupled[0] = np.flip(beta_coupled[0])
                 coeff_of_supermodes = np.flip(coeff_of_supermodes,axis=0)
@@ -190,12 +191,12 @@ class Parameter_sweeper():
                                 + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
             filename_coupled   = "data/beta_coupled_gap_" \
                                 + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
-            filename_coupled = filename_coupled.replace(".","_")+ ".txt"
-            filename_uncoupled = filename_uncoupled.replace(".","_") + ".txt"
+            filename_coupled = "../" + filename_coupled.replace(".","_")+ ".txt"
+            filename_uncoupled = "../" + filename_uncoupled.replace(".","_") + ".txt"
             beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
-                                                    filename_uncoupled=filename_uncoupled,
-                                                    filename_coupled=filename_coupled,
-                                                    plot = False)
+                        filename_uncoupled=filename_uncoupled,
+                        filename_coupled=filename_coupled,
+                        plot = False)
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
                                      filename_uncoupled, filename_coupled,
@@ -205,8 +206,8 @@ class Parameter_sweeper():
 
     # Save supermodes results calculated using coupled mode theory
     # def Calculate_Beta_and_save(self,plot=True,
-    #                             filename_uncoupled = "data/beta_uncoupled.txt",
-    #                             filename_coupled   = "data/beta_coupled.txt"):
+    #                             filename_uncoupled = "../data/beta_uncoupled.txt",
+    #                             filename_coupled   = "../data/beta_coupled.txt"):
     #     (beta_uncoupled_arr,
     #      beta_ave_uncoupled_arr,
     #      beta_coupled_arr) = self.Scan_wavl(gap_idx=0)
