@@ -226,7 +226,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
-Max_Mode_Idx = 3;
+Max_Mode_Idx = 1;
 
 folder_name = "InnerRing_L_2_8um_1500_1600_21wavls_2000x800" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
