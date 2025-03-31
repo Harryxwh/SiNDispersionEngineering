@@ -118,14 +118,14 @@ Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 ################################################
 # setting up parameters for Eigenmode calc
-# OuterRing_L_inner_2_8um_gap_5um_1500_1600_21wavls_2000x800
+# InnerRing_L_inner_2_8um_1500_1600_21wavls_2000x800
 ################################################
 
 um = 1e-6;
 nm = 1e-9;
 
 #Geometry
-Lx_WG = 1.793*um;   #width of the WG ????
+Lx_WG = 2.8*um;   #width of the WG ????
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
 
@@ -149,7 +149,8 @@ Lx_inner = 2.8*um;
 bend_radius_inner = 1000*um;
 gap = 5*um;
 
-bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
+#bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
+bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
 # Define wavelength of simulation
@@ -164,7 +165,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 1;
 
-folder_name = "OuterRing_L_inner_2_8um_gap_5um_1500_1600_21wavls_2000x800" + "\\";
+folder_name = "InnerRing_L_inner_2_8um_1500_1600_21wavls_2000x800" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
