@@ -262,28 +262,37 @@ class Coupled_Waveguides():
     def Plot_field_profile(self,field_coefficients,
                            field_name, title,
                            Plot_log = False,
-                           save_name='./results/field_profile.jpg',
+                           save_name='./results/field_profile_',
                            dpi=400):
         fonttype = "Helvetica"
         fontsize = 12
         linewidth = 0.3
         # colormap = "jet"
-        colormap = "turbo"
+        # colormap = "turbo"
+        colormap = "bwr"
         cbar_num_of_pts = 5
         num_of_plots = len(field_coefficients)
-        figsize =  (40, 8*num_of_plots)
+        figsize =  (40, 5*num_of_plots)
 
-        fig, ax = plt.subplots(num_of_plots,3,figsize=figsize,dpi=dpi)
-        plt.subplots_adjust(left=0.05, right=0.95, wspace =0.1, hspace =0.2)   #调整子图间距
 
         name_list = ['Abs','Re','Im']
+        # name_list = ['Re']
+
+        fig, ax = plt.subplots(num_of_plots,len(name_list),figsize=figsize,dpi=dpi)
+        plt.subplots_adjust(left=0.05, right=0.95, wspace =0.1, hspace =0.2)   #调整子图间距
+
+
         for plot_idx in range(num_of_plots):
 
             coeffis =   field_coefficients[plot_idx]
             field   =   coeffis[0]*self.Field_dict_uncoupled[field_name][0] +\
                         coeffis[1]*self.Field_dict_uncoupled[field_name][1]
-
+            if coeffis[0] * coeffis[1] < 0:
+                mode_name = "Asymmetric Mode "
+            else:
+                mode_name = "Symmetric Mode "
             field_list = [np.abs(field),np.real(field),np.imag(field)]
+            # field_list = [np.real(field)]
             if Plot_log:
                 # Only calculate log for nonzero terms
 
@@ -333,7 +342,7 @@ class Coupled_Waveguides():
                 ax[plot_idx,idx].plot(WG1_x_arr,WG1_y_arr,color='black', linewidth=linewidth)
                 ax[plot_idx,idx].plot(WG2_x_arr,WG2_y_arr,color='black', linewidth=linewidth)
 
-                ax[plot_idx,idx].set_title(name_list[idx]+'('+field_name+')',fontsize=fontsize*1.5)
+                ax[plot_idx,idx].set_title(mode_name+name_list[idx]+'('+field_name+')',fontsize=fontsize*1.5)
                 cbar = fig.colorbar(im, ax=ax[plot_idx,idx], orientation='vertical',
                                     label='', shrink=0.3, pad=0.02)
                 cbar.set_ticks(np.linspace(np.max(field_list[idx]),
@@ -352,8 +361,9 @@ class Coupled_Waveguides():
             # plt.rcParams["font.family"] = fonttype
             # plt.rcParams.update({'font.size': fontsize})
             # plt.legend()
-        plt.title(title)
-        plt.savefig(save_name,dpi=dpi)
+
+        # plt.title(title)
+        plt.savefig(save_name+title+".jpg",dpi=dpi)
         plt.close()
         # plt.show()
         return

@@ -52,7 +52,6 @@ class Data_analyzer(Coupled_Waveguides):
             f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) + ",{:.6f}".format(AD_range) + "\n")
 
 
-
     def Load_uncoupled_data(self,filename_uncoupled):
         beta_uncoupled_arr = []
         with open(filename_uncoupled,'r') as f:
