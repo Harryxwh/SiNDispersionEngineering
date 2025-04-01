@@ -149,12 +149,22 @@ set("injection axis","x");
 set("direction","forward");
 
 
-updateportmodes(1);
+copy;
+set("name","through");
+set("x",1.1 * radius_inner);
+set("direction","backward");
+
+copy;
+set("name","drop");
+set("x",-1.1 * radius_inner);
+set("y",-radius_outer - gap_bus - width_outer/2 - width_bus/2);
+set("direction","forward");
+
+# updateportmodes(1);
 
 select("FDTD::ports");
 set("source port","input");
 set("source mode","fundamental TE mode");
-
 
 addprofile;
 set("name","full_profile");
@@ -173,4 +183,9 @@ set("y",radius_outer + gap_bus + width_outer/2 + width_bus/2);
 set("z",height/2);
 
 #run;
+
+Tdrop_dataset = getresult("FDTD::ports::through","T");
+Tdrop_3DFDTD = abs(Tdrop_dataset.T);
+lambda_3DFDTD = Tdrop_dataset.lambda;
+savedata("2D_concentric_racetrack.ldf",Tdrop_3DFDTD,lambda_3DFDTD);
 
