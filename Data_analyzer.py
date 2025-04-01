@@ -131,7 +131,7 @@ class Data_analyzer(Coupled_Waveguides):
                     X_label,Y_label,title,
                     marker_list,linestyle_list,
                     colors_list=['green','mediumblue','tomato','orange',
-                                'deepskyblue','lightskyblue','black','red']*2,
+                                 'tomato','orange','deepskyblue','lightskyblue']*2,
                     bbox_to_anchor=(),text="",dpi=400,plot_show=False):
             #Plot parameters
             figsize = (8,6)

@@ -44,11 +44,11 @@ if __name__ == '__main__':
     Supermode 1 coefficient : A = (0.954766 + 0.000000i), B = (0.300438 + 0.000000i)    S
     Supermode 2 coefficient : A = (-0.297357 + 0.000000i), B = (0.953801 + 0.000000i)   AS
     wavelength = 1.55 um
-    Supermode 1 coefficient : A = (0.869039 + 0.000000i), B = (-0.500080 + -0.000000i)  AS
-    Supermode 2 coefficient : A = (0.494744 + -0.000000i), B = (0.865979 + 0.000000i)   S
+    Supermode 1 coefficient : A = (0.494744 + -0.000000i), B = (0.865979 + 0.000000i)   S
+    Supermode 2 coefficient : A = (0.869039 + 0.000000i), B = (-0.500080 + -0.000000i)  AS
     wavelength = 1.56 um
-    Supermode 1 coefficient : A = (0.996012 + 0.000000i), B = (-0.091263 + -0.000000i)  AS
-    Supermode 2 coefficient : A = (0.089217 + -0.000000i), B = (0.995827 + 0.000000i)   S
+    Supermode 1 coefficient : A = (0.089217 + -0.000000i), B = (0.995827 + 0.000000i)   S
+    Supermode 2 coefficient : A = (0.996012 + 0.000000i), B = (-0.091263 + -0.000000i)  AS
     '''
     # CoupledWG.Plot_field_profile([[0.869039,-0.500080],
     #                               [0.494744 ,0.865979]],
@@ -77,8 +77,6 @@ if __name__ == '__main__':
                     "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRing_L_inner_8um_gap_3um_L_2837nm_31wavls_2000x800"
 
     # foldername1 = "../data/Mode Profiles/"+\
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
@@ -107,8 +105,8 @@ if __name__ == '__main__':
     filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_gap_4.txt"
     filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_gap_4.txt"
 
-    filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_gap_5.txt"
-    filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_gap_5.txt"
+    filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
+    filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
 
     filename_lumerical_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/Lumerical_supermodes_results_gapx_4um.txt"
     filename_lumerical_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/Lumerical_supermodes_results_gapx_5um.txt"
@@ -143,7 +141,7 @@ if __name__ == '__main__':
                                 foldername1 = foldername1,
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
-    beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
+    # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
     # sweeper.Scan_gap()
     ############################################################
 
@@ -152,8 +150,8 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um,
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap5um, filename_coupled_gap5um,
-    #                          param_filename, Lumerical_data_exist=True,
-    #                          filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                             filename_uncoupled_gap5um, filename_coupled_gap5um,
+                             param_filename, Lumerical_data_exist=True,
+                             filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
 
