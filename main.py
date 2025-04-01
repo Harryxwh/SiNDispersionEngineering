@@ -77,6 +77,8 @@ if __name__ == '__main__':
                     "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "OuterRing_L_inner_8um_gap_3um_L_2837nm_31wavls_2000x800"
 
     # foldername1 = "../data/Mode Profiles/"+\
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
