@@ -4,6 +4,10 @@ deleteall;
 um = 1e-6;
 nm = 1e-9;
 
+write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
+write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
+
 # Create folders if they do not yet exist
 #for(wavl_idx=1:num_sweep_pt){
     #format short;

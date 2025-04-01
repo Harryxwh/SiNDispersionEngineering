@@ -46,9 +46,6 @@ folder_name = "Straight_WG_width_2_8um" + "\\";
 log_filename = folder_name + "Find_Modes_straight_WG_multi_wavl_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
-write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 ################################################
 # conduct simulation
@@ -105,10 +102,6 @@ Max_Mode_Idx = 1;
 folder_name = "Ring_vertical_L_2_8um_y_0um_1400_1700_31wavls_1500x1000" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
-
-write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 ################################################
 # conduct simulation
@@ -169,10 +162,6 @@ folder_name = "OuterRing_L_inner_8um_gap_3um_L_2837nm_11wavls_2000x800" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
-write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
-
 ################################################
 # conduct simulation
 ################################################
@@ -231,10 +220,6 @@ Max_Mode_Idx = 1;
 folder_name = "InnerRing_L_inner_2_8um_1500_1600_21wavls_2000x800" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
-
-write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 ################################################
 # conduct simulation
@@ -419,5 +404,4 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 # conduct simulation
 ################################################
 # Find_Modes_of_Double_Rings_Vertical_func;
-
 
