@@ -148,7 +148,7 @@ class Parameter_sweeper():
             # For anti-sym modes, delta beta is always positive
             if beta_coupled[0,0] < 0:
                 beta_coupled[0] = np.flip(beta_coupled[0])
-                coeff_of_supermodes = np.flip(coeff_of_supermodes,axis=0)
+                coeff_of_supermodes = np.flip(coeff_of_supermodes,axis=1)
             if idx == 0:
                 beta_uncoupled_arr = np.array(beta_uncoupled)
                 beta_coupled_arr = np.array(beta_coupled)
@@ -171,8 +171,8 @@ class Parameter_sweeper():
                             str(np.real(beta_coupled[0,0])) + "," + \
                             str(np.real(beta_coupled[0,1])) + "," + \
                             str(coeff_of_supermodes[0,0]) + "," +\
-                            str(coeff_of_supermodes[0,1]) + "," +\
                             str(coeff_of_supermodes[1,0]) + "," +\
+                            str(coeff_of_supermodes[0,1]) + "," +\
                             str(coeff_of_supermodes[1,1]) + "\n"
                 f.write(beta_str)
         if plot == True:

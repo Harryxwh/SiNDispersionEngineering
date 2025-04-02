@@ -26,8 +26,10 @@ if __name__ == '__main__':
 
     foldername1 = "../data/Mode Profiles/"+\
                     "InnerRing_L_inner_8um_1535_1565_31wavls"+"/1550"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"+"/1550"
     foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"+"/1550"
+                    "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"+"/1550"
 
     CoupledWG = Coupled_Waveguides(1.99,1.45,
                                 gap_x = 5, gap_y = 0,
@@ -39,44 +41,95 @@ if __name__ == '__main__':
                                 Plot_field=False,
                                 Plot_index=False)
     '''
-    L_inner 8um gap 4um :
+    L_inner 8um gap 5um :
+    wavl_idx =  10
     wavelength = 1.54 um
-    Supermode 1 coefficient : A = (0.954766 + 0.000000i), B = (0.300438 + 0.000000i)    S
-    Supermode 2 coefficient : A = (-0.297357 + 0.000000i), B = (0.953801 + 0.000000i)   AS
+    Supermode 1 coefficient : A = complex(0.998300,0.000000), B = complex(-0.058282,0.000000)
+    Supermode 2 coefficient : A = complex(0.058794,0.000000), B = complex(0.998270,0.000000)
+    wavl_idx =  20
     wavelength = 1.55 um
-    Supermode 1 coefficient : A = (0.494744 + -0.000000i), B = (0.865979 + 0.000000i)   S
-    Supermode 2 coefficient : A = (0.869039 + 0.000000i), B = (-0.500080 + -0.000000i)  AS
+    Supermode 1 coefficient : A = complex(0.083300,-0.000000), B = complex(0.996525,0.000000)
+    Supermode 2 coefficient : A = complex(0.996415,0.000000), B = complex(-0.084598,-0.000000)
+    wavl_idx =  30
     wavelength = 1.56 um
-    Supermode 1 coefficient : A = (0.089217 + -0.000000i), B = (0.995827 + 0.000000i)   S
-    Supermode 2 coefficient : A = (0.996012 + 0.000000i), B = (-0.091263 + -0.000000i)  AS
+    Supermode 1 coefficient : A = complex(0.029222,-0.000000), B = complex(0.999573,0.000000)
+    Supermode 2 coefficient : A = complex(0.999554,0.000000), B = complex(-0.029876,-0.000000)
     '''
-    # CoupledWG.Plot_field_profile([[0.869039,-0.500080],
-    #                               [0.494744 ,0.865979]],
-    #                              field_name = 'Ex',
-    #                              title=r"Electric field profile when wavl = 1550 nm",
-    #                              Plot_log=False)
-    # CoupledWG.Plot_field_profile([[-0.297357,0.953801],
-    #                               [0.954766,0.300438]],
+    # CoupledWG.Plot_field_profile([[ccomplex(0.998300,0.000000),
+    #                                complex(-0.058282,0.000000)],
+    #                               [complex(0.058794,0.000000),
+    #                                complex(0.998270,0.000000)]],
     #                              field_name = 'Ex',
     #                              title=r"Electric field profile when wavl = 1540 nm",
     #                              Plot_log=False)
-    # CoupledWG.Plot_field_profile([[0.996012,-0.091263],
-    #                               [0.089217,0.995827]],
+    # CoupledWG.Plot_field_profile([[complex(0.083300,-0.000000),
+    #                                complex(0.996525,0.000000)],
+    #                               [complex(0.996415,0.000000),
+    #                                complex(-0.084598,-0.000000)]],
+    #                              field_name = 'Ex',
+    #                              title=r"Electric field profile when wavl = 1550 nm",
+    #                              Plot_log=False)
+    # CoupledWG.Plot_field_profile([[complex(0.029222,-0.000000),
+    #                                complex(0.999573,0.000000)],
+    #                               [complex(0.999554,0.000000),
+    #                                complex(-0.029876,-0.000000)]],
     #                              field_name = 'Ex',
     #                              title=r"Electric field profile when wavl = 1560 nm",
     #                              Plot_log=False)
+
+    '''
+    L_inner 8um gap 4um:
+    wavl_idx =  5
+    wavelength = 1.5400 um
+    Supermode 1 coefficient : A = complex(0.991335,0.000000), B = complex(-0.131355,0.000000)
+    Supermode 2 coefficient : A = complex(0.132438,0.000000), B = complex(0.991191,0.000000)
+    wavl_idx =  15
+    wavelength = 1.5500 um
+    Supermode 1 coefficient : A = complex(0.494740,-0.000000), B = complex(0.869041,0.000000)
+    Supermode 2 coefficient : A = complex(0.865982,0.000000), B = complex(-0.500076,-0.000000)
+    wavl_idx =  25
+    wavelength = 1.5600 um
+    Supermode 1 coefficient : A = complex(0.120213,-0.000000), B = complex(0.992748,0.000000)
+    Supermode 2 coefficient : A = complex(0.992455,0.000000), B = complex(-0.122609,-0.000000)
+    '''
+
+    CoupledWG.Plot_field_profile([[complex(0.999579,0.000000),
+                                   complex(-0.029000,0.000000)],
+                                  [complex(0.029154,0.000000),
+                                   complex(0.999575,0.000000)]],
+                                 field_name = 'Ex',
+                                 title=r"Electric field profile when wavl = 1540 nm",
+                                 Plot_log=False)
+    CoupledWG.Plot_field_profile([[complex(0.907773,0.000000),
+                                   complex(-0.419463,0.000001)],
+                                  [complex(0.423688,0.000000),
+                                   complex(0.905808,0.000000)]],
+                                 field_name = 'Ex',
+                                 title=r"Electric field profile when wavl = 1550 nm",
+                                 Plot_log=False)
+    CoupledWG.Plot_field_profile([[complex(-0.042748,-0.000000),
+                                   complex(0.999086,0.000000)],
+                                  [complex(0.999120,0.000000),
+                                   complex(0.041949,-0.000000)]],
+                                 field_name = 'Ex',
+                                 title=r"Electric field profile when wavl = 1560 nm",
+                                 Plot_log=False)
 
     ########################################
     # Scan the gap between waveguides
     ########################################
 
     ################## Concentric double rings ###################
+    # foldername1 = "../data/Mode Profiles/"+\
+    #                 "InnerRing_L_inner_8um_1535_1565_31wavls"
     foldername1 = "../data/Mode Profiles/"+\
-                    "InnerRing_L_inner_8um_1535_1565_31wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
+                    "InnerRing_L_inner_8um_1400_1700_31wavls"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "OuterRing_L_inner_8um_gap_3um_L_2837nm_11wavls_2000x800"
 
     # foldername1 = "../data/Mode Profiles/"+\
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
@@ -102,8 +155,8 @@ if __name__ == '__main__':
     #                 "LowerRing_L_2_8um_y_-5um_1400_1700_31wavls_1000x500"
     ############################################################
 
-    filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_gap_4.txt"
-    filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_gap_4.txt"
+    filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_gap_4um.txt"
+    filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_gap_4um.txt"
 
     filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
     filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
@@ -113,8 +166,8 @@ if __name__ == '__main__':
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    # wavl_arr = np.linspace(1500,1600,11)
-    wavl_arr = np.linspace(1535,1565,31)
+    wavl_arr = np.linspace(1500,1600,11)
+    # wavl_arr = np.linspace(1535,1565,31)
 
     # param_filename = "./Param_vertical.csv"
     param_filename = "./Param_L_inner_8.csv"
@@ -122,8 +175,8 @@ if __name__ == '__main__':
     # param_filename = "./Param_800x400.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 5
-    end_gap_x     = 5
+    start_gap_x   = 3
+    end_gap_x     = 3
     num_of_gaps_x = 1
     gap_arr_x = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
@@ -142,7 +195,7 @@ if __name__ == '__main__':
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
-    # sweeper.Scan_gap()
+    sweeper.Scan_gap()
     ############################################################
 
     ####################### Analyze Data #######################
@@ -150,8 +203,8 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um,
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                             filename_uncoupled_gap5um, filename_coupled_gap5um,
-                             param_filename, Lumerical_data_exist=True,
-                             filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                          filename_uncoupled_gap5um, filename_coupled_gap5um,
+    #                          param_filename, Lumerical_data_exist=True,
+    #                          filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
 

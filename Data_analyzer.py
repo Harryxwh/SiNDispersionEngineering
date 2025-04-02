@@ -51,7 +51,6 @@ class Data_analyzer(Coupled_Waveguides):
         with open(filename_result,"a") as f:
             f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) + ",{:.6f}".format(AD_range) + "\n")
 
-
     def Load_uncoupled_data(self,filename_uncoupled):
         beta_uncoupled_arr = []
         with open(filename_uncoupled,'r') as f:
@@ -204,7 +203,7 @@ class Data_analyzer(Coupled_Waveguides):
                     right_zero =  wavl_arr[idx] + (wavl_arr[idx+1]-wavl_arr[idx])*\
                             beta_supermode[idx]/(beta_supermode[idx]-beta_supermode[idx+1])
                     right_found = True
-                    print("Right Found, wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
+                    # print("Right Found, wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
                 elif  beta_supermode[idx+1] > 0:
                     right_zero = wavl_arr[idx+1]
 
@@ -214,10 +213,10 @@ class Data_analyzer(Coupled_Waveguides):
                     left_zero =  wavl_arr[idx] + (wavl_arr[idx-1]-wavl_arr[idx])*\
                             beta_supermode[idx]/(beta_supermode[idx]-beta_supermode[idx-1])
                     left_found = True
-                    print("Left Found, wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
+                    # print("Left Found, wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
                 elif  beta_supermode[idx-1] > 0:
                     left_zero = wavl_arr[idx-1]
-                # print("left wavl:" + str(wavl_arr[idx]) + ", beta =" + str(beta_supermode[idx]))
+
         return (right_zero-left_zero)*1e3   # nm
 
     # Beta      : unit: rad/m

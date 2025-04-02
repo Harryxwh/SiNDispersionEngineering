@@ -265,14 +265,14 @@ class Coupled_Waveguides():
                            save_name='./results/field_profile_',
                            dpi=400):
         fonttype = "Helvetica"
-        fontsize = 12
+        fontsize = 18
         linewidth = 0.3
         # colormap = "jet"
         # colormap = "turbo"
         colormap = "bwr"
         cbar_num_of_pts = 5
         num_of_plots = len(field_coefficients)
-        figsize =  (40, 5*num_of_plots)
+        figsize =  (40, 6*num_of_plots)
 
 
         name_list = ['Abs','Re','Im']
@@ -287,7 +287,7 @@ class Coupled_Waveguides():
             coeffis =   field_coefficients[plot_idx]
             field   =   coeffis[0]*self.Field_dict_uncoupled[field_name][0] +\
                         coeffis[1]*self.Field_dict_uncoupled[field_name][1]
-            if coeffis[0] * coeffis[1] < 0:
+            if np.real(coeffis[0]) * np.real(coeffis[1]) < 0:
                 mode_name = "Asymmetric Mode "
             else:
                 mode_name = "Symmetric Mode "
@@ -305,7 +305,7 @@ class Coupled_Waveguides():
                 print(np.min(field_abs[non_zero_mask]))
                 field_list[0] = log_arr
             # Converting the unit of ticks to um
-            yticks_prev = np.linspace(0,np.shape(field)[0],10)
+            yticks_prev = np.linspace(0,np.shape(field)[0],6)
             xticks_prev = np.linspace(0,np.shape(field)[1],10)
             xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
 
@@ -344,11 +344,11 @@ class Coupled_Waveguides():
 
                 ax[plot_idx,idx].set_title(mode_name+name_list[idx]+'('+field_name+')',fontsize=fontsize*1.5)
                 cbar = fig.colorbar(im, ax=ax[plot_idx,idx], orientation='vertical',
-                                    label='', shrink=0.3, pad=0.02)
+                                    label='', shrink=0.8, pad=0.02)
                 cbar.set_ticks(np.linspace(np.max(field_list[idx]),
                                         np.min(field_list[idx]),
                                         cbar_num_of_pts))
-                cbar.ax.tick_params(labelsize=10)
+                cbar.ax.tick_params(labelsize=fontsize)
                 ax[plot_idx,idx].set_xticks(xticks_prev)
                 ax[plot_idx,idx].set_xticklabels(xticks,fontsize=fontsize)
                 ax[plot_idx,idx].set_yticks(yticks_prev)

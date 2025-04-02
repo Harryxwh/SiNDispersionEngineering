@@ -5,8 +5,8 @@ nm          =   1e-9;
 um          =   1e-6;
 mm          =   1e-3;
 
-Lc_inner        =   0;              #length of the straight region
-Lc_outer        =   0;              #length of the straight region
+Lc_inner        =   0     *um;          #length of the straight region
+Lc_outer        =   0     *um;          #length of the straight region
 
 width_inner     =   8     *um;    #width of the inner ring waveguide
 width_outer     =   2.589 *um;    #width of the outer ring waveguide
