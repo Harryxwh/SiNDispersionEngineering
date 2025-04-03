@@ -21,7 +21,8 @@ class Parameter_sweeper():
     def __init__(self,wavelengths,gap,
                  index_file1, index_file2,
                  foldername1,foldername2,
-                 param_filename="./Param.csv"):
+                 param_filename="./Param.csv",
+                 filename_result="./results/AD_range_res.txt"):
         #The material dispersion of waveguide and cladding
         index_file1 = index_file1
         index_file2 = index_file2
@@ -32,6 +33,7 @@ class Parameter_sweeper():
         self.foldername_1 = foldername1
         self.foldername_2 = foldername2
         self.param_filename = param_filename
+        self.filename_result = filename_result
         self.beta_array = np.array([[],[]])
 
     def Load_index_data(self,filename_n1,filename_n0):
@@ -90,35 +92,6 @@ class Parameter_sweeper():
         return Coupled_WG
 
 
-    def Plot_curve(self,X,Y_arr,Y_legends,
-                   X_label,Y_label,
-                   dpi=300):
-
-        #Plot parameters
-        fonttype = "Helvetica"
-        fontsize = 10
-        grid_linewidth = 0.8
-        plot_linewidth = 1.5
-        colors = ['tab:blue', 'tab:orange', 'tab:red', 'tab:green']
-        plt.figure(figsize=(8,6))
-        for idx in range(np.shape(Y_arr)[1]):
-            plt.plot(X,Y_arr[:,idx],label=Y_legends[idx],
-                     color=colors[idx], marker='o',
-                     linestyle='-', linewidth=plot_linewidth)
-        plt.yticks(fontproperties = fonttype, size = fontsize)
-        plt.xticks(fontproperties = fonttype, size = fontsize)
-        plt.rcParams["font.family"] = fonttype
-        plt.rcParams.update({'font.size': fontsize})
-        plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
-        plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
-        plt.legend()
-        plt.grid(linewidth=grid_linewidth, alpha=0.3)
-        plt.tight_layout()
-
-        savename = "results/"+str(Y_label)+".png"
-        plt.savefig(savename,dpi=dpi)
-        # plt.show()
-
     def Scan_wavl(self, gap_idx,
                   filename_uncoupled = "../data/beta_uncoupled.txt",
                   filename_coupled   = "../data/beta_coupled.txt",
@@ -175,12 +148,7 @@ class Parameter_sweeper():
                             str(coeff_of_supermodes[0,1]) + "," +\
                             str(coeff_of_supermodes[1,1]) + "\n"
                 f.write(beta_str)
-        if plot == True:
-            self.Plot_curve(self.wavl_arr,
-                            np.c_[beta_uncoupled_arr,beta_coupled_arr],
-                            ['beta_uncoupled_1','beta_uncoupled_2',
-                            'beta_supermode_1(CMT)','beta_supermode_1(CMT)'],
-                            'wavelength(um)',r'$\beta$ - $\beta_{ave}(rad/rad)$')
+
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
     def Scan_gap(self):
@@ -200,43 +168,5 @@ class Parameter_sweeper():
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
                                      filename_uncoupled, filename_coupled,
-                                     self.param_filename)
+                                     self.param_filename,self.filename_result)
 
-
-
-    # Save supermodes results calculated using coupled mode theory
-    # def Calculate_Beta_and_save(self,plot=True,
-    #                             filename_uncoupled = "../data/beta_uncoupled.txt",
-    #                             filename_coupled   = "../data/beta_coupled.txt"):
-    #     (beta_uncoupled_arr,
-    #      beta_ave_uncoupled_arr,
-    #      beta_coupled_arr) = self.Scan_wavl(gap_idx=0)
-    #     # beta of eigenmodes of two separate WGs
-    #     with open(filename_uncoupled,'w') as f:
-    #         f.write("wavelength,beta_1_uncoupled,beta_2_uncoupled,beta_ave_uncoupled\n")
-    #         for wavl_idx in range(len(self.wavl_arr)):
-    #             beta_str =  str(self.wavl_arr[wavl_idx]) + "," + \
-    #                         str(np.real(beta_uncoupled_arr[wavl_idx,0])) + "," + \
-    #                         str(np.real(beta_uncoupled_arr[wavl_idx,1])) + "," + \
-    #                         str(np.real(beta_ave_uncoupled_arr[wavl_idx])) + "\n"
-    #             f.write(beta_str)
-
-    #     # beta of supermodes calculated with CMT
-    #     with open(filename_coupled,'w') as f:
-    #         f.write("wavelength,beta_1_coupled,beta_2_coupled\n")
-    #         for wavl_idx in range(len(self.wavl_arr)):
-    #             beta_str =  str(self.wavl_arr[wavl_idx]) + "," + \
-    #                         str(np.real(beta_coupled_arr[wavl_idx,0])) + "," + \
-    #                         str(np.real(beta_coupled_arr[wavl_idx,1])) + "\n"
-    #             f.write(beta_str)
-
-    #     if plot == True:
-    #         self.Plot_curve(self.wavl_arr,
-    #                         np.c_[beta_uncoupled_arr,beta_coupled_arr],
-    #                         ['beta_uncoupled_1','beta_uncoupled_2',
-    #                         'beta_supermode_1(CMT)','beta_supermode_1(CMT)'],
-    #                         'wavelength(um)','beta - beta_ave(rad\\rad)')
-
-    # Load supermodes results from Lumerical
-    def Load_results(self,plot=True):
-        pass

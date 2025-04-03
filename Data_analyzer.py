@@ -20,8 +20,8 @@ class Data_analyzer(Coupled_Waveguides):
     def __init__(self, wavl_arr, gap_arr,
                  filename_uncoupled, filename_coupled,
                  param_filename,
-                 filename_result = "../data/AD_range_res.txt",
-                 plot_curve=True,
+                 filename_result = "./results/AD_range_res.txt",
+                 plot_curve = True,
                  Lumerical_data_exist = False,
                  filename_lumerical = "",
                  num_of_pts = 100):
@@ -47,9 +47,11 @@ class Data_analyzer(Coupled_Waveguides):
         else:
             self.bend_radius_outer = self.bend_radius_inner
 
-        AD_range = self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
+        uncoupled_zero, AD_left_zero, AD_right_zero = self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
         with open(filename_result,"a") as f:
-            f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) + ",{:.6f}".format(AD_range) + "\n")
+            f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) +\
+                    ",{:.6f}".format(uncoupled_zero) +\
+                    ",{:.6f}".format(AD_left_zero) + ",{:.6f}".format(AD_right_zero)+"\n")
 
     def Load_uncoupled_data(self,filename_uncoupled):
         beta_uncoupled_arr = []
@@ -162,7 +164,7 @@ class Data_analyzer(Coupled_Waveguides):
             else:
                 plt.legend(loc='best')
             if not text == "":
-                plt.text(np.quantile(X,0.75),np.quantile(Y_arr,0.01),
+                plt.text(np.quantile(X,0.5),np.quantile(Y_arr,0.01),
                         text, bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
             plt.grid(linewidth=grid_linewidth, alpha=0.3)
             savename = "results/"+str(title)+".jpg"
@@ -217,7 +219,7 @@ class Data_analyzer(Coupled_Waveguides):
                 elif  beta_supermode[idx-1] > 0:
                     left_zero = wavl_arr[idx-1]
 
-        return (right_zero-left_zero)*1e3   # nm
+        return (left_zero*1e3,right_zero*1e3)   # nm
 
     # Beta      : unit: rad/m
     # wavl_arr  : unit: um
@@ -250,15 +252,24 @@ class Data_analyzer(Coupled_Waveguides):
         # Dispersion of Isolated WGs
         beta_uncoupled_WG1 = (self.beta_uncoupled_arr[:,1]+self.beta_uncoupled_arr[:,3])  / R_WG1     # unit: rad/m
         beta_uncoupled_WG2 = (self.beta_uncoupled_arr[:,2]+self.beta_uncoupled_arr[:,3])  / R_WG2     # unit: rad/m
+
         beta_uncoupled_WG1_intp = (self.beta_uncoupled_arr_intp[:,0]+
                                 self.beta_uncoupled_arr_intp[:,2])  / R_WG1     # unit: rad/m
         beta_uncoupled_WG2_intp = (self.beta_uncoupled_arr_intp[:,1]+
                                 self.beta_uncoupled_arr_intp[:,2])  / R_WG2     # unit: rad/m
 
+
         D_WG1, Beta_1_WG1 = self.Calculate_dispersion_D(beta_uncoupled_WG1,self.wavl_arr)
         D_WG1_intp, Beta_1_WG1_intp = self.Calculate_dispersion_D(beta_uncoupled_WG1_intp,self.wavl_arr_intp)
         D_WG2, Beta_1_WG2 = self.Calculate_dispersion_D(beta_uncoupled_WG2,self.wavl_arr)
         D_WG2_intp, Beta_1_WG2_intp= self.Calculate_dispersion_D(beta_uncoupled_WG2_intp,self.wavl_arr_intp)
+
+        uncoupled_zero_arr, uncoupled_zero_idx = find_zero(self.wavl_arr_intp[2:-2]*1e3,
+                                                           (D_WG1_intp + D_WG2_intp)/2)
+        if len(uncoupled_zero_arr)>0:
+            uncoupled_zero = uncoupled_zero_arr[0]      # unit:nm
+        else:
+            uncoupled_zero = 0
 
         # Dispersion of coupled WGs using CMT
         beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
@@ -283,10 +294,12 @@ class Data_analyzer(Coupled_Waveguides):
         if self.Lumerical_data_exist:
             Y_data = Y_data + (self.beta_coupled_lumerical_arr,)
 
+
+
         # Plot propagation const curve
         if self.plot_curve:
-            self.Plot_curve(Y_data,
-                    Y_legends=['Uncoupled inner ring','Uncoupled outer ring',
+            Plot_curve(Y_data,
+                        Y_legends=['Uncoupled inner ring','Uncoupled outer ring',
                                 'Supermode 1 (CMT)','Supermode 2 (CMT)',
                                 'Supermode 1 (CMT) Interpolation','Supermode 2 (CMT) Interpolation',
                                 'Supermode 1 (FDE)','Supermode 2 (FDE)',
@@ -295,11 +308,15 @@ class Data_analyzer(Coupled_Waveguides):
                         Y_label=r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
                         title = r"Propagation constant of coupled modes calculated using different methods",
                         marker_list=["","",".",".","","","o","o"],
-                        linestyle_list=["--","--","","","-","-","",""])
+                        linestyle_list=["--","--","","","-","-","",""],
+                        colors_list=['green','mediumblue','tomato','orange',
+                                 'tomato','orange','deepskyblue','lightskyblue']*2)
 
         # Wavelength range of anomalous dispersion (unit: nm)
-        AD_range = self.Anomalous_D_bandwidth(self.wavl_arr_intp[2:-2], D_supermode_2_intp)
-        AD_range_text = "AD range = "+"{:.4f}".format(AD_range) +" nm"
+        AD_left_zero,AD_right_zero = self.Anomalous_D_bandwidth(self.wavl_arr_intp[2:-2], D_supermode_2_intp)
+
+        AD_range_text = "AD range = " + "{:.2f} nm".format(AD_left_zero)\
+                        + " - {:.2f} nm".format(AD_right_zero)
 
         Y_data = (np.c_[ self.wavl_arr_intp[2:-2],
                         D_WG1_intp, D_WG2_intp,
@@ -340,9 +357,10 @@ class Data_analyzer(Coupled_Waveguides):
                     ","+"{:.1f}".format(self.gap_arr[1])
         gap_info = gap_info.replace(".","_")
 
+
         # Plot dispersion curve
         if self.plot_curve:
-            self.Plot_curve(Y_data,
+            Plot_curve(Y_data,
                     Y_legends=['Inner Ring','Outer Ring',
                             'Supermode 1 (CMT)','Supermode 2 (CMT)',
                             'Supermode 1 (FDE)','Supermode 2 (FDE)']*2,
@@ -350,6 +368,8 @@ class Data_analyzer(Coupled_Waveguides):
                     title = "Dispersion of coupled modes"+gap_info,
                     marker_list=["","","","","",""]*2,
                     linestyle_list=["--","--","-","-","-","-","-","-"]*2,
+                    colors_list=['green','mediumblue','tomato','orange',
+                                 'tomato','orange','deepskyblue','lightskyblue']*2,
                     text=AD_range_text)
-        return AD_range
+        return uncoupled_zero, AD_left_zero, AD_right_zero
 

@@ -93,27 +93,27 @@ if __name__ == '__main__':
     Supermode 2 coefficient : A = complex(0.992455,0.000000), B = complex(-0.122609,-0.000000)
     '''
 
-    CoupledWG.Plot_field_profile([[complex(0.999579,0.000000),
-                                   complex(-0.029000,0.000000)],
-                                  [complex(0.029154,0.000000),
-                                   complex(0.999575,0.000000)]],
-                                 field_name = 'Ex',
-                                 title=r"Electric field profile when wavl = 1540 nm",
-                                 Plot_log=False)
-    CoupledWG.Plot_field_profile([[complex(0.907773,0.000000),
-                                   complex(-0.419463,0.000001)],
-                                  [complex(0.423688,0.000000),
-                                   complex(0.905808,0.000000)]],
-                                 field_name = 'Ex',
-                                 title=r"Electric field profile when wavl = 1550 nm",
-                                 Plot_log=False)
-    CoupledWG.Plot_field_profile([[complex(-0.042748,-0.000000),
-                                   complex(0.999086,0.000000)],
-                                  [complex(0.999120,0.000000),
-                                   complex(0.041949,-0.000000)]],
-                                 field_name = 'Ex',
-                                 title=r"Electric field profile when wavl = 1560 nm",
-                                 Plot_log=False)
+    # CoupledWG.Plot_field_profile([[complex(0.999579,0.000000),
+    #                                complex(-0.029000,0.000000)],
+    #                               [complex(0.029154,0.000000),
+    #                                complex(0.999575,0.000000)]],
+    #                              field_name = 'Ex',
+    #                              title=r"Electric field profile when wavl = 1540 nm",
+    #                              Plot_log=False)
+    # CoupledWG.Plot_field_profile([[complex(0.907773,0.000000),
+    #                                complex(-0.419463,0.000001)],
+    #                               [complex(0.423688,0.000000),
+    #                                complex(0.905808,0.000000)]],
+    #                              field_name = 'Ex',
+    #                              title=r"Electric field profile when wavl = 1550 nm",
+    #                              Plot_log=False)
+    # CoupledWG.Plot_field_profile([[complex(-0.042748,-0.000000),
+    #                                complex(0.999086,0.000000)],
+    #                               [complex(0.999120,0.000000),
+    #                                complex(0.041949,-0.000000)]],
+    #                              field_name = 'Ex',
+    #                              title=r"Electric field profile when wavl = 1560 nm",
+    #                              Plot_log=False)
 
     ########################################
     # Scan the gap between waveguides
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
     foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRing_L_inner_8um_gap_3um_L_2837nm_11wavls_2000x800"
+                    "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
 
     # foldername1 = "../data/Mode Profiles/"+\
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
@@ -166,8 +166,8 @@ if __name__ == '__main__':
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    wavl_arr = np.linspace(1500,1600,11)
-    # wavl_arr = np.linspace(1535,1565,31)
+    # wavl_arr = np.linspace(1500,1600,11)
+    wavl_arr = np.linspace(1535,1565,31)
 
     # param_filename = "./Param_vertical.csv"
     param_filename = "./Param_L_inner_8.csv"
@@ -175,9 +175,9 @@ if __name__ == '__main__':
     # param_filename = "./Param_800x400.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 3
-    end_gap_x     = 3
-    num_of_gaps_x = 1
+    start_gap_x   = 2.5
+    end_gap_x     = 3.5
+    num_of_gaps_x = 11
     gap_arr_x = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
-    sweeper.Scan_gap()
+    # sweeper.Scan_gap()
     ############################################################
 
     ####################### Analyze Data #######################
@@ -203,8 +203,8 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um,
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap5um, filename_coupled_gap5um,
-    #                          param_filename, Lumerical_data_exist=True,
-    #                          filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                             filename_uncoupled_gap5um, filename_coupled_gap5um,
+                             param_filename, Lumerical_data_exist=True,
+                             filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
 

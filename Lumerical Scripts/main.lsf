@@ -55,7 +55,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 
 ################################################
 # setting up parameters for Eigenmode calc
-# Ring_vertical_L_2_8um_y_0um_1400_1700_31wavls_1500x1000
+# Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000
 ################################################
 um = 1e-6;
 nm = 1e-9;
@@ -70,7 +70,7 @@ Ly_Cladding = 20*um; #height of the WG
 Lz_Cladding = 50*um; #length of the WG
 
 Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 20*um;
+Ly_Buried_Oxide = 15*um;
 Lz_Buried_Oxide = 50*um;
 
 Lx_FDE      = 30*um;
@@ -88,9 +88,9 @@ bend_radius     = 1000*um;
 ?"bend_radius   = "+num2str(bend_radius*1e6)+" um";
 
 # Define wavelength of simulation
-wavelength_min      = 1400*nm;
+wavelength_min      = 1550*nm;
 wavelength_max      = 1700*nm;
-num_sweep_pt        = 31;
+num_sweep_pt        = 16;
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Material
@@ -99,7 +99,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 1;
 
-folder_name = "Ring_vertical_L_2_8um_y_0um_1400_1700_31wavls_1500x1000" + "\\";
+folder_name = "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
@@ -109,17 +109,16 @@ if(fileexists(log_filename)){rm(log_filename);}
 # Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
-
 ################################################
 # setting up parameters for Eigenmode calc
-# OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls
+# OuterRingDesigned_L_inner_8um_gap_4um_L_2589nm_1500_1600_11wavls
 ################################################
 
 um = 1e-6;
 nm = 1e-9;
 
 #Geometry
-Lx_WG = 2.762*um;   #width of the WG
+Lx_WG = 2.589*um;   #width of the WG
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
 
@@ -141,7 +140,7 @@ mesh_cells_y = 800;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;
-gap = 3*um;
+gap = 4*um;
 
 bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
@@ -149,7 +148,7 @@ bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
 # Define wavelength of simulation
 wavelength_min = 1500*nm;
 wavelength_max = 1600*nm;
-num_sweep_pt = 21;
+num_sweep_pt   = 11;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 #Material
@@ -158,7 +157,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 1;
 
-folder_name = "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls" + "\\";
+folder_name = "OuterRingDesigned_L_inner_8um_gap_4um_L_2589nm_1500_1600_11wavls" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
@@ -225,8 +224,6 @@ if(fileexists(log_filename)){rm(log_filename);}
 # conduct simulation
 ################################################
 # Find_Modes_single_Ring_multi_wavl_XYZ_func;
-
-
 
 
 ################################################
@@ -369,7 +366,7 @@ Ly_Cladding = 10*um;     #height of the Cladding
 Lz_Cladding = 50*um;    #length of the Cladding
 
 Lx_Buried_Oxide = 50*um;    #width of the BOX
-Ly_Buried_Oxide = 20*um;  #height of the BOX
+Ly_Buried_Oxide = 15*um;  #height of the BOX
 Lz_Buried_Oxide = 50*um;    #length of the BOX
 
 Lx_FDE = 30*um;
@@ -403,5 +400,5 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_of_Double_Rings_Vertical_func;
+Find_Modes_of_Double_Rings_Vertical_func;
 
