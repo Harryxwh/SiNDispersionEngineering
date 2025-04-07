@@ -1,3 +1,5 @@
+import pandas as pd
+import os
 from Functions import *
 from Coupled_Waveguides import *
 from scipy.interpolate import CubicSpline
@@ -47,11 +49,8 @@ class Data_analyzer(Coupled_Waveguides):
         else:
             self.bend_radius_outer = self.bend_radius_inner
 
-        uncoupled_zero, AD_left_zero, AD_right_zero = self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
-        with open(filename_result,"a") as f:
-            f.write("{:.2f}".format(gap_x) + ",{:.2f}".format(gap_y) +\
-                    ",{:.6f}".format(uncoupled_zero) +\
-                    ",{:.6f}".format(AD_left_zero) + ",{:.6f}".format(AD_right_zero)+"\n")
+        self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
+
 
     def Load_uncoupled_data(self,filename_uncoupled):
         beta_uncoupled_arr = []
@@ -128,51 +127,6 @@ class Data_analyzer(Coupled_Waveguides):
         beta_coupled_lumerical_arr[:,2] = beta_coupled_lumerical_arr_ori[:,2] - beta_ave_arr
         return beta_coupled_lumerical_arr, beta_ave_arr
 
-    def Plot_curve(self,data_arr,Y_legends,
-                    X_label,Y_label,title,
-                    marker_list,linestyle_list,
-                    colors_list=['green','mediumblue','tomato','orange',
-                                 'tomato','orange','deepskyblue','lightskyblue']*2,
-                    bbox_to_anchor=(),text="",dpi=400,plot_show=False):
-            #Plot parameters
-            figsize = (8,6)
-            fonttype = "Helvetica"
-            fontsize = 9
-            grid_linewidth = 0.8
-            plot_linewidth = 1.5
-
-            plt.figure(figsize=figsize)
-            idx = 0
-            for data_idx in range(len(data_arr)):
-                X       = data_arr[data_idx][:,0]           #X is a 2D array
-                Y_arr   = data_arr[data_idx][:,1:]          #Y_arr is a 2D array
-                for Y_idx in range(np.shape(Y_arr)[1]):
-                    plt.plot(X,Y_arr[:,Y_idx],label=Y_legends[idx],
-                                color=colors_list[idx], marker=marker_list[idx],
-                                linestyle=linestyle_list[idx], linewidth=plot_linewidth)
-                    idx = idx + 1
-
-            plt.rcParams["font.family"] = fonttype
-            plt.rcParams.update({'font.size': fontsize})
-            plt.yticks(fontproperties = fonttype, size = fontsize)
-            plt.xticks(fontproperties = fonttype, size = fontsize)
-            plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
-            plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
-            plt.title(title)
-            if len(bbox_to_anchor)>0:
-                plt.legend(bbox_to_anchor=bbox_to_anchor, loc='lower left', borderaxespad=0)
-            else:
-                plt.legend(loc='best')
-            if not text == "":
-                plt.text(np.quantile(X,0.5),np.quantile(Y_arr,0.01),
-                        text, bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
-            plt.grid(linewidth=grid_linewidth, alpha=0.3)
-            savename = "results/"+str(title)+".jpg"
-            plt.savefig(savename,dpi=dpi)
-            plt.tight_layout()
-            # if plot_show:
-            #     plt.show()
-
     def Polynomial_fit(self,x, y_arr, x_fit, order = 1, num_of_fit_pts  = 100):
         num_of_columns  = np.shape(y_arr)[1]
         coeffi_array    = np.zeros((order+1,num_of_columns))
@@ -233,6 +187,46 @@ class Data_analyzer(Coupled_Waveguides):
         D           = D * 10**(-9)                          # unit: ps/km/nm
         return D, Beta_1
 
+    def write_csv(self, gap, wavl_arr, D_WG, D_supermode,
+                  filename_D_iso, filename_D_supermode):
+
+        if not os.path.exists(filename_D_iso):
+            df_iso = pd.DataFrame()
+            df_iso['wavl'] = wavl_arr
+        else:
+            df_iso = pd.read_csv(filename_D_iso)
+        df_iso[gap] = D_WG
+        df_iso.to_csv(filename_D_iso, index=False, encoding="utf-8")
+
+        if not os.path.exists(filename_D_supermode):
+            df_coupled = pd.DataFrame()
+            df_coupled['wavl'] = wavl_arr
+        else:
+            df_coupled = pd.read_csv(filename_D_supermode)
+        df_coupled[gap] = D_supermode
+        df_coupled.to_csv(filename_D_supermode, index=False, encoding="utf-8")
+
+    def calc_Dispersion_using_data_from_FDE(self,wavl_arr_lumerical,
+                                            wavl_arr_lumerical_intp):
+        # Interpolating beta_ave in the range of wavl_arr_lumerical
+        wavl_arr_lumerical_mask = np.where((self.wavl_arr >= np.min(wavl_arr_lumerical))\
+                                        & (self.wavl_arr <= np.max(wavl_arr_lumerical)))
+        coeffi_array, beta_ave_intp =  self.Polynomial_fit(wavl_arr_lumerical,
+                                    self.beta_ave_lumerical_arr.reshape(-1,1),
+                                    wavl_arr_lumerical_intp, order=2, num_of_fit_pts=num_of_pts)
+
+        beta_coupled_lumerical_arr_intp  = self.Interpolation(wavl_arr_lumerical,
+                                            self.beta_coupled_lumerical_arr[:,1:],
+                                            wavl_arr_lumerical_intp,num_of_pts)
+        beta_coupled_lumerical_arr_intp += \
+            beta_ave_intp.reshape(-1,1) # adding beta_ave
+        beta_coupled_lumerical_arr_intp = \
+            beta_coupled_lumerical_arr_intp / R_ave   # now unit: 1/m
+
+        D_lumerical_supermode_1_intp, Beta_1_lumerical_supermode_1_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,0],wavl_arr_lumerical_intp)
+        D_lumerical_supermode_2_intp, Beta_1_lumerical_supermode_2_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,1],wavl_arr_lumerical_intp)
+        return D_lumerical_supermode_1_intp,_lumerical_supermode_2_intp
+
     # Interpolate the propagation constant curve and calc the dispersion profile
     def Calc_Dispersion_curve(self,num_of_pts = 100):
 
@@ -258,18 +252,10 @@ class Data_analyzer(Coupled_Waveguides):
         beta_uncoupled_WG2_intp = (self.beta_uncoupled_arr_intp[:,1]+
                                 self.beta_uncoupled_arr_intp[:,2])  / R_WG2     # unit: rad/m
 
-
         D_WG1, Beta_1_WG1 = self.Calculate_dispersion_D(beta_uncoupled_WG1,self.wavl_arr)
         D_WG1_intp, Beta_1_WG1_intp = self.Calculate_dispersion_D(beta_uncoupled_WG1_intp,self.wavl_arr_intp)
         D_WG2, Beta_1_WG2 = self.Calculate_dispersion_D(beta_uncoupled_WG2,self.wavl_arr)
         D_WG2_intp, Beta_1_WG2_intp= self.Calculate_dispersion_D(beta_uncoupled_WG2_intp,self.wavl_arr_intp)
-
-        uncoupled_zero_arr, uncoupled_zero_idx = find_zero(self.wavl_arr_intp[2:-2]*1e3,
-                                                           (D_WG1_intp + D_WG2_intp)/2)
-        if len(uncoupled_zero_arr)>0:
-            uncoupled_zero = uncoupled_zero_arr[0]      # unit:nm
-        else:
-            uncoupled_zero = 0
 
         # Dispersion of coupled WGs using CMT
         beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
@@ -294,8 +280,6 @@ class Data_analyzer(Coupled_Waveguides):
         if self.Lumerical_data_exist:
             Y_data = Y_data + (self.beta_coupled_lumerical_arr,)
 
-
-
         # Plot propagation const curve
         if self.plot_curve:
             Plot_curve(Y_data,
@@ -312,12 +296,6 @@ class Data_analyzer(Coupled_Waveguides):
                         colors_list=['green','mediumblue','tomato','orange',
                                  'tomato','orange','deepskyblue','lightskyblue']*2)
 
-        # Wavelength range of anomalous dispersion (unit: nm)
-        AD_left_zero,AD_right_zero = self.Anomalous_D_bandwidth(self.wavl_arr_intp[2:-2], D_supermode_2_intp)
-
-        AD_range_text = "AD range = " + "{:.2f} nm".format(AD_left_zero)\
-                        + " - {:.2f} nm".format(AD_right_zero)
-
         Y_data = (np.c_[ self.wavl_arr_intp[2:-2],
                         D_WG1_intp, D_WG2_intp,
                         D_supermode_1_intp, D_supermode_2_intp],)
@@ -326,37 +304,16 @@ class Data_analyzer(Coupled_Waveguides):
         if self.Lumerical_data_exist:
             wavl_arr_lumerical = self.beta_coupled_lumerical_arr[:,0]    # unit: um
             wavl_arr_lumerical_intp = np.linspace(np.min(wavl_arr_lumerical),
-                                                  np.max(wavl_arr_lumerical),
-                                                  num_of_pts)
-            # Interpolating beta_ave in the range of wavl_arr_lumerical
-            wavl_arr_lumerical_mask = np.where((self.wavl_arr >= np.min(wavl_arr_lumerical))\
-                                            & (self.wavl_arr <= np.max(wavl_arr_lumerical)))
-            coeffi_array, beta_ave_intp =  self.Polynomial_fit(wavl_arr_lumerical,
-                                        self.beta_ave_lumerical_arr.reshape(-1,1),
-                                        wavl_arr_lumerical_intp, order=2, num_of_fit_pts=num_of_pts)
-            # plt.figure()
-            # plt.plot(wavl_arr_lumerical_intp,beta_ave_intp,marker = "")
-            # plt.plot(wavl_arr_lumerical,
-            #          self.beta_ave_lumerical_arr.reshape(-1,1),
-            #          marker = "o")
-            beta_coupled_lumerical_arr_intp  = self.Interpolation(wavl_arr_lumerical,
-                                                self.beta_coupled_lumerical_arr[:,1:],
-                                                wavl_arr_lumerical_intp,num_of_pts)
-            beta_coupled_lumerical_arr_intp += \
-                beta_ave_intp.reshape(-1,1) # adding beta_ave
-            beta_coupled_lumerical_arr_intp = \
-                beta_coupled_lumerical_arr_intp / R_ave   # now unit: 1/m
-
-            D_lumerical_supermode_1_intp, Beta_1_lumerical_supermode_1_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,0],wavl_arr_lumerical_intp)
-            D_lumerical_supermode_2_intp, Beta_1_lumerical_supermode_2_intp = self.Calculate_dispersion_D(beta_coupled_lumerical_arr_intp[:,1],wavl_arr_lumerical_intp)
-
+                                                np.max(wavl_arr_lumerical),
+                                                num_of_pts)
+            D_lumerical_supermode_1_intp, D_lumerical_supermode_2_intp =self.calc_Dispersion_using_data_from_FDE(wavl_arr_lumerical,
+                                                wavl_arr_lumerical_intp)
             Y_data = Y_data + (np.c_[wavl_arr_lumerical_intp[2:-2],
                       D_lumerical_supermode_1_intp,D_lumerical_supermode_2_intp],)
 
-        gap_info = "gap_"+"{:.1f}".format(self.gap_arr[0])+\
-                    ","+"{:.1f}".format(self.gap_arr[1])
+        gap_info = "gap_"+"{:.2f}".format(self.gap_arr[0])+\
+                    ","+"{:.2f}".format(self.gap_arr[1])
         gap_info = gap_info.replace(".","_")
-
 
         # Plot dispersion curve
         if self.plot_curve:
@@ -370,6 +327,13 @@ class Data_analyzer(Coupled_Waveguides):
                     linestyle_list=["--","--","-","-","-","-","-","-"]*2,
                     colors_list=['green','mediumblue','tomato','orange',
                                  'tomato','orange','deepskyblue','lightskyblue']*2,
-                    text=AD_range_text)
-        return uncoupled_zero, AD_left_zero, AD_right_zero
+                    text="")
+
+        gap_label = "({:.2f}".format(self.gap_arr[0])+\
+                    ","+"{:.2f})".format(self.gap_arr[1])
+        D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
+        self.write_csv(gap= gap_label, wavl_arr= self.wavl_arr_intp[2:-2],
+                       D_WG=D_WG_ave, D_supermode=D_supermode_2_intp,
+                       filename_D_iso="./results/Dispersion_isolated_WG.csv",
+                       filename_D_supermode="./results/Dispersion_coupled_WG.csv")
 

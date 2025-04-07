@@ -172,9 +172,6 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr, beta_coupled_arr
 
-    def Scan_gap(self):
-        pass
-
     def Dispersion(self):
         fre_vec = self.c / self.wavl_vec
         Diff_fre = np.diff(fre_vec,axis=0)
@@ -209,36 +206,4 @@ class Parameter_sweeper():
                             ['beta_uncoupled_1','beta_uncoupled_2',
                             'beta_coupled_1','beta_coupled_2'],
                             'wavelength(um)','beta - beta_ave(rad\\rad)')
-
-
-if __name__ == '__main__':
-
-    # foldername1 = "InnerRingXYZ_Lx_8um_bendr_1000um_800x400cells_beta_ang/1550"
-    # #foldername2 = "ExternalRing_2690x100nm_bendr_1000-3um_200x100cells"
-    # foldername2 = "OuterRingDesigned_800x400cells/1550"
-
-    # CoupledWG = Coupled_Waveguides(1.99,1.45,gap_x = 5,gap_y = 0,
-    #                             wavelength=1.5e-6,
-    #                             name1=foldername1,
-    #                             name2=foldername2,
-    #                             ModeIdx1=1, ModeIdx2=1,
-    #                             param_file_name="./Param.csv",
-    #                             Plot_field=False,
-    #                             Plot_index=False
-    #                             )
-    # Plot_field_profile(CoupledWG.Field_dict_uncoupled['Ex'][0]
-    #                    + CoupledWG.Field_dict_uncoupled['Ex'][1],'Ex')
-
-    foldername1 = "InnerRingXYZ_Lx_8um_bendr_1000um_800x400cells_beta_ang_21_wavls"
-    foldername2 = "OuterRingDesigned_800x400cells_21_wavls"
-    #unit: um
-    wavl_vec = np.linspace(1.5,1.6,21)
-    gap_vec = np.array([[5,0],
-                        [0,5]])
-    sweeper = Parameter_sweeper(wavl_vec,gap_vec,
-                                foldername1,foldername2)
-    sweeper.Save_results()
-    #sweeper.Scan_wavl(0)
-
-
 

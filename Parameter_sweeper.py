@@ -39,23 +39,6 @@ class Parameter_sweeper():
     def Load_index_data(self,filename_n1,filename_n0):
         n1_dict = {}
         n0_dict = {}
-        # with open(filename_n1,'r') as f_n1:
-        #     data = f_n1.readlines()
-        #     for line in data:
-        #         line = line.replace('\n','')
-        #         wavl = int(line.split(' ')[0].strip())
-        #         n_re = float(line.split(' ')[1].strip())
-        #         n_im = float(line.split(' ')[2].strip())
-        #         #n1_dict.append(complex(n_re,n_im))
-        #         n1_dict[wavl] = n_re
-        # with open(filename_n0,'r') as f_n0:
-        #     data = f_n0.readlines()
-        #     for line in data:
-        #         wavl = int(line.split()[0])
-        #         n_re = float(line.split()[1])
-        #         n_im = float(line.split()[2])
-        #         #n0_dict.append(complex(n_re,n_im))
-        #         n0_dict[wavl] = n_re
         wavl_nm = np.linspace(1000,2000,1001).astype(int)
         wavl_um = wavl_nm / 1000
         n_Si3N4 = (1+3.0249/(1-(0.1353406/wavl_um)**2)+
@@ -151,7 +134,7 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
-    def Scan_gap(self):
+    def Scan_gap(self,calc_needed = True):
         for gap_idx in range(len(self.gap)):
             gap_x, gap_y = self.gap[gap_idx]
 
@@ -161,10 +144,11 @@ class Parameter_sweeper():
                                 + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
             filename_coupled = "../" + filename_coupled.replace(".","_")+ ".txt"
             filename_uncoupled = "../" + filename_uncoupled.replace(".","_") + ".txt"
-            beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
-                        filename_uncoupled=filename_uncoupled,
-                        filename_coupled=filename_coupled,
-                        plot = False)
+            if calc_needed:
+                beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
+                            filename_uncoupled=filename_uncoupled,
+                            filename_coupled=filename_coupled,
+                            plot = False)
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
                                      filename_uncoupled, filename_coupled,

@@ -166,8 +166,8 @@ if __name__ == '__main__':
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    # wavl_arr = np.linspace(1500,1600,11)
-    wavl_arr = np.linspace(1535,1565,31)
+    wavl_arr = np.linspace(1500,1600,11)
+    # wavl_arr = np.linspace(1535,1565,31)
 
     # param_filename = "./Param_vertical.csv"
     param_filename = "./Param_L_inner_8.csv"
@@ -175,9 +175,9 @@ if __name__ == '__main__':
     # param_filename = "./Param_800x400.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 2.5
+    start_gap_x   = 2.9
     end_gap_x     = 3.5
-    num_of_gaps_x = 11
+    num_of_gaps_x = 7
     gap_arr_x = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
-    # sweeper.Scan_gap()
+    sweeper.Scan_gap(calc_needed=True)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -203,8 +203,8 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um,
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                             filename_uncoupled_gap5um, filename_coupled_gap5um,
-                             param_filename, Lumerical_data_exist=True,
-                             filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                          filename_uncoupled_gap5um, filename_coupled_gap5um,
+    #                          param_filename, Lumerical_data_exist=True,
+    #                          filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
 
