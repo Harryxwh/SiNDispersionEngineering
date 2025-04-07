@@ -26,7 +26,7 @@ set("mesh order",2);
 set("material",material_core);
 
 #Lower Ring
-copy(0,-(gap+Ly_WG),0);
+copy(0,(gap+Ly_WG),0);
 
 #BOX
 addrect;
@@ -82,10 +82,23 @@ set("bend radius",bend_radius);
 
 addmesh;
 set("name","mesh_waveguide");
-set("x min", - Lx_WG1 -1*um);
-set("x max", + Lx_WG2 +1*um );
-set("y min", -gap-0.3*um);
-set("y max", Ly_WG1+0.3*um);
+set("x min", - Lx_WG -1*um);
+set("x max", Lx_WG +1*um );
+set("y min", gap - 1*um);
+set("y max", gap + 1*um);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",0);
+set("set maximum mesh step",1);
+set("dx",10*nm);
+set("dy",10*nm);
+
+addmesh;
+set("name","mesh_waveguide");
+set("x min", - Lx_WG -1*um);
+set("x max", Lx_WG + 1*um );
+set("y min", Ly_WG - 0.8*um);
+set("y max", Ly_WG + 0.8*um);
 set("override x mesh",1);
 set("override y mesh",1);
 set("override z mesh",0);
