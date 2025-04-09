@@ -11,8 +11,7 @@ deleteall;
     #system("mkdir "+folder_path);
 #}
 
-
-#Upper Ring
+#Lower Ring
 addrect;
 set("name","Upper Ring");
 set("x",0);
@@ -25,8 +24,8 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
-#Lower Ring
-copy(0,-(gap+Ly_WG),0);
+#Upper Ring
+copy(0,+(gap+Ly_WG),0);
 
 #BOX
 addrect;
