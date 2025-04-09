@@ -101,6 +101,8 @@ class Parameter_sweeper():
             beta_uncoupled = np.array([[Coupled_WG.beta_ang_1,
                                         Coupled_WG.beta_ang_2]]) - Coupled_WG.beta_ave
             beta_coupled, coeff_of_supermodes = Coupled_WG.Find_supermodes()
+            Coupled_WG.Export_kappa()
+
             # For anti-sym modes, delta beta is always positive
             if beta_coupled[0,0] < 0:
                 beta_coupled[0] = np.flip(beta_coupled[0])
@@ -134,14 +136,14 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
-    def Scan_gap(self,calc_needed = True):
+    def Scan_gap(self,calc_needed = True, num_of_wavl_pts = 100):
         for gap_idx in range(len(self.gap)):
             gap_x, gap_y = self.gap[gap_idx]
 
             filename_uncoupled = "data/beta_uncoupled_gap_"\
-                                + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
+                                + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
             filename_coupled   = "data/beta_coupled_gap_" \
-                                + "{:.1f}".format(gap_x) +"_" + "{:.1f}".format(gap_y)
+                                + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
             filename_coupled = "../" + filename_coupled.replace(".","_")+ ".txt"
             filename_uncoupled = "../" + filename_uncoupled.replace(".","_") + ".txt"
             if calc_needed:
@@ -152,5 +154,6 @@ class Parameter_sweeper():
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
                                      filename_uncoupled, filename_coupled,
-                                     self.param_filename,self.filename_result)
+                                     self.param_filename,self.filename_result,
+                                     num_of_pts = num_of_wavl_pts)
 

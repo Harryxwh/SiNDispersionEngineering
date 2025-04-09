@@ -28,12 +28,13 @@ class Data_analyzer(Coupled_Waveguides):
                  filename_lumerical = "",
                  num_of_pts = 100):
         self.load_param(param_filename)
+        self.num_of_pts = num_of_pts
         self.wavl_arr = wavl_arr/1000   #unit: um
-        self.wavl_arr_intp = np.linspace(np.min(self.wavl_arr),np.max(self.wavl_arr),num_of_pts)
+        self.wavl_arr_intp = np.linspace(np.min(self.wavl_arr),np.max(self.wavl_arr),
+                                         self.num_of_pts)  #unit: um
         self.gap_arr = gap_arr
         self.plot_curve = plot_curve
         self.Lumerical_data_exist = Lumerical_data_exist
-        self.num_of_pts = num_of_pts
 
         # beta_uncoupled_arr: shape = (?,4)   format: (wavl(unit:um),beta_WG1, beta_WG2, beta_ave(unit:rad/rad))
         self.beta_uncoupled_arr = self.Load_uncoupled_data(filename_uncoupled)
@@ -280,6 +281,10 @@ class Data_analyzer(Coupled_Waveguides):
         if self.Lumerical_data_exist:
             Y_data = Y_data + (self.beta_coupled_lumerical_arr,)
 
+        gap_info = "gap_"+"{:.2f}".format(self.gap_arr[0])+\
+                    ","+"{:.2f}".format(self.gap_arr[1])
+        gap_info = gap_info.replace(".","_")
+
         # Plot propagation const curve
         if self.plot_curve:
             Plot_curve(Y_data,
@@ -306,14 +311,9 @@ class Data_analyzer(Coupled_Waveguides):
             wavl_arr_lumerical_intp = np.linspace(np.min(wavl_arr_lumerical),
                                                 np.max(wavl_arr_lumerical),
                                                 num_of_pts)
-            D_lumerical_supermode_1_intp, D_lumerical_supermode_2_intp =self.calc_Dispersion_using_data_from_FDE(wavl_arr_lumerical,
-                                                wavl_arr_lumerical_intp)
+            D_lumerical_supermode_1_intp, D_lumerical_supermode_2_intp =self.calc_Dispersion_using_data_from_FDE(wavl_arr_lumerical, wavl_arr_lumerical_intp)
             Y_data = Y_data + (np.c_[wavl_arr_lumerical_intp[2:-2],
                       D_lumerical_supermode_1_intp,D_lumerical_supermode_2_intp],)
-
-        gap_info = "gap_"+"{:.2f}".format(self.gap_arr[0])+\
-                    ","+"{:.2f}".format(self.gap_arr[1])
-        gap_info = gap_info.replace(".","_")
 
         # Plot dispersion curve
         if self.plot_curve:
@@ -332,8 +332,9 @@ class Data_analyzer(Coupled_Waveguides):
         gap_label = "({:.2f}".format(self.gap_arr[0])+\
                     ","+"{:.2f})".format(self.gap_arr[1])
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
+
         self.write_csv(gap= gap_label, wavl_arr= self.wavl_arr_intp[2:-2],
-                       D_WG=D_WG_ave, D_supermode=D_supermode_2_intp,
-                       filename_D_iso="./results/Dispersion_isolated_WG.csv",
-                       filename_D_supermode="./results/Dispersion_coupled_WG.csv")
+                    D_WG=D_WG_ave, D_supermode=D_supermode_2_intp,
+                    filename_D_iso="./results/Dispersion_isolated_WG.csv",
+                    filename_D_supermode="./results/Dispersion_coupled_WG.csv")
 

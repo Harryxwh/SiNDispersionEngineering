@@ -96,7 +96,8 @@ class Coupled_Waveguides():
     def Convert_ticks(self,xticks_prev,yticks_prev):
         shift_x,shift_y = self.Calculate_shift
         yticks      = self.Convert_to_um(yticks_prev,axis='y') + self.FDE_y_min \
-                        - (self.FDE_height_padded - self.FDE_height)/2
+                        - (self.FDE_height_padded - self.FDE_height)/2 \
+                        + self.Convert_to_um(shift_y,axis='y')
         yticks      = np.round(yticks, 2)
         xticks      = self.Convert_to_um(xticks_prev - np.max(xticks_prev)/2
                                          ,axis='x') -\
@@ -358,11 +359,7 @@ class Coupled_Waveguides():
                 ax[plot_idx,idx].invert_yaxis()
                 ax[plot_idx,idx].tick_params(axis='both',labelsize=fontsize)
 
-            # plt.rcParams["font.family"] = fonttype
-            # plt.rcParams.update({'font.size': fontsize})
-            # plt.legend()
-
-        # plt.title(title)
+        plt.title(title)
         plt.savefig(save_name+title+".jpg",dpi=dpi)
         plt.close()
         # plt.show()
@@ -473,7 +470,6 @@ class Coupled_Waveguides():
         F = np.array([[Alpha_a + self.delta_beta, -Kappa_a],
                       [-Kappa_b, Alpha_b - self.delta_beta]])
 
-        F = F
         return F
 
     def Find_supermodes(self):
@@ -495,3 +491,10 @@ class Coupled_Waveguides():
         print("\n")
         return Eigenvalues, Eigenvectors
 
+    def Export_kappa(self,filename_kappa="./results/straight_WG_Kappa.txt"):
+        K_12 = self.Kappa(1,2,self.N2)
+        K_21 = self.Kappa(2,1,self.N1)
+        print("K_12 = {:.6f}".format(K_12))
+        print("K_21 = {:.6f}".format(K_21))
+        with open(filename_kappa,"a") as f:
+            f.write("{:.1f}".format(self.wavelength) + ",{:.6f}".format(K_12) + ",{:.6f}\n".format(K_21))

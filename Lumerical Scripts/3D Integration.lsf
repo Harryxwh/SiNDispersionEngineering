@@ -1,0 +1,162 @@
+um = 1e-6;
+nm = 1e-9;
+
+# ULL SiN
+Lx_WG_ULL_SiN = 2.8*um; #width of the WG
+Ly_WG_ULL_SiN = 0.1*um; #height of the WG
+Lz_WG_ULL_SiN = 10*um; #length of the WG
+
+# RDL SiN
+Lx_WG_RDL_SiN = 2.8*um; #width of the WG
+Ly_WG_RDL_SiN = 0.1*um; #height of the WG
+Lz_WG_RDL_SiN = 10*um; #length of the WG
+
+# RDL SiN
+Lx_WG_Si      = 269*nm; #width of the WG
+Ly_WG_RDL_SiN = 200*nm; #height of the WG
+Lz_WG_RDL_SiN = 10*um; #length of the WG
+
+Lx_Cladding = 50*um;     #width of the Cladding
+Lz_Cladding = 50*um;     #length of the Cladding
+
+Ly_Cladding_top = 10*um;        #height of the Cladding on top
+Ly_Cladding_Si_RDL = 0.5*um;    #height of the Cladding between Si and RDL SiN
+Ly_Cladding_RDL_ULL = 4*um;     #height of the Cladding between Si and RDL SiN
+
+Lx_Buried_Oxide = 50*um;    #width of the BOX
+Ly_Buried_Oxide = 15*um;    #height of the BOX
+Lz_Buried_Oxide = 50*um;    #length of the BOX
+
+Lx_FDE = 30*um;
+Ly_FDE_min = -15*um;
+Ly_FDE_max = 5*um;
+
+mesh_step = 200e-9;
+mesh_cells_x = 1500;
+mesh_cells_y = 1000;
+
+gap = 5*um;
+?"gap = "+num2str(gap*1e6)+" um";
+
+bend_waveguide = 0;
+bend_radius =  1000*um;
+?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+
+material_core = "Si3N4 (Silicon Nitride) - Luke";
+material_cladding = "SiO2 (Glass) - Palik";
+
+Max_Mode_Idx = 2;
+
+folder_name = "DoubleRingSuperModes_vertical_L_inner_2_8um_gap_5um" + "\\";
+
+# Define wavelength of simulation
+wavelength_min  = 1400*nm;
+wavelength_max  = 1700*nm;
+num_sweep_pt    = 16;
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+
+switchtolayout;
+deleteall;
+
+# Create folders if they do not yet exist
+#for(wavl_idx=1:num_sweep_pt){
+    #format short;
+    #wavelength = wavelength_array(wavl_idx);
+
+    #folder_path = folder_name + num2str(wavelength*1e9);
+    #?"mkdir "+folder_path;
+    #system("mkdir "+folder_path);
+#}
+
+
+#Upper Ring
+addrect;
+set("name","Upper Ring");
+set("x",0);
+set("x span",Lx_WG);
+set("y min",0);
+set("y max",Ly_WG);
+#set("z",0);
+#set("z span",Lz_WG1);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
+
+#Lower Ring
+copy(0,-(gap+Ly_WG),0);
+
+#BOX
+addrect;
+set("name","BOX");
+set("x",0);
+set("x span",Lx_Buried_Oxide);
+set("y max",0);
+set("y min",-Ly_Buried_Oxide);
+#set("z",0);
+#set("z span",Lz_Buried_Oxide);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+#Cladding
+addrect;
+set("name","Cladding");
+set("x",0);
+set("x span",Lx_Cladding);
+set("y min",0);
+set("y max",Ly_Cladding);
+#set("z",0);
+#set("z span",Lz_Cladding);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+addfde;
+set("solver type","2D Z normal");
+set("x",0*um);
+set("y",0);
+set("x span",Lx_FDE);
+set("y min",Ly_FDE_min);
+set("y max",Ly_FDE_max);
+#set("x min bc","Metal");
+#set("x max bc","Metal");
+#set("y min bc","Metal");
+#set("y max bc","Metal");
+set("x min bc","PML");
+set("x max bc","PML");
+set("y min bc","PML");
+set("y max bc","PML");
+set("define x mesh by","number of mesh cells");
+set("define y mesh by","number of mesh cells");
+set("mesh cells x",mesh_cells_x);
+set("mesh cells y",mesh_cells_y);
+
+set("bent waveguide",1);
+set("bend location x", 0);
+set("bend location y", 0);
+set("bend location z", 0);
+set("bend radius",bend_radius);
+
+addmesh;
+set("name","mesh_waveguide");
+set("x min", - Lx_WG1 -1*um);
+set("x max", + Lx_WG2 +1*um );
+set("y min", -gap-0.3*um);
+set("y max", Ly_WG1+0.3*um);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",0);
+set("set maximum mesh step",1);
+set("dx",10*nm);
+set("dy",10*nm);
+
+Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+
+# results combined in one file
+info_total_filename  = folder_name + "Lumerical_supermodes_results.txt";
+if(fileexists(info_total_filename)){rm(info_total_filename);}
+
+#print header
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+ ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+

@@ -85,6 +85,7 @@ X_label: name of the X axis
 Y_label: name of the Y axis
 xticks: original xticks to be renamed
 xtickslabel: new labels for xticks
+yticks: used to control the number of ticks on y axis
 title: title of the whole figure
 marker_list: format:["",".","o"...] each markers corresp to a y data
 linestyle_list: format:["-","--","dotted"...] each linestyle corresp to a y data
@@ -92,15 +93,19 @@ colors_list: format:['tab:red','tab:orange'...] each color corresp to a y data
 figsize: format: (x,y)
 fontsize: size of all the text
 ylim: set the y range of the whole figure to (-ylim,ylim)
+fill_color: whether to fill color in region of y>0
 bbox_to_anchor: coordinates for the legends
-dpi: 300 bby default
+text: used to show comments
+dpi: 300 by default
 '''
 def Plot_curve(data_arr,Y_legends,
                 X_label,Y_label,
                 title,
                 marker_list,linestyle_list,colors_list,
                 figsize=(10,6),fontsize=10,
-                xticks=[],xtickslabel=[],ylim=-1,
+                xticks=[],xtickslabel=[],
+                yticks = [],
+                ylim=-1, fill_color=False,
                 bbox_to_anchor=(),text="",
                 dpi=300,plot_show=False):
     #Plot parameters
@@ -127,14 +132,26 @@ def Plot_curve(data_arr,Y_legends,
                             linestyle=linestyle_list[idx], linewidth=plot_linewidth)
             idx = idx + 1
 
-    if len(xtickslabel)>1:
-        plt.xticks(xticks,xtickslabel,fontproperties = fonttype, size = fontsize)
-    # plt.yticks(yticks,ytickslabel,fontproperties = fonttype, size = fontsize)
     plt.rcParams["font.family"] = fonttype
     plt.rcParams.update({'font.size': fontsize})
     plt.title(title)
+
+    ymin = plt.ylim()[0]
+    ymax = plt.ylim()[1]
+
     if ylim>0:
         plt.ylim(-ylim,ylim)
+    if fill_color:
+        plt.axhspan(0, ymax, color='green', alpha=0.1, label='Anamolous Dispersion Region')
+        plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
+        plt.ylim(ymin,ymax)
+
+    if len(xtickslabel)>1:
+        plt.xticks(xticks,xtickslabel,fontproperties = fonttype, size = fontsize)
+    if len(yticks)>1:
+        yticks = ticks_arr([ymin,ymax])
+        plt.yticks(yticks,yticks,fontproperties = fonttype, size = fontsize)
+
     plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
     plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
     if len(bbox_to_anchor)>0:
@@ -151,3 +168,18 @@ def Plot_curve(data_arr,Y_legends,
         plt.show()
 
 
+# Gives a better array of ticks than the defaults
+def ticks_arr(data_arr):
+    # For data>0, the largest base. E.g. if max = 7875, largest base is 1000.
+    largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
+    ticks_arr = np.arange(largest_divider_max,
+                          (int(np.max(data_arr)/largest_divider_max)+1)*largest_divider_max,
+                          largest_divider_max)
+    # if min<0, than for data<0, the largest base.
+    if np.min(data_arr)<0:
+        largest_divider_min = 10**int(np.log10(-np.min(data_arr)))
+        nega_arr = np.arange(int(np.min(data_arr)/largest_divider_min)*largest_divider_min,
+                             0, largest_divider_min)
+        ticks_arr = np.r_[nega_arr,np.array([0,]),ticks_arr]
+
+    return ticks_arr
