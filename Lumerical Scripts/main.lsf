@@ -106,7 +106,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-#Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
 ################################################
@@ -164,7 +164,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
 ################################################
@@ -347,7 +347,7 @@ Scanning_Beta_ang_Lx_for_given_gap_func;
 
 ################################################
 # setting up parameters for double ring supermodes simulation
-# DoubleRingSuperModes_L_inner_2_8_gap_5um_1540_1560_21wavls
+# DoubleRingSuperModes_L_inner_8_gap_2_75um_1500_1600_21wavls
 ################################################
 um = 1e-6;
 nm = 1e-9;
@@ -355,12 +355,12 @@ nm = 1e-9;
 #Geometry
 
 #Inner Ring
-Lx_WG1 = 2.8*um; #width of the WG
+Lx_WG1 = 8*um; #width of the WG
 Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
 #Outer Ring
-Lx_WG2 = 1.793*um; #width of the WG     #gap_x = 5um
+Lx_WG2 = 2.808*um; #width of the WG
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG
 
@@ -380,7 +380,7 @@ mesh_step = 200e-9;
 mesh_cells_x = 2800;
 mesh_cells_y = 1000;
 
-gap = 5*um;
+gap = 2.75*um;
 
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
@@ -392,7 +392,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 2;
 
-folder_name = "DoubleRingSuperModes_L_inner_2_8_gap_5um_1540_1560_21wavls" + "\\";
+folder_name = "DoubleRingSuperModes_L_inner_8_gap_2_75um_1500_1600_21wavls" + "\\";
 
 # Define wavelength of simulation
 wavelength_min = 1500*nm;
@@ -403,10 +403,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_of_Double_Rings_Horizontal_func;
-
-
-# main_L_inner_8um_gap_around_4;
+Find_Modes_of_Double_Rings_Horizontal_func;
 
 
 ################################################
@@ -423,7 +420,7 @@ Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um; #length of the WG
 
 Lx_Cladding = 50*um;    #width of the Cladding
-Ly_Cladding = 15*um;     #height of the Cladding
+Ly_Cladding = 10*um;     #height of the Cladding
 Lz_Cladding = 50*um;    #length of the Cladding
 
 Lx_Buried_Oxide = 50*um;    #width of the BOX
@@ -431,14 +428,14 @@ Ly_Buried_Oxide = 15*um;  #height of the BOX
 Lz_Buried_Oxide = 50*um;    #length of the BOX
 
 Lx_FDE = 30*um;
-Ly_FDE_min = -8*um;
-Ly_FDE_max = 10*um;
+Ly_FDE_min = -15*um;
+Ly_FDE_max = 5*um;
 
 mesh_step = 200e-9;
 mesh_cells_x = 1500;
-mesh_cells_y = 900;
+mesh_cells_y = 1000;
 
-gap = 2*um;
+gap = 5*um;
 ?"gap = "+num2str(gap*1e6)+" um";
 
 bend_waveguide = 0;
@@ -461,5 +458,5 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_of_Double_Rings_Vertical_func;
+# Find_Modes_of_Double_Rings_Vertical_func;
 
