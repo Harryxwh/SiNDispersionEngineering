@@ -106,7 +106,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_single_Ring_multi_wavl_XYZ_func;
+#Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
 ################################################
@@ -164,7 +164,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_single_Ring_multi_wavl_XYZ_func;
+Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 
 ################################################
@@ -423,7 +423,7 @@ Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um; #length of the WG
 
 Lx_Cladding = 50*um;    #width of the Cladding
-Ly_Cladding = 10*um;     #height of the Cladding
+Ly_Cladding = 15*um;     #height of the Cladding
 Lz_Cladding = 50*um;    #length of the Cladding
 
 Lx_Buried_Oxide = 50*um;    #width of the BOX
@@ -431,14 +431,14 @@ Ly_Buried_Oxide = 15*um;  #height of the BOX
 Lz_Buried_Oxide = 50*um;    #length of the BOX
 
 Lx_FDE = 30*um;
-Ly_FDE_min = -15*um;
-Ly_FDE_max = 5*um;
+Ly_FDE_min = -8*um;
+Ly_FDE_max = 10*um;
 
 mesh_step = 200e-9;
 mesh_cells_x = 1500;
-mesh_cells_y = 1000;
+mesh_cells_y = 900;
 
-gap = 5*um;
+gap = 2*um;
 ?"gap = "+num2str(gap*1e6)+" um";
 
 bend_waveguide = 0;
@@ -461,5 +461,5 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_of_Double_Rings_Vertical_func;
+Find_Modes_of_Double_Rings_Vertical_func;
 
