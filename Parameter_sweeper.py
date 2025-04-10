@@ -136,6 +136,7 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
+    # calc_needed: True for initial run, False if beta files already exist.
     def Scan_gap(self,calc_needed = True, num_of_wavl_pts = 100):
         for gap_idx in range(len(self.gap)):
             gap_x, gap_y = self.gap[gap_idx]

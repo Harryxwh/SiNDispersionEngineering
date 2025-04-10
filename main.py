@@ -128,15 +128,15 @@ if __name__ == '__main__':
     # Scan the gap between waveguides
     ########################################
 
-    ################## Concentric double rings ###################
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "InnerRing_L_inner_8um_1535_1565_31wavls"
+    ############## Concentric double rings L_inner 8um ###########
+    foldername1 = "../data/Mode Profiles/"+\
+                    "InnerRing_L_inner_8um_1535_1565_31wavls"
     foldername1 = "../data/Mode Profiles/"+\
                     "InnerRing_L_inner_8um_1400_1700_31wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
     foldername2 = "../data/Mode Profiles/"+\
                     "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
 
@@ -144,26 +144,30 @@ if __name__ == '__main__':
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_20x10um_800x400cells_21_wavls"
+    ##############################################################
 
+    ############# Concentric double rings L_inner 2.8um ###########
     # foldername1 = "../data/Mode Profiles/"+\
     #               "InnerRing_L_inner_2_8um_1540_1560_11wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #               "OuterRingDesigned_L_inner_2_8um_gap_8um_1540_1560_21wavls"
+    ##############################################################
 
-    foldername1 = "../data/Mode Profiles/"+\
-                  "Straight_WG_width_2_8um_1480_1620_15wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                  "Straight_WG_width_2_8um_1480_1620_15wavls"
-
-    ############################################################
-
-    ################## Vertical double rings ###################
+    ############# Parallel double rings L 2.8um ##################
     # foldername1 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    #               "Straight_WG_width_2_8um_1480_1620_15wavls"
     # foldername2 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
-    ############################################################
+    #               "Straight_WG_width_2_8um_1480_1620_15wavls"
+    ##############################################################
 
+    ################## Vertical double rings #####################
+    foldername1 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    ##############################################################
+
+    ################## Horizontal double rings ###################
     filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_gap_4um.txt"
     filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_gap_4um.txt"
 
@@ -173,29 +177,33 @@ if __name__ == '__main__':
     filename_lumerical_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/Lumerical_supermodes_results_gapx_4um.txt"
     filename_lumerical_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/Lumerical_supermodes_results_gapx_5um.txt"
 
-    filename_uncoupled_gapy_5um = "results/beta_uncoupled_gapy_5um.txt"
-    filename_coupled_gapy_5um   = "results/beta_coupled_gapy_5um.txt"
+    ##############################################################
+
+    ################## Vertical double rings #####################
+    filename_uncoupled_gapy_2um = "results/beta_uncoupled_gap_0_000_2_000.txt"
+    filename_coupled_gapy_2um   = "results/beta_coupled_gap_0_000_2_000.txt"
+    ##############################################################
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    # wavl_arr = np.linspace(1500,1600,11)
+    wavl_arr = np.linspace(1500,1600,11)
     # wavl_arr = np.linspace(1535,1565,31)
-    wavl_arr = np.linspace(1480,1620,15)
+    # wavl_arr = np.linspace(1480,1620,15)
 
-    # param_filename = "./Param_vertical.csv"
+    param_filename = "./Param_vertical.csv"
     # param_filename = "./Param_L_inner_8.csv"
     # param_filename = "./Param_L_inner_2_8.csv"
     # param_filename = "./Param_800x400.csv"
-    param_filename = "./Param_straight_2_8.csv"
+    # param_filename = "./Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 2.4
-    end_gap_x     = 2.4
+    start_gap_x   = 0
+    end_gap_x     = 0
     num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0
-    end_gap_y     = 0
+    start_gap_y   = 2
+    end_gap_y     = 2
     num_of_gaps_y = 1
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
@@ -209,7 +217,8 @@ if __name__ == '__main__':
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
-    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
+
+    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -217,12 +226,9 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um,
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap5um, filename_coupled_gap5um,
-    #                          param_filename, Lumerical_data_exist=True,
-    #                          filename_lumerical=filename_lumerical_gap5um,num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gapy_5um, filename_coupled_gapy_5um,
-    #                          param_filename, Lumerical_data_exist=False,
-    #                          num_of_pts=100)
+
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                             filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
+                             param_filename, Lumerical_data_exist=False,
+                             num_of_pts=100)
 

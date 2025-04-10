@@ -13,7 +13,7 @@ deleteall;
 
 #Lower Ring
 addrect;
-set("name","Upper Ring");
+set("name","Lower Ring");
 set("x",0);
 set("x span",Lx_WG);
 set("y min",0);
@@ -25,7 +25,8 @@ set("mesh order",2);
 set("material",material_core);
 
 #Upper Ring
-copy(0,+(gap+Ly_WG),0);
+copy(0,+(gap_y+Ly_WG),0);
+set("name","Upper Ring")
 
 #BOX
 addrect;
@@ -83,7 +84,7 @@ addmesh;
 set("name","mesh_waveguide");
 set("x min", - Lx_WG1 -1*um);
 set("x max", + Lx_WG2 +1*um );
-set("y min", -gap-0.3*um);
+set("y min", -gap_y-0.3*um);
 set("y max", Ly_WG1+0.3*um);
 set("override x mesh",1);
 set("override y mesh",1);
@@ -99,7 +100,7 @@ info_total_filename  = folder_name + "Lumerical_supermodes_results.txt";
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 
 #print header
-write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+ ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius*1e6)+ "um, gap_x = " + num2str(gap_x*1e6)+ "um, gap_y = " + num2str(gap_y*1e6) + "um, num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
 for(wavl_idx=1:num_sweep_pt){
