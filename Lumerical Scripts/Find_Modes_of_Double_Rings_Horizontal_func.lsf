@@ -166,15 +166,15 @@ for(wavl_idx=1:num_sweep_pt){
         }
 
         #write mode profile matrix
-        for (j=1:6){
-            format short;
-            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
-            if(fileexists(filename)){
-                rm(filename);
-            }
-            format long; # set num2str() to return 16 digits of precision
-            write(filename,num2str(Comp_list{j}));
-        }
+        #for (j=1:6){
+            #format short;
+            #filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            #if(fileexists(filename)){
+                #rm(filename);
+            #}
+            #format long; # set num2str() to return 16 digits of precision
+            #write(filename,num2str(Comp_list{j}));
+        #}
 
     }
 }
