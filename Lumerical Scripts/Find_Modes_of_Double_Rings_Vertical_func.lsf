@@ -12,9 +12,9 @@ deleteall;
 #}
 
 
-#Upper Ring
+#Lower Ring
 addrect;
-set("name","Upper Ring");
+set("name","Lower Ring");
 set("x",0);
 set("x span",Lx_WG);
 set("y min",0);
@@ -25,7 +25,8 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
-#Lower Ring
+#Upper Ring
+set("name","Upper Ring");
 copy(0,(gap+Ly_WG),0);
 
 #BOX
@@ -97,8 +98,8 @@ addmesh;
 set("name","mesh_waveguide");
 set("x min", - Lx_WG -1*um);
 set("x max", Lx_WG + 1*um );
-set("y min", Ly_WG - 0.8*um);
-set("y max", Ly_WG + 0.8*um);
+set("y min", Ly_WG - 1*um);
+set("y max", Ly_WG + 1*um);
 set("override x mesh",1);
 set("override y mesh",1);
 set("override z mesh",0);
