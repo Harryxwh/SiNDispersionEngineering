@@ -372,11 +372,17 @@ mesh_cells_y = 200;
 Lx_upper            = 2.8*um;
 bend_radius_upper   = 1000*um;
 
-# Parameter sweep of width of outer ring
+# Parameter sweep of width of lower ring
 Lx_start        = 2.1*um;
 Lx_end          = 3.5*um;
 num_of_pts_Lx   = 15;
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
+
+# Parameter sweep of gapx between rings
+gapx_start      = 2.1*um;
+gapx_end        = 3.5*um;
+num_of_pts_gapx = 15;
+gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
 
 # Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
@@ -384,10 +390,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 # Results array and file
 beta_ang_array  = zeros(num_of_pts_Lx);
-format short;
-filename = "Scanning_Lx_lower_around_2_8um.txt";
-if(fileexists(filename)){rm(filename);}
-write(filename,"Lx,beta_ang");
+filename = "Scanning_L_lower_and_gapx.txt";
 
 ################################################
 # conduct simulation
