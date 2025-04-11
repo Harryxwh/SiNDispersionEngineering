@@ -11,23 +11,27 @@ deleteall;
     #system("mkdir "+folder_path);
 #}
 
-
 #Lower Ring
 addrect;
 set("name","Lower Ring");
 set("x",0);
-set("x span",Lx_WG);
+set("x span",Lx_WG1);
 set("y min",0);
 set("y max",Ly_WG);
-#set("z",0);
-#set("z span",Lz_WG1);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
 #Upper Ring
+addrect;
 set("name","Upper Ring");
-copy(0,(gap+Ly_WG),0);
+set("x",0);
+set("x span",Lx_WG2);
+set("y min",gap);
+set("y max",gap+Ly_WG);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
 
 #BOX
 addrect;

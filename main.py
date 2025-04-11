@@ -180,8 +180,10 @@ if __name__ == '__main__':
     ##############################################################
 
     ################## Vertical double rings #####################
-    filename_uncoupled_gapy_2um = "results/beta_uncoupled_gap_0_000_2_000.txt"
-    filename_coupled_gapy_2um   = "results/beta_coupled_gap_0_000_2_000.txt"
+    filename_uncoupled_gapy_2um = "../data/beta_uncoupled_gap_0_000_2_000.txt"
+    filename_coupled_gapy_2um   = "../data/beta_coupled_gap_0_000_2_000.txt"
+    filename_uncoupled_gapy_0_2um = "../data/beta_uncoupled_gap_0_000_0_200.txt"
+    filename_coupled_gapy_0_2um   = "../data/beta_coupled_gap_0_000_0_200.txt"
     ##############################################################
 
     # unit: nm
@@ -218,7 +220,7 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
-    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
+    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -227,9 +229,9 @@ if __name__ == '__main__':
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
 
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
-    #                          param_filename, Lumerical_data_exist=True,
-    #                          filename_lumerical="./results/Lumerical_supermodes_results_L_2_8um_gapy_2um.txt",
-    #                          num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                             filename_uncoupled_gapy_0_2um, filename_coupled_gapy_0_2um,
+                             param_filename, Lumerical_data_exist=True,
+                             filename_lumerical="./results/Lumerical_supermodes_results_L_inner_2_8um_gap_0_2um.txt",
+                             num_of_pts=100)
 

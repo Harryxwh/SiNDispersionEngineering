@@ -64,7 +64,6 @@ class Data_analyzer(Coupled_Waveguides):
         beta_uncoupled_arr = np.array(beta_uncoupled_arr)
         return beta_uncoupled_arr
 
-
     def Load_coupled_data_CMT(self, filename_coupled, wavl_arr=[], wavl_idx = -1, print_coeffi = False):
         wavl_min = np.min(wavl_arr)
         beta_coupled_arr = []
@@ -88,6 +87,7 @@ class Data_analyzer(Coupled_Waveguides):
                 beta_coupled_arr.append(beta_coupled)
                 coeff_supermode_1_arr.append(coeff_supermode_1)
                 coeff_supermode_2_arr.append(coeff_supermode_2)
+
         beta_coupled_arr = np.array(beta_coupled_arr, dtype = np.float64)
         coeff_supermode_1_arr = np.array(coeff_supermode_1_arr, dtype = np.complex64)
         coeff_supermode_2_arr = np.array(coeff_supermode_2_arr, dtype = np.complex64)
