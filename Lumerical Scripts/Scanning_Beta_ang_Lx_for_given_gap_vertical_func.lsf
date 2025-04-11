@@ -14,8 +14,6 @@ deleteall;
 for (gapx_idx = 1:num_of_pts_gapx){
     gapx = gapx_arr(gapx_idx);
     ?"gap_x = " + num2str(gapx*1e6) + " um";
-    format short;
-    write(filename,num2str(gapx*1e6)+",");
     for (Lx_idx = 1:num_of_pts_Lx)
     {
         Lx_lower = Lx_arr(Lx_idx);
@@ -115,16 +113,17 @@ for (gapx_idx = 1:num_of_pts_gapx){
         Beta_ang    = real(2*pi/wavelength * neff * bend_radius);
         beta_ang_array(Lx_idx) = Beta_ang;
 
-        format long;
+        format short;
         ?"Beta_ang = " + num2str(real(Beta_ang));
-
+        Beta_ang_info     = num2str(gapx*1e6)+",";
+        
+        format long;
         if(Lx_idx == 1){
             Beta_ang_info = Beta_ang_info + num2str(Beta_ang);
         }
         else{
             Beta_ang_info = Beta_ang_info + ","+ num2str(Beta_ang);
         }
-        
         ?"\n";
     }
     write(filename,Beta_ang_info);
