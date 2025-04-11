@@ -168,6 +168,61 @@ if(fileexists(log_filename)){rm(log_filename);}
 
 ################################################
 # setting up parameters for Eigenmode calc
+# LowerRing_L_upper_2_8um_L_2_7um_1500_1600_11wavls
+################################################
+um = 1e-6;
+nm = 1e-9;
+
+#Geometry
+Lx_WG = 2.7*um;   #width of the WG
+Ly_WG = 0.1*um;     #height of the WG
+Lz_WG = 50*um;      #length of the WG
+
+Lx_Cladding = 50*um; #width of the WG
+Ly_Cladding = 2*um; #height of the WG
+Lz_Cladding = 50*um; #length of the WG
+
+Lx_Buried_Oxide = 50*um;
+Ly_Buried_Oxide = 14.5*um;
+Lz_Buried_Oxide = 50*um;
+
+Lx_FDE = 30*um;
+Ly_FDE_min = -8*um;
+Ly_FDE_max = 4*um;
+
+mesh_step = 200e-9;
+mesh_cells_x = 2000;
+mesh_cells_y = 800;
+
+Lx_upper            = 2.8*um;
+bend_radius_upper   = 1000*um;
+
+bend_radius =  bend_radius_upper - (Lx_upper-Lx_WG)/2;
+?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+
+# Define wavelength of simulation
+wavelength_min = 1500*nm;
+wavelength_max = 1600*nm;
+num_sweep_pt   = 11;
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+
+#Material
+material_core = "Si3N4 (Silicon Nitride) - Luke";
+material_cladding = "SiO2 (Glass) - Palik";
+
+Max_Mode_Idx = 1;
+
+folder_name = "LowerRing_L_upper_2_8um_L_2_7um_1500_1600_11wavls" + "\\";
+log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
+if(fileexists(log_filename)){rm(log_filename);}
+
+################################################
+# conduct simulation
+################################################
+Find_Modes_single_Ring_multi_wavl_XYZ_func;
+
+################################################
+# setting up parameters for Eigenmode calc
 # InnerRing_L_inner_2_8um_1500_1600_21wavls_2000x800
 ################################################
 
@@ -310,8 +365,8 @@ Lx_FDE      = 30*um;
 Ly_FDE_min  = -8*um;
 Ly_FDE_max  = 4*um;
 
-mesh_cells_x = 1000;
-mesh_cells_y = 400;
+mesh_cells_x = 500;
+mesh_cells_y = 200;
 
 # Parameter of the inner ring is fixed
 Lx_upper            = 2.8*um;
@@ -337,7 +392,7 @@ write(filename,"Lx,beta_ang");
 ################################################
 # conduct simulation
 ################################################
-Scanning_Beta_ang_Lx_for_given_gap_vertical_func;
+#Scanning_Beta_ang_Lx_for_given_gap_vertical_func;
 
 
 ################################################
@@ -414,7 +469,7 @@ Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um;  #length of the WG
 
 #Lower Ring
-Lx_WG = 2.8*um; #width of the WG
+Lx_WG = 2.7*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um;  #length of the WG
 
@@ -457,4 +512,4 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_of_Double_Rings_Vertical_func;
+#Find_Modes_of_Double_Rings_Vertical_func;
