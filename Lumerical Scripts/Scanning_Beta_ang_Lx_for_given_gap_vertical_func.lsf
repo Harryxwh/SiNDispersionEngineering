@@ -115,15 +115,10 @@ for (gapx_idx = 1:num_of_pts_gapx){
 
         format short;
         ?"Beta_ang = " + num2str(real(Beta_ang));
-        Beta_ang_info     = num2str(gapx*1e6)+",";
+        Beta_ang_info     = num2str(gapx*1e6);
         
         format long;
-        if(Lx_idx == 1){
-            Beta_ang_info = Beta_ang_info + num2str(Beta_ang);
-        }
-        else{
-            Beta_ang_info = Beta_ang_info + ","+ num2str(Beta_ang);
-        }
+        Beta_ang_info = Beta_ang_info + ","+ num2str(Beta_ang);
         ?"\n";
     }
     write(filename,Beta_ang_info);
