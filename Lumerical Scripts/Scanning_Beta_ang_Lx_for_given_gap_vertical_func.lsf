@@ -1,22 +1,17 @@
 # Write header in result file
 format short;
 if(fileexists(filename)){rm(filename);}
-header = "gap/L_lower"
+header = "gap/L_lower";
 for (Lx_idx = 1:num_of_pts_Lx){
     Lx_lower = Lx_arr(Lx_idx);
-    if (Lx_idx==1){
-        header = header + num2str(Lx_lower*1e6);
-    }
-    else{
-        header = header + "," + num2str(Lx_lower*1e6);
-    }
+    header = header + "," + num2str(Lx_lower*1e6);
 }
 write(filename,header);
 
 switchtolayout;
 deleteall;
 
-for (gapx_idx = 1:num_of_pts_gap){
+for (gapx_idx = 1:num_of_pts_gapx){
     gapx = gapx_arr(gapx_idx);
     ?"gap_x = " + num2str(gapx*1e6) + " um";
     format short;
@@ -124,13 +119,14 @@ for (gapx_idx = 1:num_of_pts_gap){
         ?"Beta_ang = " + num2str(real(Beta_ang));
 
         if(Lx_idx == 1){
-            Beta_ang_info = num2str(Beta_ang);
+            Beta_ang_info = Beta_ang_info + num2str(Beta_ang);
         }
         else{
-            Beta_ang_info = ","+ num2str(Beta_ang);
+            Beta_ang_info = Beta_ang_info + ","+ num2str(Beta_ang);
         }
-        write(filename,Beta_ang_info);
+        
         ?"\n";
     }
-    write(filename,"\n");
+    write(filename,Beta_ang_info);
+    #write(filename,"\n");
 }

@@ -219,7 +219,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-Find_Modes_single_Ring_multi_wavl_XYZ_func;
+#Find_Modes_single_Ring_multi_wavl_XYZ_func;
 
 ################################################
 # setting up parameters for Eigenmode calc
@@ -365,8 +365,8 @@ Lx_FDE      = 30*um;
 Ly_FDE_min  = -8*um;
 Ly_FDE_max  = 4*um;
 
-mesh_cells_x = 500;
-mesh_cells_y = 200;
+mesh_cells_x = 250;
+mesh_cells_y = 100;
 
 # Parameter of the inner ring is fixed
 Lx_upper            = 2.8*um;
@@ -375,13 +375,13 @@ bend_radius_upper   = 1000*um;
 # Parameter sweep of width of lower ring
 Lx_start        = 2.1*um;
 Lx_end          = 3.5*um;
-num_of_pts_Lx   = 15;
+num_of_pts_Lx   = 8;
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
 # Parameter sweep of gapx between rings
-gapx_start      = 2.1*um;
-gapx_end        = 3.5*um;
-num_of_pts_gapx = 15;
+gapx_start      = 1*um;
+gapx_end        = 3*um;
+num_of_pts_gapx = 9;
 gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
 
 # Material
@@ -395,7 +395,7 @@ filename = "Scanning_L_lower_and_gapx.txt";
 ################################################
 # conduct simulation
 ################################################
-#Scanning_Beta_ang_Lx_for_given_gap_vertical_func;
+Scanning_Beta_ang_Lx_for_given_gap_vertical_func;
 
 
 ################################################
