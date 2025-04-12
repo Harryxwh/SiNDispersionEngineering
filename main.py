@@ -204,8 +204,8 @@ if __name__ == '__main__':
     num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0.2
-    end_gap_y     = 0.2
+    start_gap_y   = 2
+    end_gap_y     = 2
     num_of_gaps_y = 1
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
@@ -230,8 +230,8 @@ if __name__ == '__main__':
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
 
     Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                             filename_uncoupled_gapy_0_2um, filename_coupled_gapy_0_2um,
+                             filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
                              param_filename, Lumerical_data_exist=True,
-                             filename_lumerical="./results/Lumerical_supermodes_results_L_inner_2_8um_gap_0_2um.txt",
+                             filename_lumerical="./results/Lumerical_supermodes_results_L_inner_2_8um_gap_2um.txt",
                              num_of_pts=100)
 
