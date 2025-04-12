@@ -3,57 +3,54 @@ deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-
-# Geometry
 #Lx_WG = 2.8*um; #width of the WG        #Inner WG
 #Lx_WG = 1.989*um; #width of the WG     #gap_x = 4um
 #Lx_WG = 1.798*um; #width of the WG     #gap_x = 5um
 #Lx_WG = 1.547*um; #width of the WG       #gap_x = 8um
 #Lx_WG = 1.460*um; #width of the WG       #gap_x = 10um
-#Lx_WG = 2.437*um; #height of the WG
-Lx_WG = 8*um; #height of the WG
+
+Lx_WG = 1*um; #height of the WG
+#Lx_WG = 8*um; #height of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
 
 Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
+Ly_Cladding = 15*um; #height of the WG
 Lz_Cladding = 50*um; #length of the WG
 
 Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 14.5*um;
+Ly_Buried_Oxide = 15*um;
 Lz_Buried_Oxide = 50*um;
 
-Lx_FDE = 30*um;
+Lx_FDE = 20*um;
 Ly_FDE_min = -8*um;
-Ly_FDE_max = 4*um;
+Ly_FDE_max = 8*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 2000;
-mesh_cells_y = 800;
+mesh_cells_x = 500;
+mesh_cells_y = 400;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;
-gap = 5*um;
-?"gap = "+num2str(gap*1e6)+" um";
+gap = 3*um;
 
-#bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
-bend_radius =  bend_radius_inner;
+bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
+#bend_radius =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
 Max_Mode_Idx = 1;
 
 # Define wavelength of simulation
-#wavelength_min = 1550*nm;
-#wavelength_max = 1550*nm;
-num_sweep_pt = 10;
-#wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
-wavelength_array = [linspace(1.535,1.539,5),linspace(1.561,1.565,5)]*um;
+wavelength_min = 1550*nm;
+wavelength_max = 1550*nm;
+num_sweep_pt = 1;
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
-folder_name = "Single_Ring" + "\\";
+folder_name = "OuterRingDesigned_L_inner_8um_gap_3um_2762nm_1500_1600_21wavls" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 

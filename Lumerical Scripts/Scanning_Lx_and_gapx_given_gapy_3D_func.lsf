@@ -1,0 +1,131 @@
+# Write header in result file
+format short;
+if(fileexists(filename)){rm(filename);}
+header = "gap/L_lower";
+for (Lx_idx = 1:num_of_pts_Lx){
+    Lx_lower = Lx_arr(Lx_idx);
+    header = header + "," + num2str(Lx_lower*1e6);
+}
+write(filename,header);
+
+switchtolayout;
+deleteall;
+
+for (gapx_idx = 1:num_of_pts_gapx){
+    gapx = gapx_arr(gapx_idx);
+    ?"gap_x = " + num2str(gapx*1e6) + " um";
+    format short;
+    Beta_ang_info     = num2str(gapx*1e6)+",";
+    for (Lx_idx = 1:num_of_pts_Lx)
+    {
+        Lx_lower = Lx_arr(Lx_idx);
+        ?"Lx_lower = " + num2str(Lx_lower*1e6)+" um";
+
+        # Calc the bending radius based on the waveguide width of lower ring
+        bend_radius = bend_radius_upper - gapx;
+        ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+
+        switchtolayout;
+        deleteall;
+
+        #WG
+        addrect;
+        set("name","WG");
+        set("x", 0);
+        set("x span",Lx_lower);
+        set("y min",0);
+        set("y max",Ly_lower);
+        #set("z",0);
+        #set("z span",Lz_lower);
+        set("override mesh order from material database",true);
+        set("mesh order",2);
+        set("material",material_core);
+
+        #BOX
+        addrect;
+        set("name","BOX");
+        set("x",0);
+        set("x span",Lx_Buried_Oxide);
+        set("y max",0);
+        set("y min",-Ly_Buried_Oxide);
+        #set("z",0);
+        #set("z span",Lz_Buried_Oxide);
+        set("override mesh order from material database",true);
+        set("mesh order",3);
+        set("material",material_cladding);
+
+        #Cladding
+        addrect;
+        set("name","Cladding");
+        set("x",0);
+        set("x span",Lx_Cladding);
+        set("y min",0);
+        set("y max",Ly_Cladding);
+        #set("z",0);
+        #set("z span",Lz_Cladding);
+        set("override mesh order from material database",true);
+        set("mesh order",3);
+        set("material",material_cladding);
+
+        addfde;
+        set("solver type","2D Z normal");
+        set("x",0*um);
+        set("y",0);
+        set("x span",Lx_FDE);
+        set("y min",Ly_FDE_min);
+        set("y max",Ly_FDE_max);
+        #set("x min bc","Metal");
+        #set("x max bc","Metal");
+        #set("y min bc","Metal");
+        #set("y max bc","Metal");
+        set("x min bc","PML");
+        set("x max bc","PML");
+        set("y min bc","PML");
+        set("y max bc","PML");
+        set("define x mesh by","number of mesh cells");
+        set("define y mesh by","number of mesh cells");
+        set("mesh cells x",mesh_cells_x);
+        set("mesh cells y",mesh_cells_y);
+
+        set("bent waveguide",1);
+        set("bend location x", 0);
+        set("bend location y", 0);
+        set("bend location z", 0);
+        set("bend radius",bend_radius);
+
+        addmesh;
+        set("name","mesh_waveguide");
+        set("x min",-Lx_lower/2 - 0.5*um);
+        set("x max",-Lx_lower/2 + 0.5*um );
+        set("y min",0-0.5*um);
+        set("y max",Ly_lower + 0.5*um);
+        set("override x mesh",1);
+        set("override y mesh",1);
+        set("override z mesh",0);
+        set("set maximum mesh step",1);
+        set("dx",20*nm);
+        set("dy",20*nm);
+
+        findmodes;
+
+        mode_idx    = 1;    #fundamental mode
+        neff        = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+
+        #NOTE: Angular propagation constant is the value with physical meaning. It is important to notice that the definition of neff here is dependent on the bending radius R.
+        Beta_ang    = real(2*pi/wavelength * neff * bend_radius);
+        beta_ang_array(Lx_idx) = Beta_ang;
+ 
+        ?"Beta_ang = " + num2str(real(Beta_ang));
+
+        format long;
+        if(Lx_idx == 1){
+            Beta_ang_info = Beta_ang_info + num2str(Beta_ang);
+        }
+        else{
+            Beta_ang_info = Beta_ang_info + ","+ num2str(Beta_ang);
+        }
+        ?"\n";
+    }
+    write(filename,Beta_ang_info);
+    #write(filename,"\n");
+}
