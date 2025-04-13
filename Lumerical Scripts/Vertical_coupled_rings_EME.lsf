@@ -5,50 +5,54 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_upper = 10*um;   #length of the straight part of racetrack
+Lx_upper = 12*um;   #length of the straight part of racetrack
 Ly_upper = 2.8*um;  #width of the WG
 Lz_upper = 0.1*um;  #height of the WG
 z_upper  = 10*um;
 
-Lx_lower = 10*um;   #length of the straight part of racetrack
+Lx_lower = 12*um;   #length of the straight part of racetrack
 Ly_lower = 2.8*um;  #width of the WG
 Lz_lower = 0.1*um;  #height of the WG
 z_lower  = 0*um;
 
-Lx_exten = 2*um;    #extension length in x direction
+Lx_exten = 4*um;    #extension length in x direction
 
 #RDL WG
-Lx_RDL = 50*um;   #length of the WG
+Lx_RDL = 10*um;   #length of the WG
 Ly_RDL = 2.8*um;  #width of the WG
 Lz_RDL = 0.1*um;  #height of the WG
 z_RDL  = 5*um;
 
 Lx_Cladding = 50*um; #length of the Cladding
 Ly_Cladding = 50*um; #width of the Cladding
-Lz_Cladding = 15*um;  #height of the Cladding
+Lz_Cladding = 20*um;  #height of the Cladding
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 50*um;
 Lz_Buried_Oxide = 15*um;
 
 #EME settings
-EME_x_min = -15     *um;
-EME_x_max = 15      *um;
+EME_x_min = -Lx_upper/2;
+EME_x_max = Lx_upper/2;
 EME_y_min = -10     *um;
 EME_y_max = 10      *um;
-EME_z_min = -12.5   *um;
-EME_z_max = 12.5    *um;
+EME_z_min = -6      *um;
+EME_z_max = 18      *um;
 
-group_1_len = 3*um;
+group_1_len = 4*um;
 group_2_len = 4*um;
-group_3_len = 3*um;
+group_3_len = 4*um;
 
-Port_y_span = 10 * um;
-Port_z_span = 8 * um;
+group_1_cell_num = 5;
+group_2_cell_num = 1;
+group_3_cell_num = 5;
 
-mesh_step = 200e-9;
-mesh_cells_x = 2000;
-mesh_cells_y = 800;
+Port_y_span = 15 * um;
+Port_z_span = 14 * um;
+
+mesh_step = 100*nm;
+#mesh_cells_x = 2000;
+#mesh_cells_y = 800;
 
 radius_Upper    =   4 *um;    #radius of the Upper racetrack
 radius_Lower    =   4 *um;    #radius of the lower ring
@@ -56,24 +60,43 @@ bend_radius_inner = 1000*um;
 bend_radius  =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
-Max_Mode_Idx = 1;
+Num_of_trial_modes = 50;
 
 # Define wavelength of EMEulation
 #wavelength_min = 1550*nm;
 #wavelength_max = 1550*nm;
-num_sweep_pt = 1;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+#num_sweep_pt = 1;
+#wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength              = 1550*nm;
+material_fitting_span   = 0.5*um;
 
 # Material
-material_core     = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_cladding = copymaterial("SiO2 (Glass) - Palik");   # Background material
+setmaterial(material_cladding, "max coefficients", 20);
+setmaterial(material_cladding, "tolerance", 1e-5);
+setmaterial(material_cladding, "make fit passive", 1);
+setmaterial(material_cladding, "improve numerical stability", 1);
+setmaterial(material_cladding, "imaginary weight", 0.001);
+setmaterial(material_cladding, "specify fit range", 1);
+setmaterial(material_cladding, "wavelength min", wavelength - material_fitting_span);
+setmaterial(material_cladding, "wavelength max", wavelength + material_fitting_span);
+
+material_core = copymaterial("Si3N4 (Silicon Nitride) - Luke");  # Waveguide material
+setmaterial(material_core, "max coefficients", 20);
+setmaterial(material_core, "tolerance", 1e-5);
+setmaterial(material_core, "make fit passive", 1);
+setmaterial(material_core, "improve numerical stability", 1);
+setmaterial(material_core, "imaginary weight", 0.001);
+setmaterial(material_core, "specify fit range", 1);
+setmaterial(material_core, "wavelength min", wavelength - material_fitting_span);
+setmaterial(material_core, "wavelength max", wavelength + material_fitting_span);
 alpha             = 0.3;        # display transparency for cladding
 
 folder_name = "Vertical_EME" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
-write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+write(log_filename,"mesh_step = "+num2str(mesh_step));
 write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
 write(log_filename,"Lx_upper = "+num2str(Lx_upper)+"\n");
 write(log_filename,"Lx_lower = "+num2str(Lx_lower)+"\n");
@@ -101,19 +124,20 @@ set("z max",z_upper+ Lz_upper);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
+set("alpha",alpha);
 
 # RDL WG
-addrect;
-set("name","RDL WG");
-set("x",0);
-set("x span",Lx_RDL+Lx_exten);
-set("y",0);
-set("y span",Ly_RDL);
-set("z min",z_RDL);
-set("z max",z_RDL + Lz_RDL);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
+#addrect;
+#set("name","RDL WG");
+#set("x",0);
+#set("x span",Lx_RDL);
+#set("y",0);
+#set("y span",Ly_RDL);
+#set("z min",z_RDL);
+#set("z max",z_RDL + Lz_RDL);
+#set("override mesh order from material database",true);
+#set("mesh order",2);
+#set("material",material_core);
 
 # Lower racetrack Straight part
 addrect;
@@ -128,6 +152,15 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
+# set taper
+gdsimport("nazca_export.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke Copy 1", z_RDL, z_RDL+Lz_RDL);
+select("GDS_LAYER_1111:0");
+set("x",-Lx_RDL/2);
+set("y",0);
+set("z",z_RDL);
+set("z span",Lz_RDL);
+
+
 #BOX
 addrect;
 set("name","BOX");
@@ -135,8 +168,8 @@ set("x",0);
 set("x span",Lx_Buried_Oxide);
 set("y",0);
 set("y span",Ly_Buried_Oxide);
-#set("z max",0);
-#set("z min",-Lz_Buried_Oxide);
+set("z max",0);
+set("z min",-Lz_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
@@ -149,8 +182,8 @@ set("x",0);
 set("x span",Lx_Cladding);
 set("y",0);
 set("y span",Ly_Cladding);
-#set("z min",0);
-#set("z max",Lz_Cladding);
+set("z min",0);
+set("z max",Lz_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
@@ -166,66 +199,79 @@ set("y max", EME_y_max);
 set("z min", EME_z_min);
 set("z max", EME_z_max);
 set("energy conservation", "make passive");
+set("use relative coordinates",0);
 set("display cells", 1);
-
 # set cell properties
 set("number of cell groups",3);
 set("group spans",[group_1_len; group_2_len; group_3_len]);
-set("cells",[10; 5; 10]);
+set("cells",[4; 1; 4]);
 set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
-
+# mesh settings
 set("define y mesh by", "maximum mesh step");
 set("define z mesh by", "maximum mesh step");
 set("dy", mesh_step);
 set("dz", mesh_step);
 
+setactivesolver("EME");
+
 set("allow custom eigensolver settings", 1);
-
 select("EME::Cells::cell_1");
-seteigensolver("number of trial modes", num_mode);
-seteigensolver("use max index", 0);
-seteigensolver("n", search_mode_around);
+seteigensolver("number of trial modes", Num_of_trial_modes);
+seteigensolver("use max index", 1);
+#seteigensolver("n", 1.996);
 
-# set up ports: port 1
+# set up port upper left
 select("EME::Ports::port_1");
-set("name","input_upper");
-set("use full simulation span",1);
-set("x",-Lx_upper/2);
+set("use full simulation span",0);
+set("use relative coordinates",0);
+#set("x",-Lx_upper/2);
 set("y",0);
 set("y span",Port_y_span);
-set("z",z_upper);
+#set("z",z_upper);
+set("z",z_upper-z_RDL);
 set("z span",Port_z_span);
 set("mode selection","fundamental mode");
 
-# set up ports: port 2
+# set up port lower left
 select("EME::Ports::port_2");
-set("name","input_lower");
-set("use full simulation span",1);
-set("x",-Lx_lower/2);
+set("port location","left");
+set("use full simulation span",0);
+set("use relative coordinates",0);
 set("y",0);
 set("y span",Port_y_span);
-set("z",z_lower);
+set("z",z_lower-z_RDL);
 set("z span",Port_z_span);
+
 set("mode selection","fundamental mode");
 
-select("EME::Ports");
-addport;
-# set up port
-set("name","output_upper");
-set("x",Lx_upper/2);
+# set up port upper right
+addemeport;
+select("EME::Ports::port_3");
+set("port location","right");
+set("use full simulation span",0);
+set("use relative coordinates",0);
 set("y",0);
 set("y span",Port_y_span);
-set("z",z_upper);
+set("z",z_upper-z_RDL);
 set("z span",Port_z_span);
 
-addport;
-# set up port
-set("name","output_lower");
-set("x",-Lx_lower/2);
+# set up port lower right
+addemeport;
+set("port location","right");
+set("use full simulation span",0);
+set("use relative coordinates",0);
 set("y",0);
 set("y span",Port_y_span);
-set("z",z_lower);
+set("z",z_lower-z_RDL);
 set("z span",Port_z_span);
+
+#addfde;
+#set("solver type","2D X normal");
+#set("x", -Lx_upper/2);
+#set("y",0);
+#set("y span",Port_y_span);
+#set("z",z_upper);
+#set("z span",Port_z_span);
 
 #run;
 #emepropagate;
