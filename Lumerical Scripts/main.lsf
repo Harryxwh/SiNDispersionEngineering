@@ -1,3 +1,7 @@
+# Material
+material_core = "Si3N4 (Silicon Nitride) - Luke";
+material_cladding = "SiO2 (Glass) - Palik";
+
 ################################################
 # setting up parameters for Eigenmode calc
 # Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000
@@ -10,13 +14,13 @@ Lx_WG = 2.8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 20*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um; #width of the cladding
+Ly_Cladding = 20*um; #height of the cladding
+Lz_Cladding = 50*um; #length of the cladding
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 15*um;
-Lz_Buried_Oxide = 50*um;
+Lx_Buried_Oxide = 50*um; #width of the BOX
+Ly_Buried_Oxide = 15*um; #width of the BOX
+Lz_Buried_Oxide = 50*um; #width of the BOX
 
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -10*um;
@@ -37,10 +41,6 @@ wavelength_min      = 1550*nm;
 wavelength_max      = 1700*nm;
 num_sweep_pt        = 16;
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
-
-# Material
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 1;
 
@@ -66,17 +66,19 @@ Lx_WG = 2.7*um;   #width of the WG
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um; #width of the cladding
+Ly_Cladding = 20*um; #height of the cladding
+Lz_Cladding = 50*um; #length of the cladding
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
+Lx_Buried_Oxide = 50*um; #width of the BOX
+Ly_Buried_Oxide = 15*um; #width of the BOX
+Lz_Buried_Oxide = 50*um; #width of the BOX
 
-Lx_FDE = 30*um;
-Ly_FDE_min = -8*um;
-Ly_FDE_max = 4*um;
+Lx_FDE      = 30*um;
+Ly_FDE_min  = -10*um;
+Ly_FDE_max  = 10*um;
+
+y_min = 0*um;
 
 mesh_step = 200e-9;
 mesh_cells_x = 2000;
@@ -94,10 +96,6 @@ wavelength_max = 1600*nm;
 num_sweep_pt   = 11;
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-#Material
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
-
 Max_Mode_Idx = 1;
 
 folder_name = "LowerRing_L_upper_2_8um_L_2_7um_1500_1600_11wavls" + "\\";
@@ -112,7 +110,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 
 ################################################
 # setting up parameters for Finding Lx_lower
-# Scanning_Lx_lower
+# Scanning_L_lower_and_gapx_width
 ################################################
 wavelength  = 1550*nm;
 
@@ -123,29 +121,87 @@ nm = 1e-9;
 Ly_lower = 0.1*um;  #height of the WG
 Lz_lower = 50*um;   #length of the WG
 
-Lx_Cladding = 50*um; #length of the WG
-Ly_Cladding = 8*um;  #width of the WG
-Lz_Cladding = 50*um; #height of the WG
+Lx_Cladding = 50*um; #width of the cladding
+Ly_Cladding = 20*um; #height of the cladding
+Lz_Cladding = 50*um; #length of the cladding
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
+Lx_Buried_Oxide = 50*um; #width of the BOX
+Ly_Buried_Oxide = 15*um; #width of the BOX
+Lz_Buried_Oxide = 50*um; #width of the BOX
 
 Lx_FDE      = 30*um;
-Ly_FDE_min  = -8*um;
-Ly_FDE_max  = 4*um;
+Ly_FDE_min  = -10*um;
+Ly_FDE_max  = 10*um;
 
-mesh_cells_x = 500;
-mesh_cells_y = 200;
+y_min = 0*um;
+
+mesh_cells_x = 600;
+mesh_cells_y = 400;
 
 # Parameter of the upper ring is fixed
 Lx_upper            = 2.8*um;
 bend_radius_upper   = 1000*um;
 
 # Parameter sweep of width of lower ring
-Lx_start        = 1.6*um;
+Lx_start        = 2.5*um;
 Lx_end          = 3.5*um;
-num_of_pts_Lx   = 25;
+num_of_pts_Lx   = 11;
+Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
+
+# Parameter sweep of gapx between rings
+gapx_start      = 2.4*um;
+gapx_end        = 3.5*um;
+num_of_pts_gapx = 12;
+gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
+
+# Results array and file
+beta_ang_array  = zeros(num_of_pts_Lx);
+filename = "Scanning_L_lower_and_gapx_width_2_4_3_5_gapx_2_5_3_5.txt";
+
+################################################
+# conduct simulation
+################################################
+Scanning_Lx_and_gapx_given_gapy_3D_func;
+
+
+################################################
+# setting up parameters for Finding Lx_lower
+# Scanning_L_lower_and_gapx_width
+################################################
+wavelength  = 1550*nm;
+
+#Geometry
+um = 1e-6;
+nm = 1e-9;
+
+Ly_lower = 0.1*um;  #height of the WG
+Lz_lower = 50*um;   #length of the WG
+
+Lx_Cladding = 50*um; #width of the cladding
+Ly_Cladding = 20*um; #height of the cladding
+Lz_Cladding = 50*um; #length of the cladding
+
+Lx_Buried_Oxide = 50*um; #width of the BOX
+Ly_Buried_Oxide = 15*um; #width of the BOX
+Lz_Buried_Oxide = 50*um; #width of the BOX
+
+Lx_FDE      = 30*um;
+Ly_FDE_min  = -10*um;
+Ly_FDE_max  = 10*um;
+
+y_min = 0*um;
+
+mesh_cells_x = 600;
+mesh_cells_y = 400;
+
+# Parameter of the upper ring is fixed
+Lx_upper            = 2.8*um;
+bend_radius_upper   = 1000*um;
+
+# Parameter sweep of width of lower ring
+Lx_start        = 3.6*um;
+Lx_end          = 4.2*um;
+num_of_pts_Lx   = 7;
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
 # Parameter sweep of gapx between rings
@@ -154,13 +210,9 @@ gapx_end        = 3.5*um;
 num_of_pts_gapx = 31;
 gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
 
-# Material
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
-
 # Results array and file
 beta_ang_array  = zeros(num_of_pts_Lx);
-filename = "Scanning_L_lower_and_gapx.txt";
+filename = "Scanning_L_lower_and_gapx_width_0_5_3_5_gapx_3_6_4_2.txt";
 
 ################################################
 # conduct simulation
@@ -185,17 +237,19 @@ Lx_WG = 2.7*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um;  #length of the WG
 
-Lx_Cladding = 50*um;    #width of the Cladding
-Ly_Cladding = 10*um;    #height of the Cladding
-Lz_Cladding = 50*um;    #length of the Cladding
+Lx_Cladding = 50*um; #width of the cladding
+Ly_Cladding = 20*um; #height of the cladding
+Lz_Cladding = 50*um; #length of the cladding
 
-Lx_Buried_Oxide = 50*um;    #width of the BOX
-Ly_Buried_Oxide = 15*um;    #height of the BOX
-Lz_Buried_Oxide = 50*um;    #length of the BOX
+Lx_Buried_Oxide = 50*um; #width of the BOX
+Ly_Buried_Oxide = 15*um; #width of the BOX
+Lz_Buried_Oxide = 50*um; #width of the BOX
 
-Lx_FDE = 30*um;
-Ly_FDE_min = -10*um;
-Ly_FDE_max = 8*um;
+Lx_FDE      = 30*um;
+Ly_FDE_min  = -10*um;
+Ly_FDE_max  = 10*um;
+
+y_min = 0*um;
 
 mesh_step = 200e-9;
 mesh_cells_x = 500;
@@ -207,9 +261,6 @@ gap = 0.2*um;
 bend_waveguide = 0;
 bend_radius =  1000*um;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
-
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 2;
 
