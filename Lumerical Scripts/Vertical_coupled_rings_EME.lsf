@@ -15,6 +15,8 @@ Ly_lower = 2.8*um;  #width of the WG
 Lz_lower = 0.1*um;  #height of the WG
 z_lower  = 0*um;
 
+Lx_exten = 2*um;    #extension length in x direction
+
 #RDL WG
 Lx_RDL = 50*um;   #length of the WG
 Ly_RDL = 2.8*um;  #width of the WG
@@ -29,12 +31,20 @@ Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 50*um;
 Lz_Buried_Oxide = 15*um;
 
+#EME settings
 EME_x_min = -15     *um;
 EME_x_max = 15      *um;
 EME_y_min = -10     *um;
 EME_y_max = 10      *um;
 EME_z_min = -12.5   *um;
 EME_z_max = 12.5    *um;
+
+group_1_len = 3*um;
+group_2_len = 4*um;
+group_3_len = 3*um;
+
+Port_y_span = 10 * um;
+Port_z_span = 8 * um;
 
 mesh_step = 200e-9;
 mesh_cells_x = 2000;
@@ -83,7 +93,7 @@ write(log_filename,"Lx_RDL = "+num2str(Lx_RDL)+"\n");
 addrect;
 set("name","Upper racetrack Straight part");
 set("x",0);
-set("x span",Lx_upper);
+set("x span",Lx_upper+Lx_exten);
 set("y",0);
 set("y span",Ly_upper);
 set("z min",z_upper);
@@ -92,27 +102,11 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
-# Left half ring of the Upper racetrack
-addring;
-set("name","Upper racetrack - left");
-set("theta start",90);
-set("theta stop",270);
-set("inner radius",radius_Upper - Ly_upper/2);
-set("outer radius",radius_Upper + Ly_upper/2);
-set("x", -Lx_upper/2);
-
-# Right half ring of the Upper racetrack
-copy;
-set("name","Upper racetrack - right");
-set("theta start",-90);
-set("theta stop",90);
-set("x", Lx_upper/2);
-
 # RDL WG
 addrect;
 set("name","RDL WG");
 set("x",0);
-set("x span",Lx_RDL);
+set("x span",Lx_RDL+Lx_exten);
 set("y",0);
 set("y span",Ly_RDL);
 set("z min",z_RDL);
@@ -125,7 +119,7 @@ set("material",material_core);
 addrect;
 set("name","Lower racetrack Straight part");
 set("x",0);
-set("x span",Lx_lower);
+set("x span",Lx_lower+Lx_exten);
 set("y",0);
 set("y span",Ly_lower);
 set("z min",z_lower);
@@ -133,22 +127,6 @@ set("z max",z_lower + Lz_lower);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
-
-# Left half ring of the Lower racetrack
-addring;
-set("name","Lower racetrack - left");
-set("theta start",90);
-set("theta stop",270);
-set("inner radius",radius_Lower - Ly_lower/2);
-set("outer radius",radius_Lower + Ly_lower/2);
-set("x", -Lx_Lower/2);
-
-# Right half ring of the Lower racetrack
-copy;
-set("name","Lower racetrack - right");
-set("theta start",-90);
-set("theta stop",90);
-set("x", Lx_Lower/2);
 
 #BOX
 addrect;
@@ -192,99 +170,62 @@ set("display cells", 1);
 
 # set cell properties
 set("number of cell groups",3);
-set("group spans",[3e-6; 10e-6; 3e-6]);
-set("cells",[1; 19; 1]);
-set("subcell method",[0; 1; 0]);   # 0 = none,  1 = CVCS
+set("group spans",[group_1_len; group_2_len; group_3_len]);
+set("cells",[10; 5; 10]);
+set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
 
 set("define y mesh by", "maximum mesh step");
 set("define z mesh by", "maximum mesh step");
 set("dy", mesh_step);
 set("dz", mesh_step);
+
 set("allow custom eigensolver settings", 1);
+
 select("EME::Cells::cell_1");
 seteigensolver("number of trial modes", num_mode);
 seteigensolver("use max index", 0);
 seteigensolver("n", search_mode_around);
-seteigensolver("bent waveguide", 1);
-seteigensolver("bend radius", bend_radius);
-seteigensolver("bend orientation", bend_orientation);
-seteigensolver("bend location", "user specified");
-seteigensolver("bend location x", 0);
-seteigensolver("bend location y", -coupler_gap/2-ring_width/2);
-seteigensolver("bend location z", ring_thick/2);
 
-set("bent waveguide",1);
-set("bend location x", 0);
-set("bend location y", 0);
-set("bend location z", 0);
-set("bend radius",bend_radius);
+# set up ports: port 1
+select("EME::Ports::port_1");
+set("name","input_upper");
+set("use full simulation span",1);
+set("x",-Lx_upper/2);
+set("y",0);
+set("y span",Port_y_span);
+set("z",z_upper);
+set("z span",Port_z_span);
+set("mode selection","fundamental mode");
 
-# Create arrays to store results
-neff_array = zeros(num_sweep_pt);
-Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+# set up ports: port 2
+select("EME::Ports::port_2");
+set("name","input_lower");
+set("use full simulation span",1);
+set("x",-Lx_lower/2);
+set("y",0);
+set("y span",Port_y_span);
+set("z",z_lower);
+set("z span",Port_z_span);
+set("mode selection","fundamental mode");
 
-for(wavl_idx=1:num_sweep_pt){
+select("EME::Ports");
+addport;
+# set up port
+set("name","output_upper");
+set("x",Lx_upper/2);
+set("y",0);
+set("y span",Port_y_span);
+set("z",z_upper);
+set("z span",Port_z_span);
 
-    switchtolayout;
-    wavelength = wavelength_array(wavl_idx);
+addport;
+# set up port
+set("name","output_lower");
+set("x",-Lx_lower/2);
+set("y",0);
+set("y span",Port_y_span);
+set("z",z_lower);
+set("z span",Port_z_span);
 
-    setnamed("FDE","wavelength",wavelength);
-
-    findmodes;
-
-    format short;
-
-    folder_path = folder_name + num2str(wavelength*1e9);
-    info_filename = folder_path+ "\Mode_info.txt";
-    if(fileexists(info_filename)){rm(info_filename);}
-
-    #print header
-    write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
-
-    for (mode_idx=1:Max_Mode_Idx){
-
-        format short;
-        neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
-        ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
-        loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
-        polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
-
-        beta_ang = real(2*pi/wavelength * bend_radius * neff);
-
-        Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
-        Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
-        Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
-        Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
-        Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
-        Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
-
-        Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
-        info = num2str(mode_idx) +",";
-
-        format long;
-        info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
-        write(info_filename,info);
-
-        #Fundamental mode
-        if(mode_idx == 1){
-            wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
-            neff_log = "Effective index: " + num2str(real(neff));
-            beta_log = "beta_ang: " + num2str(beta_ang);
-            ?wave_log;
-            ?neff_log;
-            ?beta_log;
-            write(log_filename,wave_log + "\n" + neff_log + "\n" + beta_log + "\n");
-        }
-        #write mode profile matrix
-        for (j=1:6){
-            format short;
-            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
-            if(fileexists(filename)){
-                rm(filename);
-            }
-        format long; # set num2str() to return 16 digits of precision
-        write(filename,num2str(Comp_list{j}));
-        }
-
-    }
-}
+#run;
+#emepropagate;
