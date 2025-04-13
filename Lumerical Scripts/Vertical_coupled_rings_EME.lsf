@@ -15,7 +15,7 @@ Ly_lower = 2.8*um;  #width of the WG
 Lz_lower = 0.1*um;  #height of the WG
 z_lower  = 0*um;
 
-Lx_exten = 6*um;    #extension length in x direction
+Lx_exten = 4*um;    #extension length in x direction
 
 #RDL WG
 Lx_RDL = 10*um;   #length of the WG
@@ -39,16 +39,20 @@ EME_y_max = 10      *um;
 EME_z_min = -6      *um;
 EME_z_max = 18      *um;
 
-group_1_len = 3*um;
-group_2_len = 6*um;
-group_3_len = 3*um;
+group_1_len = 4*um;
+group_2_len = 4*um;
+group_3_len = 4*um;
+
+group_1_cell_num = 5;
+group_2_cell_num = 1;
+group_3_cell_num = 5;
 
 Port_y_span = 15 * um;
 Port_z_span = 14 * um;
 
 mesh_step = 100*nm;
-mesh_cells_x = 2000;
-mesh_cells_y = 800;
+#mesh_cells_x = 2000;
+#mesh_cells_y = 800;
 
 radius_Upper    =   4 *um;    #radius of the Upper racetrack
 radius_Lower    =   4 *um;    #radius of the lower ring
@@ -120,19 +124,20 @@ set("z max",z_upper+ Lz_upper);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
+set("alpha",alpha);
 
 # RDL WG
-addrect;
-set("name","RDL WG");
-set("x",0);
-set("x span",Lx_RDL);
-set("y",0);
-set("y span",Ly_RDL);
-set("z min",z_RDL);
-set("z max",z_RDL + Lz_RDL);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
+#addrect;
+#set("name","RDL WG");
+#set("x",0);
+#set("x span",Lx_RDL);
+#set("y",0);
+#set("y span",Ly_RDL);
+#set("z min",z_RDL);
+#set("z max",z_RDL + Lz_RDL);
+#set("override mesh order from material database",true);
+#set("mesh order",2);
+#set("material",material_core);
 
 # Lower racetrack Straight part
 addrect;
@@ -146,6 +151,15 @@ set("z max",z_lower + Lz_lower);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
+
+# set taper
+gdsimport("nazca_export.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke Copy 1", z_RDL, z_RDL+Lz_RDL);
+select("GDS_LAYER_1111:0");
+set("x",-Lx_RDL/2);
+set("y",0);
+set("z",z_RDL);
+set("z span",Lz_RDL);
+
 
 #BOX
 addrect;
