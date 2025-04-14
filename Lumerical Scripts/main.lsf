@@ -276,3 +276,18 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 # conduct simulation
 ################################################
 #Find_Modes_of_Double_Rings_Vertical_func;
+
+
+################################################
+# setting up parameters
+# Scan_len_taper_RDL
+################################################
+um = 1e-6;
+nm = 1e-9;
+
+len_taper_RDL_start     =   0.5 *um;
+len_taper_RDL_end       =   10.5  *um;
+num_of_pts_len_taper    =   11;
+len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
+
+Scan_len_taper_RDL;

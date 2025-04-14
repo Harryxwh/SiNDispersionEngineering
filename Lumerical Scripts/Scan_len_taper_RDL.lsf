@@ -1,0 +1,77 @@
+#Geometry
+
+#Upper and Lower WG
+Lx_upper = 16*um;   #length of the straight part of racetrack
+Ly_upper = 2.8*um;  #width of the WG
+Lz_upper = 0.1*um;  #thickness of the WG
+z_upper  = 10*um;
+
+Lx_lower = 16*um;   #length of the straight part of racetrack
+Ly_lower = 2.8*um;  #width of the WG
+Lz_lower = 0.1*um;  #thickness of the WG
+z_lower  = 0*um;
+
+Lx_exten_const = 4*um;    #extension length in x direction
+Lx_offset_const= 1*um;    #offset in x direc
+
+#RDL WG
+width_in_RDL        = 0.8   *um;    # width of the input side of the taper
+width_prop_RDL      = 2.8   *um;    # width of the output side of the taper
+len_prop_RDL        = 8     *um;    # length of the straight propagation region
+Lz_RDL              = 0.1   *um;    # thickness of the WG
+z_RDL               = 5   *um;      # z of the WG
+
+#Cladding and BOX
+Lx_Cladding         = 80*um;    #length of the Cladding
+Ly_Cladding         = 50*um;    #width of the Cladding
+Lz_Cladding         = 20*um;    #thickness of the Cladding
+
+Lx_Buried_Oxide     = 80*um;
+Ly_Buried_Oxide     = 50*um;
+Lz_Buried_Oxide     = 15*um;
+
+#EME settings
+EME_x_min_param = -(Lx_upper + Lx_lower)/2;
+EME_y_min       = -10     *um;
+EME_y_max       = 10      *um;
+EME_z_min       = -6      *um;
+EME_z_max       = 18      *um;
+
+num_of_cells_taper = 10;
+num_of_cells_prop  = 1;
+
+mesh_step = 200*nm;
+
+radius_Upper    =   4 *um;    #radius of the Upper racetrack
+radius_Lower    =   4 *um;    #radius of the lower ring
+bend_radius_inner = 1000*um;
+bend_radius  =  bend_radius_inner;
+?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+
+Num_of_trial_modes = 25;
+
+# Define wavelength of EME simulation
+#wavelength_min     = 1550*nm;
+#wavelength_max     = 1550*nm;
+#num_sweep_pt       = 1;
+#wavelength_array   = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength          = 1550*nm;
+
+# Material
+material_cladding = "SiO2 (Glass) - Palik";
+material_core = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
+
+format short;
+foldername      = "Vertical_EME" + "\\";
+log_filename    = foldername + "log.txt";
+
+for (i = 1: num_of_pts_len_taper)
+{
+    filename        = "len_taper_RDL-"+num2str(len_taper_RDL)+".txt";
+    data_filename   = foldername + filename;
+    if(fileexists(data_filename)){rm(data_filename);}
+
+    len_taper_RDL       = len_taper_RDL_arr(i);     # length of the taper
+
+    Vertical_coupled_rings_EME_func;
+}

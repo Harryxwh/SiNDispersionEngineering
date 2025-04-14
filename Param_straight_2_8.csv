@@ -9,7 +9,7 @@ WG1_x,0,np.float64,unit:um
 WG1_width,2.8,np.float64,unit:um
 WG1_y,-2.95,np.float64,unit:um
 WG1_height,0.1,np.float64,unit:um
-bend_radius_inner,1e9,np.float64,unit:um
+bend_radius_inner,-1000,np.float64,unit:um
 WG2_x,0,np.float64,unit:um
 WG2_width,2.8,np.float64,unit:um
 WG2_y,-2.95,np.float64,unit:um

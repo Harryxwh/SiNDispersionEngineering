@@ -25,8 +25,10 @@ class Coupled_Waveguides():
     n_si        =   3.48
     component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
 
-    def __init__(self, n_core, n_cladding, gap_x, gap_y, wavelength,
-                 name1,name2, ModeIdx1, ModeIdx2, param_file_name,Plot_field,Plot_index):
+    def __init__(self, n_core, n_cladding,
+                 gap_x, gap_y, wavelength,
+                 name1,name2, ModeIdx1, ModeIdx2,
+                 param_file_name,Plot_field,Plot_index):
         self.load_param(param_file_name)
 
         self.n_core = n_core

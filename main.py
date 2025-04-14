@@ -154,17 +154,17 @@ if __name__ == '__main__':
     ##############################################################
 
     ############# Parallel double rings L 2.8um ##################
-    # foldername1 = "../data/Mode Profiles/"+\
-    #               "Straight_WG_width_2_8um_1480_1620_15wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #               "Straight_WG_width_2_8um_1480_1620_15wavls"
+    foldername1 = "../data/Mode Profiles/"+\
+                  "Straight_WG_width_2_8um_1480_1620_15wavls"
+    foldername2 = "../data/Mode Profiles/"+\
+                  "Straight_WG_width_2_8um_1480_1620_15wavls"
     ##############################################################
 
     ################## Vertical double rings #####################
-    foldername1 = "../data/Mode Profiles/"+\
-                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    # foldername1 = "../data/Mode Profiles/"+\
+    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
     ##############################################################
 
     ################## Horizontal double rings ###################
@@ -187,25 +187,25 @@ if __name__ == '__main__':
     ##############################################################
 
     # unit: nm
-    wavl_arr = np.linspace(1400,1700,31)
+    # wavl_arr = np.linspace(1400,1700,31)
     # wavl_arr = np.linspace(1500,1600,11)
     # wavl_arr = np.linspace(1535,1565,31)
-    # wavl_arr = np.linspace(1480,1620,15)
+    wavl_arr = np.linspace(1480,1620,15)
 
-    param_filename = "./Param_vertical.csv"
+    # param_filename = "./Param_vertical.csv"
     # param_filename = "./Param_L_inner_8.csv"
     # param_filename = "./Param_L_inner_2_8.csv"
     # param_filename = "./Param_800x400.csv"
-    # param_filename = "./Param_straight_2_8.csv"
+    param_filename = "./Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 0
-    end_gap_x     = 0
+    start_gap_x   = 2.4
+    end_gap_x     = 2.4
     num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 2
-    end_gap_y     = 2
+    start_gap_y   = 0
+    end_gap_y     = 0
     num_of_gaps_y = 1
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
@@ -220,7 +220,7 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
-    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
+    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -229,9 +229,9 @@ if __name__ == '__main__':
     #                          param_filename, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
 
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                             filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
-                             param_filename, Lumerical_data_exist=True,
-                             filename_lumerical="./results/Lumerical_supermodes_results_L_inner_2_8um_gap_2um.txt",
-                             num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                          filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
+    #                          param_filename, Lumerical_data_exist=True,
+    #                          filename_lumerical="./results/Lumerical_supermodes_results_L_inner_2_8um_gap_2um.txt",
+    #                          num_of_pts=100)
 

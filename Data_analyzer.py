@@ -223,6 +223,9 @@ class Data_analyzer(Coupled_Waveguides):
         R_WG1       = self.bend_radius_inner / 1e6
         R_WG2       = self.bend_radius_outer / 1e6
         R_ave       = (R_WG1+R_WG2)/2
+        # Unbended waveguides
+        if R_ave <0:
+            R_ave = 1
 
         # Interpolating beta_ave in the range of wavl_arr_lumerical
         wavl_arr_lumerical_mask = np.where((self.wavl_arr >= np.min(wavl_arr_lumerical))\

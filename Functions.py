@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
 
 def str2complex(s):
         str = s.replace(" ","")\
@@ -92,7 +93,7 @@ linestyle_list: format:["-","--","dotted"...] each linestyle corresp to a y data
 colors_list: format:['tab:red','tab:orange'...] each color corresp to a y data
 figsize: format: (x,y)
 fontsize: size of all the text
-ylim: set the y range of the whole figure to (-ylim,ylim)
+ylim: format : (ymin, ymax). set the y range of the whole figure
 fill_color: whether to fill color in region of y>0
 bbox_to_anchor: coordinates for the legends
 text: used to show comments
@@ -105,8 +106,10 @@ def Plot_curve(data_arr,Y_legends,
                 figsize=(10,6),fontsize=10,
                 xticks=[],xtickslabel=[],
                 yticks = [],
-                ylim=-1, fill_color=False,
-                bbox_to_anchor=(),text="",
+                xlim = (), ylim = (),
+                fill_color=False,
+                bbox_legend=(),
+                text="", loc_text=(0,5,0.01),
                 dpi=300,plot_show=False):
     #Plot parameters
     figsize = figsize
@@ -136,11 +139,15 @@ def Plot_curve(data_arr,Y_legends,
     plt.rcParams.update({'font.size': fontsize})
     plt.title(title)
 
+    if len(xlim)>0:
+        plt.xlim(xlim[0],xlim[1])
+    xmin = plt.xlim()[0]
+    xmax = plt.xlim()[1]
+    if len(ylim)>0:
+        plt.ylim(ylim[0],ylim[1])
     ymin = plt.ylim()[0]
     ymax = plt.ylim()[1]
 
-    if ylim>0:
-        plt.ylim(-ylim,ylim)
     if fill_color:
         plt.axhspan(0, ymax, color='green', alpha=0.1, label='Anamolous Dispersion Region')
         plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
@@ -154,12 +161,13 @@ def Plot_curve(data_arr,Y_legends,
 
     plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
     plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
-    if len(bbox_to_anchor)>0:
-                plt.legend(bbox_to_anchor=bbox_to_anchor, borderaxespad=0)
+    if len(bbox_legend)>0:
+                plt.legend(bbox_to_anchor=bbox_legend, borderaxespad=0)
     else:
         plt.legend(loc='best')
+
     if not text == "":
-        plt.text(np.quantile(X,0.5),np.quantile(Y_arr,0.01),
+        plt.text(xmin + (xmax-xmin)*loc_text[0], ymin + (ymax-ymin)*loc_text[1],
                 text, bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
     plt.grid(linewidth=grid_linewidth, alpha=0.3)
     plt.tight_layout()
@@ -167,6 +175,11 @@ def Plot_curve(data_arr,Y_legends,
     if plot_show:
         plt.show()
 
+def Interpol(x,y,x_intp):
+    cs = CubicSpline(x, y, bc_type='natural')
+    # bc_type 可选 'natural', 'clamped', 'periodic' 等
+    y_intp = cs(x_intp)
+    return y_intp
 
 # Gives a better array of ticks than the defaults
 def ticks_arr(data_arr):
@@ -183,3 +196,5 @@ def ticks_arr(data_arr):
         ticks_arr = np.r_[nega_arr,np.array([0,]),ticks_arr]
 
     return ticks_arr
+
+
