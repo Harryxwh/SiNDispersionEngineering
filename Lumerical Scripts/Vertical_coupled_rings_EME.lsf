@@ -19,7 +19,7 @@ Lx_exten_const = 4*um;     #extension length in x direction
 Lx_offset_const= 1*um;    #offset in x direc of WGs
 
 #RDL WG
-Lx_RDL = 12*um;   #length of the WG
+Lx_RDL = 10*um;   #length of the WG
 Ly_RDL = 2.8*um;  #width of the WG
 Lz_RDL = 0.2*um;  #height of the WG
 z_RDL  = 3.5*um;
@@ -33,14 +33,14 @@ Ly_Buried_Oxide = 50*um;
 Lz_Buried_Oxide = 15*um;
 
 width_in_upper = 2.8 *um;
-width_prop_upper = 2 *um;
+width_prop_upper = 2.8 *um;
 width_in_RDL   = 0.8 *um;
 width_prop_RDL   = 3 *um;
-len_taper     = 4*um;
+len_taper     = 3*um;
 len_prop      = 8.96*um;
 
 #EME settings
-EME_x_min = -len_taper-len_prop/2;
+EME_x_min_const = -len_taper-len_prop/2;
 
 EME_y_min = -10     *um;
 EME_y_max = 10      *um;
@@ -50,7 +50,10 @@ EME_z_max = 18      *um;
 Port_y_span = 15 * um;
 Port_z_span = 14 * um;
 
-mesh_step = 100*nm;
+num_of_cells_taper = 10;
+num_of_cells_prop  = 1;
+
+mesh_step = 50*nm;
 #mesh_cells_x = 2000;
 #mesh_cells_y = 800;
 
@@ -72,26 +75,8 @@ material_fitting_span   = 0.5*um;
 
 # Material
 material_cladding = "SiO2 (Glass) - Palik";
-#material_cladding = copymaterial("SiO2 (Glass) - Palik");   # Background material
-#setmaterial(material_cladding, "max coefficients", 20);
-#setmaterial(material_cladding, "tolerance", 1e-5);
-#setmaterial(material_cladding, "make fit passive", 1);
-#setmaterial(material_cladding, "improve numerical stability", 1);
-#setmaterial(material_cladding, "imaginary weight", 0.001);
-#setmaterial(material_cladding, "specify fit range", 1);
-#setmaterial(material_cladding, "wavelength min", wavelength - material_fitting_span);
-#setmaterial(material_cladding, "wavelength max", wavelength + material_fitting_span);
-
 material_core = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
-#setmaterial(material_core, "max coefficients", 20);
-#setmaterial(material_core, "tolerance", 1e-5);
-#setmaterial(material_core, "make fit passive", 1);
-#setmaterial(material_core, "improve numerical stability", 1);
-#setmaterial(material_core, "imaginary weight", 0.001);
-#setmaterial(material_core, "specify fit range", 1);
-#setmaterial(material_core, "wavelength min", wavelength - material_fitting_span);
-#setmaterial(material_core, "wavelength max", wavelength + material_fitting_span);
-alpha         = 0.3;        # display transparency for cladding
+
 
 folder_name = "Vertical_EME" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
@@ -160,7 +145,7 @@ set("material",material_core);
 set("enabled",rect_enabled);
 
 #set upper ring
-gdsimport("Upper.gds", "Cell_B", "1111:0", "Si3N4 (Silicon Nitride) - Luke Copy 1", z_upper-Lz_upper/2, z_upper+Lz_upper/2);
+gdsimport("Upper.gds", "Cell_B", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_upper-Lz_upper/2, z_upper+Lz_upper/2);
 select("GDS_LAYER_1111:0");
 set("name","Upper WG GDS");
 set("x",-Lx_upper/2 - Lx_offset);
@@ -170,7 +155,7 @@ set("z span",Lz_upper);
 set("enabled",GDS_enabled);
 
 # set taper
-gdsimport("RDL.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke Copy 1", z_RDL-Lz_RDL/2, z_RDL+Lz_RDL/2);
+gdsimport("RDL.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_RDL-Lz_RDL/2, z_RDL+Lz_RDL/2);
 select("GDS_LAYER_1111:0");
 set("name","RDL WG GDS");
 set("x",-Lx_RDL/2);
@@ -180,7 +165,7 @@ set("z span",Lz_RDL);
 set("enabled",GDS_enabled);
 
 #set lower ring
-gdsimport("Lower.gds", "Cell_C", "1111:0", "Si3N4 (Silicon Nitride) - Luke Copy 1", z_lower-Lz_lower/2, z_lower+Lz_lower/2);
+gdsimport("Lower.gds", "Cell_C", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_lower-Lz_lower/2, z_lower+Lz_lower/2);
 select("GDS_LAYER_1111:0");
 set("name","Lower WG GDS");
 set("x",-Lx_lower/2 + Lx_offset);
@@ -196,6 +181,8 @@ set("enabled",GDS_enabled);
 structure_group_name = "Upper WG";
 Lx_offset   = Lx_offset_const;
 Lx_exten    = Lx_exten_const;
+len_taper   = 4*um;
+EME_x_min   = EME_x_min_const;
 width_prop  = width_prop_upper;
 width_in    = width_in_upper;
 Lz          = Lz_upper;
@@ -210,6 +197,8 @@ setup_taper;
 structure_group_name = "Lower WG";
 Lx_offset   = -Lx_offset_const;
 Lx_exten    = Lx_exten_const;
+len_taper   = 4*um;
+EME_x_min   = EME_x_min_const;
 width_prop  = width_prop_upper;
 width_in    = width_in_upper;
 Lz          = Lz_lower;
@@ -224,6 +213,8 @@ setup_taper;
 structure_group_name = "RDL WG";
 Lx_offset   = 0*um;
 Lx_exten    = 0*um;
+len_taper   = 3.5*um;
+EME_x_min   = EME_x_min_const + 0.5*um;
 width_prop  = width_prop_RDL;
 width_in    = width_in_RDL;
 Lz          = Lz_RDL;
@@ -232,7 +223,7 @@ res         = 1000; #resolution of polygon
 material    = material_core;
 setup_taper;
 
-
+len_taper   = 4*um;
 
 #BOX
 addrect;
@@ -266,7 +257,7 @@ set("alpha",alpha);
 addeme;
 set("wavelength" , wavelength);
 set("index" , 1);
-set("x min", EME_x_min);
+set("x min", EME_x_min_const);
 set("y min", EME_y_min);
 set("y max", EME_y_max);
 set("z min", EME_z_min);
@@ -277,7 +268,7 @@ set("display cells", 1);
 # set cell properties
 set("number of cell groups",3);
 set("group spans",[len_taper; len_prop; len_taper]);
-set("cells",[4; 1; 4]);
+set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
 set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
 # mesh settings
 set("define y mesh by", "maximum mesh step");
@@ -363,7 +354,7 @@ addemeprofile;
 set("name","EMEprofile");
 set("monitor type","2D Y-normal");
 set("x",0);
-set("x span",Lx_upper);
+set("x span",(EME_x_max-EME_x_min_const)*1.2);
 set("y",0);
 set("z max",EME_z_max);
 set("z min",EME_z_min);

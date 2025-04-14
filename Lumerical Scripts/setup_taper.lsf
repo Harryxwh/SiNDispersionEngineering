@@ -1,5 +1,10 @@
 ##############################################
 # taper
+
+# parameters:
+# Lx_exten: length of waveguide at the left and right
+# Lx_offset: extra length of waveguide at the left and right to calc isolated modes
+
 ##############################################
 addstructuregroup;
 set("name",structure_group_name);
