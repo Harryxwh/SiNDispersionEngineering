@@ -8,18 +8,7 @@
 ##############################################
 addstructuregroup;
 set("name",structure_group_name);
-EME_x_max = EME_x_min + 2*len_taper + len_prop;
-# waveguide left
-addrect;
-set("name","waveguide left");
-set("x min",EME_x_min-(Lx_exten/2+Lx_offset));
-set("x max",EME_x_min);
-set("y",0);
-set("y span",width_in);
-set("z",z);
-set("z span",Lz);
-set("material",material);
-addtogroup(structure_group_name);
+EME_x_max = EME_x_min + 2*len_taper + len_prop + 2*x_taper_offset;
 
 # Taper
 xspan = linspace(0,len_taper,res);
@@ -32,7 +21,7 @@ V(1:2*res,1) = [xspan , flip(xspan,1)];
 V(1:2*res,2) = [-yspan/2 , flip(yspan,1)/2];
 
 addpoly;
-set("x",EME_x_min);
+set("x",EME_x_min + x_taper_offset);
 set("y",0);
 set("z",z);
 set("z span",Lz);
@@ -43,8 +32,8 @@ addtogroup(structure_group_name);
 # waveguide prop
 addrect;
 set("name","waveguide prop");
-set("x min",EME_x_min + len_taper);
-set("x max",EME_x_min + len_taper + len_prop);
+set("x min",EME_x_min + x_taper_offset + len_taper);
+set("x max",EME_x_min + x_taper_offset + len_taper + len_prop);
 set("y",0);
 set("y span",width_prop);
 set("z",0);
@@ -61,7 +50,7 @@ V(1:2*res,1) = [xspan , flip(xspan,1)];
 V(1:2*res,2) = [-yspan/2 , flip(yspan,1)/2];
 
 addpoly;
-set("x",EME_x_max-len_taper);
+set("x",EME_x_max-len_taper-x_taper_offset);
 set("y",0);
 set("z",z);
 set("z span",Lz);
@@ -69,14 +58,3 @@ set("vertices",V);
 set("material",material);
 addtogroup(structure_group_name);
 
-# waveguide right
-addrect;
-set("name","waveguide left");
-set("x min",EME_x_max);
-set("x max",EME_x_max+(Lx_exten/2-Lx_offset));
-set("y",0);
-set("y span",width_in);
-set("z",z);
-set("z span",Lz); 
-set("material",material);
-addtogroup(structure_group_name);

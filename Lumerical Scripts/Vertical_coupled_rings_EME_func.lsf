@@ -1,10 +1,6 @@
 switchtolayout;
 deleteall;
 
-write(log_filename,"len_taper_RDL = "+num2str(len_taper_RDL));
-write(log_filename,"len_prop_RDL = "+num2str(len_prop_RDL));
-write(log_filename,"\n");
-
 # Create folders if they do not yet exist
 #for(wavl_idx=1:num_sweep_pt){
     #format short;
@@ -15,14 +11,15 @@ write(log_filename,"\n");
     #system("mkdir "+folder_path);
 #}
 
-rect_enabled = 0;
+EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3; 
+rect_enabled = 1;
 GDS_enabled = 0;
 
 # Upper racetrack Straight part
 addrect;
 set("name","Upper racetrack Straight part");
-set("x",-Lx_offset);
-set("x span",Lx_upper + Lx_exten);
+set("x min", EME_x_min - Lx_exten/2 - Lx_offset);
+set("x max", EME_x_max + Lx_exten/2);
 set("y",0);
 set("y span",Ly_upper);
 set("z",z_upper);
@@ -33,27 +30,11 @@ set("material",material_core);
 set("alpha",alpha);
 set("enabled",rect_enabled);
 
-##############################################
-# RDL WG
-##############################################
-structure_group_name = "RDL WG";
-Lx_offset   = 0*um;
-Lx_exten    = 0*um;
-len_taper   = 3.5*um;
-EME_x_min   = EME_x_min_param + 0.5*um;
-width_prop  = width_prop_RDL;
-width_in    = width_in_RDL;
-Lz          = Lz_RDL;
-z           = z_RDL;
-res         = 1000; #resolution of polygon
-material    = material_core;
-setup_taper;
-
 # Lower racetrack Straight part
 addrect;
 set("name","Lower racetrack Straight part");
-set("x",Lx_offset);
-set("x span",Lx_lower+Lx_exten);
+set("x min", EME_x_min - Lx_exten/2);
+set("x max", EME_x_max + Lx_exten/2 + Lx_offset);
 set("y",0);
 set("y span",Ly_lower);
 set("z",z_lower);
@@ -63,35 +44,19 @@ set("mesh order",2);
 set("material",material_core);
 set("enabled",rect_enabled);
 
-#set upper ring
-gdsimport("Upper.gds", "Cell_B", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_upper-Lz_upper/2, z_upper+Lz_upper/2);
-select("GDS_LAYER_1111:0");
-set("name","Upper WG GDS");
-set("x",-Lx_upper/2 - Lx_offset);
-set("y",0);
-set("z",z_upper);
-set("z span",Lz_upper);
-set("enabled",GDS_enabled);
-
-# set taper
-gdsimport("RDL.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_RDL-Lz_RDL/2, z_RDL+Lz_RDL/2);
-select("GDS_LAYER_1111:0");
-set("name","RDL WG GDS");
-set("x",-Lx_RDL/2);
-set("y",0);
-set("z",z_RDL);
-set("z span",Lz_RDL);
-set("enabled",GDS_enabled);
-
-#set lower ring
-gdsimport("Lower.gds", "Cell_C", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_lower-Lz_lower/2, z_lower+Lz_lower/2);
-select("GDS_LAYER_1111:0");
-set("name","Lower WG GDS");
-set("x",-Lx_lower/2 + Lx_offset);
-set("y",0);
-set("z",z_lower);
-set("z span",Lz_lower);
-set("enabled",GDS_enabled);
+##############################################
+# RDL WG
+##############################################
+structure_group_name = "RDL WG";
+len_taper       = len_taper_RDL;
+len_prop        = 8*um;
+width_prop      = width_prop_RDL;
+width_in        = width_in_RDL;
+Lz              = Lz_RDL;
+z               = z_RDL;
+res             = 1000; #resolution of polygon
+material        = material_core;
+setup_taper;
 
 #BOX
 addrect;
@@ -125,7 +90,7 @@ set("alpha",alpha);
 addeme;
 set("wavelength" , wavelength);
 set("index" , 1);
-set("x min", EME_x_min_param);
+set("x min", EME_x_min);
 set("y min", EME_y_min);
 set("y max", EME_y_max);
 set("z min", EME_z_min);
@@ -135,7 +100,7 @@ set("use relative coordinates",0);
 set("display cells", 1);
 # set cell properties
 set("number of cell groups",3);
-set("group spans",[len_taper; len_prop; len_taper]);
+set("group spans",[group_span1;group_span2;group_span3]);
 set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
 set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
 # mesh settings
@@ -143,8 +108,6 @@ set("define y mesh by", "maximum mesh step");
 set("define z mesh by", "maximum mesh step");
 set("dy", mesh_step);
 set("dz", mesh_step);
-
-setactivesolver("EME");
 
 set("allow custom eigensolver settings", 1);
 select("EME::Cells::cell_1");
@@ -163,7 +126,7 @@ set("use full simulation span",1);
 #set("z",z_upper-z_RDL);
 #set("z span",Port_z_span);
 set("mode selection","fundamental mode");
-set("offset",-2*um);
+set("offset",-Lx_offset/2-Lx_exten/2);
 
 # set up port lower left
 select("EME::Ports::port_2");
@@ -175,13 +138,13 @@ set("use full simulation span",1);
 #set("z",z_lower-z_RDL);
 #set("z span",Port_z_span);
 set("mode selection","fundamental mode");
-set("offset",2*um);
+set("offset",Lx_offset/2+Lx_exten/2);
 
 addemeindex;
 set("name","EMEindex");
 set("monitor type","2D Y-normal");
-set("x",0);
-set("x span",Lx_upper);
+set("x min", EME_x_min-Lx_exten);
+set("x max", EME_x_max+Lx_exten);
 set("y",0);
 set("z max",EME_z_max);
 set("z min",EME_z_min);
@@ -189,8 +152,8 @@ set("z min",EME_z_min);
 addemeprofile;
 set("name","EMEprofile");
 set("monitor type","2D Y-normal");
-set("x",0);
-set("x span",(EME_x_max-EME_x_min_param)*1.2);
+set("x min", EME_x_min-Lx_exten);
+set("x max", EME_x_max+Lx_exten);
 set("y",0);
 set("z max",EME_z_max);
 set("z min",EME_z_min);
@@ -198,11 +161,12 @@ set("z min",EME_z_min);
 run;
 emepropagate;
 
+num_of_pts_sweep_prop   = 981;
 setemeanalysis("propagation sweep",1);
 setemeanalysis("parameter","group span 2");
 setemeanalysis("start",1*um);
 setemeanalysis("stop", 50*um);
-setemeanalysis("number of points",981);
+setemeanalysis("number of points",num_of_pts_sweep_prop);
 
 # run propagation sweep tool
 emesweep;
@@ -212,4 +176,7 @@ S = getemesweep('S');
 
 # plot S21 vs group span
 s21_abs_sq = abs(S.s21)^2;
-write(filename,s21_abs_sq);
+format long;
+for(i =1:num_of_pts_sweep_prop){
+    write(data_filename,num2str(s21_abs_sq(i)));
+}

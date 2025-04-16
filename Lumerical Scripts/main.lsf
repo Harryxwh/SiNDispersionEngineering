@@ -109,6 +109,33 @@ if(fileexists(log_filename)){rm(log_filename);}
 
 
 ################################################
+# setting up parameters
+# Scan_len_taper_RDL
+################################################
+um = 1e-6;
+nm = 1e-9;
+
+len_taper_RDL_start     =   400 *um;
+len_taper_RDL_end       =   400 *um;
+num_of_pts_len_taper    =   1;
+len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
+
+num_of_cells_taper = 10;
+num_of_cells_prop  = 1;
+
+num_of_pts_sweep_prop   = 901;
+EME_prop_start          = 300*um;
+EME_prop_stop           = 1200*um;
+
+mesh_step = 100*nm;
+
+################################################
+# conduct simulation
+################################################
+Scan_len_taper_RDL;
+
+
+################################################
 # setting up parameters for Finding Lx_lower
 # Scanning_L_lower_and_gapx_width
 ################################################
@@ -149,75 +176,19 @@ num_of_pts_Lx   = 11;
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 
 # Parameter sweep of gapx between rings
-gapx_start      = 2.4*um;
-gapx_end        = 3.5*um;
-num_of_pts_gapx = 12;
+gapx_start      = 0.1*um;
+gapx_end        = 0.4*um;
+num_of_pts_gapx = 4;
 gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
 
 # Results array and file
 beta_ang_array  = zeros(num_of_pts_Lx);
-filename = "Scanning_L_lower_and_gapx_width_2_4_3_5_gapx_2_5_3_5.txt";
+filename = "Scanning_L_lower_and_gapx_width_0_1_0_4_gapx_2_5_3_5.txt";
 
 ################################################
 # conduct simulation
 ################################################
-Scanning_Lx_and_gapx_given_gapy_3D_func;
-
-
-################################################
-# setting up parameters for Finding Lx_lower
-# Scanning_L_lower_and_gapx_width
-################################################
-wavelength  = 1550*nm;
-
-#Geometry
-um = 1e-6;
-nm = 1e-9;
-
-Ly_lower = 0.1*um;  #height of the WG
-Lz_lower = 50*um;   #length of the WG
-
-Lx_Cladding = 50*um; #width of the cladding
-Ly_Cladding = 20*um; #height of the cladding
-Lz_Cladding = 50*um; #length of the cladding
-
-Lx_Buried_Oxide = 50*um; #width of the BOX
-Ly_Buried_Oxide = 15*um; #width of the BOX
-Lz_Buried_Oxide = 50*um; #width of the BOX
-
-Lx_FDE      = 30*um;
-Ly_FDE_min  = -10*um;
-Ly_FDE_max  = 10*um;
-
-y_min = 0*um;
-
-mesh_cells_x = 600;
-mesh_cells_y = 400;
-
-# Parameter of the upper ring is fixed
-Lx_upper            = 2.8*um;
-bend_radius_upper   = 1000*um;
-
-# Parameter sweep of width of lower ring
-Lx_start        = 3.6*um;
-Lx_end          = 4.2*um;
-num_of_pts_Lx   = 7;
-Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
-
-# Parameter sweep of gapx between rings
-gapx_start      = 0.5*um;
-gapx_end        = 3.5*um;
-num_of_pts_gapx = 31;
-gapx_arr        = linspace(gapx_start,gapx_end,num_of_pts_gapx);
-
-# Results array and file
-beta_ang_array  = zeros(num_of_pts_Lx);
-filename = "Scanning_L_lower_and_gapx_width_0_5_3_5_gapx_3_6_4_2.txt";
-
-################################################
-# conduct simulation
-################################################
-Scanning_Lx_and_gapx_given_gapy_3D_func;
+#Scanning_Lx_and_gapx_given_gapy_3D_func;
 
 
 ################################################
@@ -251,7 +222,7 @@ Ly_FDE_max  = 10*um;
 
 y_min = 0*um;
 
-mesh_step = 200e-9;
+mesh_step = 400e-9;
 mesh_cells_x = 500;
 mesh_cells_y = 300;
 
@@ -276,18 +247,3 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 # conduct simulation
 ################################################
 #Find_Modes_of_Double_Rings_Vertical_func;
-
-
-################################################
-# setting up parameters
-# Scan_len_taper_RDL
-################################################
-um = 1e-6;
-nm = 1e-9;
-
-len_taper_RDL_start     =   0.5 *um;
-len_taper_RDL_end       =   10.5  *um;
-num_of_pts_len_taper    =   11;
-len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
-
-Scan_len_taper_RDL;
