@@ -1,30 +1,27 @@
 um = 1e-6;
 nm = 1e-9;
 
-len_taper_RDL_start     =   400 *um;
-len_taper_RDL_end       =   400 *um;
-num_of_pts_len_taper    =   1;
+len_taper_RDL_start     =   100 *um;
+len_taper_RDL_end       =   700 *um;
+num_of_pts_len_taper    =   7;
 len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
 
-num_of_cells_taper = 4;
+num_of_cells_taper = 10;
 num_of_cells_prop  = 1;
 
-num_of_pts_sweep_prop   = 901;
+num_of_pts_sweep_prop   = 701;
 EME_prop_start          = 300*um;
-EME_prop_stop           = 1200*um;
+EME_prop_stop           = 1600*um;
 
 mesh_step = 50*nm;
-
 
 #Geometry
 
 #Upper and Lower WG
-#x_upper  = -1000*um;   #length of the straight part of racetrack
 Ly_upper = 2.8*um;  #width of the WG
 Lz_upper = 0.1*um;  #thickness of the WG
 z_upper  = 10*um;
 
-#x_lower = 16*um;   #length of the straight part of racetrack
 Ly_lower = 2.8*um;  #width of the WG
 Lz_lower = 0.1*um;  #thickness of the WG
 z_lower  = 0*um;
@@ -56,11 +53,11 @@ EME_y_max       = 10      *um;
 EME_z_min       = -10      *um;
 EME_z_max       = 20      *um;
 
-radius_Upper    =   4 *um;    #radius of the Upper racetrack
-radius_Lower    =   4 *um;    #radius of the lower ring
-bend_radius_inner = 1000*um;
-bend_radius  =  bend_radius_inner;
-?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+#radius_Upper    =   4 *um;    #radius of the Upper racetrack
+#radius_Lower    =   4 *um;    #radius of the lower ring
+#bend_radius_inner = 1000*um;
+#bend_radius  =  bend_radius_inner;
+#?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
 Num_of_trial_modes = 25;
 
@@ -75,6 +72,7 @@ wavelength          = 1550*nm;
 material_cladding   = "SiO2 (Glass) - Palik";
 material_core       = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
 alpha               = 0.3;
+
 format short;
 foldername      = "Vertical_EME" + "\\";
 log_filename    = foldername + "log.txt";
@@ -83,19 +81,18 @@ for (i = 1: num_of_pts_len_taper)
 {
     len_taper_RDL   = len_taper_RDL_arr(i);     # length of the taper
     format short;
-    #filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
-    #data_filename   = foldername + filename;
-    #if(fileexists(data_filename)){rm(data_filename);}
+    filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
+    data_filename   = foldername + filename;
+    if(fileexists(data_filename)){rm(data_filename);}
     
     group_span1     = len_taper_RDL + x_taper_offset;
     group_span2     = len_prop_RDL;
     group_span3     = len_taper_RDL + x_taper_offset;    
     
-    #format short;
-    #write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
-    #write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");
-    #write(log_filename,"\n");
-    #Vertical_coupled_rings_EME_func;
+    format short;
+    write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
+    write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");
+    write(log_filename,"\n");
     
     switchtolayout;
     deleteall;
@@ -112,7 +109,6 @@ for (i = 1: num_of_pts_len_taper)
     
     EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3; 
     rect_enabled = 1;
-    GDS_enabled = 0;
     
     # Upper racetrack Straight part
     addrect;
@@ -147,15 +143,16 @@ for (i = 1: num_of_pts_len_taper)
     # RDL WG
     ##############################################
     structure_group_name = "RDL WG";
+    x_min           = EME_x_min;
     len_taper       = len_taper_RDL;
     len_prop        = len_prop_RDL;
     width_prop      = width_prop_RDL;
     width_in        = width_in_RDL;
     Lz              = Lz_RDL;
     z               = z_RDL;
-    res             = 1000; #resolution of polygon
+    res             = 10000; #resolution of polygon
     material        = material_core;
-    setup_taper;
+    setup_RDL;
     
     #BOX
     addrect;
@@ -199,7 +196,7 @@ for (i = 1: num_of_pts_len_taper)
     set("display cells", 1);
     # set cell properties
     set("number of cell groups",3);
-    set("group spans",[group_span1;group_span2;group_span3]);
+    set("group spans",[group_span1; group_span2; group_span3]);
     set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
     set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
     # mesh settings
@@ -212,7 +209,6 @@ for (i = 1: num_of_pts_len_taper)
     select("EME::Cells::cell_1");
     seteigensolver("number of trial modes", Num_of_trial_modes);
     seteigensolver("use max index", 1);
-    #seteigensolver("n", 1.996);
     
     # set up port upper left
     select("EME::Ports::port_1");
@@ -259,4 +255,25 @@ for (i = 1: num_of_pts_len_taper)
     
     run;
     emepropagate;
+    
+    num_of_pts_sweep_prop   = num_of_pts_sweep_prop;
+    setemeanalysis("propagation sweep",1);
+    setemeanalysis("parameter","group span 2");
+    setemeanalysis("start",EME_prop_start);
+    setemeanalysis("stop", EME_prop_stop);
+    setemeanalysis("number of points",num_of_pts_sweep_prop);
+    
+    # run propagation sweep tool
+    emesweep;
+    
+    # get propagation sweep result
+    S = getemesweep('S');
+    
+    # plot S21 vs group span
+    s21_abs_sq = abs(S.s21)^2;
+    format long;
+    for(i =1:num_of_pts_sweep_prop){
+        write(data_filename,num2str(s21_abs_sq(i)));
+    }
+
 }
