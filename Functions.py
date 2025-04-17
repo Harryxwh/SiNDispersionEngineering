@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
+import json
 
 def str2complex(s):
         str = s.replace(" ","")\
@@ -99,80 +100,83 @@ bbox_to_anchor: coordinates for the legends
 text: used to show comments
 dpi: 300 by default
 '''
-def Plot_curve(data_arr,Y_legends,
-                X_label,Y_label,
-                title,
-                marker_list,linestyle_list,colors_list,
-                figsize=(10,6),fontsize=10,
-                xticks=[],xtickslabel=[],
-                yticks = [],
-                xlim = (), ylim = (),
-                fill_color=False,
-                bbox_legend=(),
-                text="", loc_text=(0,5,0.01),
-                dpi=300,plot_show=False):
-    #Plot parameters
-    figsize = figsize
-    fontsize = fontsize
-    fonttype = "Helvetica"
-    grid_linewidth = 0.8
-    plot_linewidth = 1.5
-    # colors_list = ['tab:blue']*3+['tab:red']*3+['tab:orange']+['tab:green']
-    savename = "results/"+str(title)+".jpg"
+def Plot_curve(data_arr,
+                default_param_filename = "Param_plot_curve.json",
+                *args, **kwargs):
+    with open(default_param_filename,'r', encoding='UTF-8') as f:
+        param_dict = json.load(f)
+
+    for key,value in kwargs.items():
+        param_dict[key] = value
+
+    savename = "results/"+str(param_dict["title"])+".jpg"
     idx = 0
-    plt.figure(figsize=figsize)
+    plt.figure(figsize=param_dict["figsize"])
     for data_idx in range(len(data_arr)):
         X       = data_arr[data_idx][:,0]           #X is a 2D array
         Y_arr   = data_arr[data_idx][:,1:]          #Y_arr is a 2D array
         for Y_idx in range(np.shape(Y_arr)[1]):
-            if Y_legends[idx] == "":
-                plt.plot(X,Y_arr[:,Y_idx],
-                        color=colors_list[idx], marker=marker_list[idx],
-                        linestyle=linestyle_list[idx], linewidth=plot_linewidth)
-            else:
-                plt.plot(X,Y_arr[:,Y_idx],label=Y_legends[idx],
-                            color=colors_list[idx], marker=marker_list[idx],
-                            linestyle=linestyle_list[idx], linewidth=plot_linewidth)
+            # use the same legend as the last curve
+            plt.plot(X,Y_arr[:,Y_idx],label=param_dict["Y_legends"][idx],
+                    color = param_dict["colors_list"][idx],
+                    marker = param_dict["marker_list"][idx],
+                    linestyle = param_dict["linestyle_list"][idx],
+                    linewidth = param_dict["plot_linewidth"])
             idx = idx + 1
 
-    plt.rcParams["font.family"] = fonttype
-    plt.rcParams.update({'font.size': fontsize})
-    plt.title(title)
+    plt.rcParams["font.family"] = param_dict["fonttype"]
+    plt.rcParams.update({'font.size': param_dict["fontsize"]})
+    plt.title(param_dict["title"])
 
-    if len(xlim)>0:
+    if len(param_dict["xlim"])>0:
+        xlim = param_dict["xlim"]
         plt.xlim(xlim[0],xlim[1])
     xmin = plt.xlim()[0]
     xmax = plt.xlim()[1]
-    if len(ylim)>0:
+
+    if len(param_dict["ylim"])>0:
+        ylim = param_dict["ylim"]
         plt.ylim(ylim[0],ylim[1])
     ymin = plt.ylim()[0]
     ymax = plt.ylim()[1]
 
-    if fill_color:
-        plt.axhspan(0, ymax, color='green', alpha=0.1, label='Anamolous Dispersion Region')
+    if param_dict["fill_color"]:
+        plt.axhspan(0, ymax, color='green', alpha=0.1,
+                    label='Anamolous Dispersion Region')
         plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
         plt.ylim(ymin,ymax)
 
-    if len(xtickslabel)>1:
-        plt.xticks(xticks,xtickslabel,fontproperties = fonttype, size = fontsize)
-    if len(yticks)>1:
+    if len(param_dict["xtickslabel"])>1:
+        plt.xticks(param_dict["xticks"],param_dict["xtickslabel"],
+                   fontproperties = param_dict["fonttype"],
+                   size = param_dict["fontsize"])
+    if len(param_dict["yticks"])>1:
         yticks = ticks_arr([ymin,ymax])
-        plt.yticks(yticks,yticks,fontproperties = fonttype, size = fontsize)
+        plt.yticks(param_dict["yticks"],param_dict["yticks"],
+                   fontproperties = param_dict["fonttype"],
+                   size = param_dict["fontsize"])
 
-    plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
-    plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
-    if len(bbox_legend)>0:
-                plt.legend(bbox_to_anchor=bbox_legend, borderaxespad=0)
+    plt.ylabel(param_dict["Y_label"],
+               fontdict={'family' : param_dict["fonttype"],
+                        'size' : param_dict["fontsize"]})
+    plt.xlabel(param_dict["X_label"],
+               fontdict={'family' : param_dict["fonttype"],
+                         'size' : param_dict["fontsize"]})
+    if len(param_dict["bbox_legend"])>0:
+        plt.legend(bbox_to_anchor=param_dict["bbox_legend"],
+                   borderaxespad=0)
     else:
         plt.legend(loc='best')
 
-    if not text == "":
-        plt.text(xmin + (xmax-xmin)*loc_text[0], ymin + (ymax-ymin)*loc_text[1],
-                text, bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
-    plt.grid(linewidth=grid_linewidth, alpha=0.3)
+    if not param_dict["text"] == "":
+        plt.text(xmin + (xmax-xmin)*param_dict["loc_text"][0],
+                 ymin + (ymax-ymin)*param_dict["loc_text"][1],
+                param_dict["text"],linespacing = param_dict["linespacing"],
+                bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
+    plt.grid(linewidth=param_dict["grid_linewidth"], alpha=0.3)
     plt.tight_layout()
-    plt.savefig(savename,dpi=dpi)
-    if plot_show:
+    plt.savefig(savename,dpi=param_dict["dpi"])
+    if param_dict["plot_show"]:
         plt.show()
 
 def Interpol(x,y,x_intp):
@@ -182,9 +186,12 @@ def Interpol(x,y,x_intp):
     return y_intp
 
 # Gives a better array of ticks than the defaults
-def ticks_arr(data_arr):
+def ticks_arr(data_arr, small_ticks = False):
     # For data>0, the largest base. E.g. if max = 7875, largest base is 1000.
-    largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
+    if small_ticks:
+        largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
+    else:
+        largest_divider_max = 10**int(np.log10(np.max(data_arr)))
     ticks_arr = np.arange(largest_divider_max,
                           (int(np.max(data_arr)/largest_divider_max)+1)*largest_divider_max,
                           largest_divider_max)
@@ -198,3 +205,45 @@ def ticks_arr(data_arr):
     return ticks_arr
 
 
+
+def Plot_im(data_arr, point_arr = [],
+            default_param_filename = "Param_plot_image.json",
+            *args, **kwargs):
+
+    with open(default_param_filename,'r', encoding='UTF-8') as f:
+        param_dict = json.load(f)
+
+    for key,value in kwargs.items():
+        param_dict[key] = value
+
+    fig, ax = plt.subplots(figsize=param_dict["figsize"],
+                           dpi = param_dict["dpi"])
+    im      = ax.imshow(data_arr,cmap = param_dict["colormap"],
+                        aspect=param_dict["aspect"])
+    if len(point_arr) > 0:
+        ax.scatter(point_arr[:,0],point_arr[:,1],
+                   s=10, c=param_dict["point_color"], marker='^')
+
+    # shrink: 缩放比例，pad: 间距
+    cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],
+                        shrink=param_dict["shrink"], pad=param_dict["pad"])
+    cbar.set_ticks(ticks_arr(data_arr,param_dict["cbar_small_ticks"]))
+    cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
+    cbar.set_label(param_dict["cbar_label"])
+
+    if len(param_dict["ytickslabel"]) >0:
+        plt.yticks(param_dict["yticks"],
+                   param_dict["ytickslabel"],
+                   fontproperties = param_dict["fonttype"],
+                   size = param_dict["fontsize"])
+    if len(param_dict["xtickslabel"]) >0:
+        plt.xticks(param_dict["xticks"],
+                   param_dict["xtickslabel"],
+                   fontproperties = param_dict["fonttype"],
+                   size = param_dict["fontsize"])
+
+    plt.xlabel(param_dict["xlabel"])
+    plt.ylabel(param_dict["ylabel"])
+    plt.title(param_dict["title"])
+    plt.savefig("./results/"+param_dict["title"]+".jpg")
+    plt.show()

@@ -1,0 +1,21 @@
+{
+    "figsize"           : [10,8],
+    "dpi"               : 300,
+    "title"             : "plot_image",
+    "colormap"          : "Blues",
+    "aspect"            : 10,
+    "point_color"       : "b",
+    "xlabel"            : "",
+    "ylabel"            : "",
+    "xticks"            : [],
+    "yticks"            : [],
+    "xtickslabel"       : [],
+    "ytickslabel"       : [],
+    "fonttype"          : "Helvetica",
+    "fontsize"          : 5,
+    "cbar_label"        : "",
+    "cbar_small_ticks"  : false,
+    "cbar_orientation"  : "horizontal",
+    "shrink"            : 0.9,
+    "pad"               : 0.1
+}
