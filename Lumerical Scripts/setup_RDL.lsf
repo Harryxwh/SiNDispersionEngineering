@@ -1,28 +1,26 @@
-#deleteall;
-#structure_group_name = "RDL WG";
-#len_taper       = 400*um;
-#len_prop        = 300*um;
-#width_prop      = 2.8*um;
-#width_in        = 0.8*um;
-#Lz              = 0.1*um;
-#z               = 5*um;
-#res             = 1000; #resolution of polygon
-#material        = material_core;
-
 ##############################################
-# taper
+# setup_RDL
 
 # parameters:
-# Lx_exten: length of waveguide at the left and right
-# Lx_offset: extra length of waveguide at the left and right to calc isolated modes
-
+# structure_group_name: name of the RDL group
+# len_taper: length of the adiabatic taper region
+# len_prop: length of the straight propagtion region
+# width_in: width of the narrow side of the taper
+# width_prop: width of the wide side of the taper
+# res: num of pts when drawing the linear taper
+# Lz: thickness of the RDL WG
+# z: z coordinate of the RDL WG
+# x_min: starting point of the RDL region
+# x_taper_offset: offset of the starting point of the taper in +x direction
+# material: material of the RDL WG
 ##############################################
+
 addstructuregroup;
 set("name",structure_group_name);
 set("x",0);
 set("y",0);
 set("z",0);
-EME_x_max = EME_x_min + 2*len_taper + len_prop + 2*x_taper_offset;
+x_max = x_min + 2*len_taper + len_prop + 2*x_taper_offset;
 
 # Taper
 xspan = linspace(0,len_taper,res);
@@ -35,7 +33,7 @@ V(1:2*res,1) = [xspan , flip(xspan,1)];
 V(1:2*res,2) = [-yspan/2 , flip(yspan,1)/2];
 
 addpoly;
-set("x",EME_x_min + x_taper_offset);
+set("x",x_min + x_taper_offset);
 set("y",0);
 set("z",z);
 set("z span",Lz);
@@ -46,8 +44,8 @@ addtogroup(structure_group_name);
 # waveguide prop
 addrect;
 set("name","waveguide prop");
-set("x min",EME_x_min + x_taper_offset + len_taper);
-set("x max",EME_x_min + x_taper_offset + len_taper + len_prop);
+set("x min",x_min + x_taper_offset + len_taper);
+set("x max",x_min + x_taper_offset + len_taper + len_prop);
 set("y",0);
 set("y span",width_prop);
 set("z",z);
@@ -64,7 +62,7 @@ V(1:2*res,1) = [xspan , flip(xspan,1)];
 V(1:2*res,2) = [-yspan/2 , flip(yspan,1)/2];
 
 addpoly;
-set("x",EME_x_max-len_taper-x_taper_offset);
+set("x",x_max-len_taper-x_taper_offset);
 set("y",0);
 set("z",z);
 set("z span",Lz);
