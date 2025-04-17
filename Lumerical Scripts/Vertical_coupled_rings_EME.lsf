@@ -1,61 +1,60 @@
-switchtolayout;
-deleteall;
-
 um = 1e-6;
 nm = 1e-9;
 
-# Geometry
-Lx_upper = 16*um;   #length of the straight part of racetrack
-Ly_upper = 2.8*um;  #width of the WG
-Lz_upper = 0.1*um;  #height of the WG
-z_upper  = 7*um;
+len_taper_RDL_start     =   400 *um;
+len_taper_RDL_end       =   400 *um;
+num_of_pts_len_taper    =   1;
+len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
 
-Lx_lower = 16*um;   #length of the straight part of racetrack
-Ly_lower = 2.8*um;  #width of the WG
-Lz_lower = 0.1*um;  #height of the WG
-z_lower  = 0*um;
-
-Lx_exten_const = 4*um;     #extension length in x direction
-Lx_offset_const= 1*um;    #offset in x direc of WGs
-
-#RDL WG
-Lx_RDL = 10*um;   #length of the WG
-Ly_RDL = 2.8*um;  #width of the WG
-Lz_RDL = 0.2*um;  #height of the WG
-z_RDL  = 3.5*um;
-
-Lx_Cladding = 80*um; #length of the Cladding
-Ly_Cladding = 50*um; #width of the Cladding
-Lz_Cladding = 20*um;  #height of the Cladding
-
-Lx_Buried_Oxide = 80*um;
-Ly_Buried_Oxide = 50*um;
-Lz_Buried_Oxide = 15*um;
-
-width_in_upper = 2.8 *um;
-width_prop_upper = 2.8 *um;
-width_in_RDL   = 0.8 *um;
-width_prop_RDL   = 3 *um;
-len_taper     = 3*um;
-len_prop      = 8.96*um;
-
-#EME settings
-EME_x_min_const = -len_taper-len_prop/2;
-
-EME_y_min = -10     *um;
-EME_y_max = 10      *um;
-EME_z_min = -6      *um;
-EME_z_max = 18      *um;
-
-Port_y_span = 15 * um;
-Port_z_span = 14 * um;
-
-num_of_cells_taper = 10;
+num_of_cells_taper = 4;
 num_of_cells_prop  = 1;
 
+num_of_pts_sweep_prop   = 901;
+EME_prop_start          = 300*um;
+EME_prop_stop           = 1200*um;
+
 mesh_step = 50*nm;
-#mesh_cells_x = 2000;
-#mesh_cells_y = 800;
+
+
+#Geometry
+
+#Upper and Lower WG
+#x_upper  = -1000*um;   #length of the straight part of racetrack
+Ly_upper = 2.8*um;  #width of the WG
+Lz_upper = 0.1*um;  #thickness of the WG
+z_upper  = 10*um;
+
+#x_lower = 16*um;   #length of the straight part of racetrack
+Ly_lower = 2.8*um;  #width of the WG
+Lz_lower = 0.1*um;  #thickness of the WG
+z_lower  = 0*um;
+
+Lx_exten = 4*um;    #extension length in x direction
+Lx_offset= 1*um;    #offset in x direc
+
+#RDL WG
+width_in_RDL        = 0.8   *um;    # width of the input side of the taper
+width_prop_RDL      = 2.8   *um;    # width of the output side of the taper
+len_prop_RDL        = 400   *um;    # length of the straight propagation region
+Lz_RDL              = 0.1   *um;    # thickness of the WG
+z_RDL               = 5     *um;      # z of the WG
+x_taper_offset      = 1     *um;
+
+#Cladding and BOX
+Lx_Cladding         = 2000*um;    #length of the Cladding
+Ly_Cladding         = 50*um;    #width of the Cladding
+Lz_Cladding         = 20*um;    #thickness of the Cladding
+
+Lx_Buried_Oxide     = 2000*um;
+Ly_Buried_Oxide     = 50*um;
+Lz_Buried_Oxide     = 15*um;
+
+#EME settings
+EME_x_min       = -900*um;
+EME_y_min       = -10     *um;
+EME_y_max       = 10      *um;
+EME_z_min       = -10      *um;
+EME_z_max       = 20      *um;
 
 radius_Upper    =   4 *um;    #radius of the Upper racetrack
 radius_Lower    =   4 *um;    #radius of the lower ring
@@ -63,301 +62,201 @@ bend_radius_inner = 1000*um;
 bend_radius  =  bend_radius_inner;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
-Num_of_trial_modes = 20;
+Num_of_trial_modes = 25;
 
-# Define wavelength of EMEulation
-#wavelength_min = 1550*nm;
-#wavelength_max = 1550*nm;
-#num_sweep_pt = 1;
-#wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
-wavelength              = 1550*nm;
-material_fitting_span   = 0.5*um;
+# Define wavelength of EME simulation
+#wavelength_min     = 1550*nm;
+#wavelength_max     = 1550*nm;
+#num_sweep_pt       = 1;
+#wavelength_array   = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength          = 1550*nm;
 
 # Material
-material_cladding = "SiO2 (Glass) - Palik";
-material_core = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
+material_cladding   = "SiO2 (Glass) - Palik";
+material_core       = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
+alpha               = 0.3;
+format short;
+foldername      = "Vertical_EME" + "\\";
+log_filename    = foldername + "log.txt";
 
-
-folder_name = "Vertical_EME" + "\\";
-log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
-if(fileexists(log_filename)){rm(log_filename);}
-
-write(log_filename,"mesh_step = "+num2str(mesh_step));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_upper = "+num2str(Lx_upper)+"\n");
-write(log_filename,"Lx_lower = "+num2str(Lx_lower)+"\n");
-write(log_filename,"Lx_RDL = "+num2str(Lx_RDL)+"\n");
-
-# Create folders if they do not yet exist
-#for(wavl_idx=1:num_sweep_pt){
+for (i = 1: num_of_pts_len_taper)
+{
+    len_taper_RDL   = len_taper_RDL_arr(i);     # length of the taper
+    format short;
+    #filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
+    #data_filename   = foldername + filename;
+    #if(fileexists(data_filename)){rm(data_filename);}
+    
+    group_span1     = len_taper_RDL + x_taper_offset;
+    group_span2     = len_prop_RDL;
+    group_span3     = len_taper_RDL + x_taper_offset;    
+    
     #format short;
-    #wavelength = wavelength_array(wavl_idx);
-
-    #folder_path = folder_name + num2str(wavelength*1e9);
-    #?"mkdir "+folder_path;
-    #system("mkdir "+folder_path);
-#}
-
-rect_enabled = 0;
-GDS_enabled = 0;
-
-# Upper racetrack Straight part
-addrect;
-set("name","Upper racetrack Straight part");
-set("x",-Lx_offset);
-set("x span",Lx_upper + Lx_exten);
-set("y",0);
-set("y span",Ly_upper);
-set("z",z_upper);
-set("z span",Lz_upper);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
-set("alpha",alpha);
-set("enabled",rect_enabled);
-
-# RDL WG
-addrect;
-set("name","RDL Layer");
-set("x",0);
-set("x span",Lx_RDL);
-set("y",0);
-set("y span",Ly_RDL);
-set("z",z_RDL);
-set("z span",Lz_RDL);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
-set("enabled",rect_enabled);
-
-# Lower racetrack Straight part
-addrect;
-set("name","Lower racetrack Straight part");
-set("x",Lx_offset);
-set("x span",Lx_lower+Lx_exten);
-set("y",0);
-set("y span",Ly_lower);
-set("z",z_lower);
-set("z span",Lz_lower);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
-set("enabled",rect_enabled);
-
-#set upper ring
-gdsimport("Upper.gds", "Cell_B", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_upper-Lz_upper/2, z_upper+Lz_upper/2);
-select("GDS_LAYER_1111:0");
-set("name","Upper WG GDS");
-set("x",-Lx_upper/2 - Lx_offset);
-set("y",0);
-set("z",z_upper);
-set("z span",Lz_upper);
-set("enabled",GDS_enabled);
-
-# set taper
-gdsimport("RDL.gds", "Cell_A", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_RDL-Lz_RDL/2, z_RDL+Lz_RDL/2);
-select("GDS_LAYER_1111:0");
-set("name","RDL WG GDS");
-set("x",-Lx_RDL/2);
-set("y",0);
-set("z",z_RDL);
-set("z span",Lz_RDL);
-set("enabled",GDS_enabled);
-
-#set lower ring
-gdsimport("Lower.gds", "Cell_C", "1111:0", "Si3N4 (Silicon Nitride) - Luke", z_lower-Lz_lower/2, z_lower+Lz_lower/2);
-select("GDS_LAYER_1111:0");
-set("name","Lower WG GDS");
-set("x",-Lx_lower/2 + Lx_offset);
-set("y",0);
-set("z",z_lower);
-set("z span",Lz_lower);
-set("enabled",GDS_enabled);
-
-
-##############################################
-# Upper WG
-##############################################
-structure_group_name = "Upper WG";
-Lx_offset   = Lx_offset_const;
-Lx_exten    = Lx_exten_const;
-len_taper   = 4*um;
-EME_x_min   = EME_x_min_const;
-width_prop  = width_prop_upper;
-width_in    = width_in_upper;
-Lz          = Lz_upper;
-z           = z_upper;
-res         = 1000; #resolution of polygon\
-material    = material_core;
-setup_taper;
-
-##############################################
-# Lower WG
-##############################################
-structure_group_name = "Lower WG";
-Lx_offset   = -Lx_offset_const;
-Lx_exten    = Lx_exten_const;
-len_taper   = 4*um;
-EME_x_min   = EME_x_min_const;
-width_prop  = width_prop_upper;
-width_in    = width_in_upper;
-Lz          = Lz_lower;
-z           = z_lower;
-res         = 1000; #resolution of polygon
-material    = material_core;
-setup_taper;
-
-##############################################
-# RDL WG
-##############################################
-structure_group_name = "RDL WG";
-Lx_offset   = 0*um;
-Lx_exten    = 0*um;
-len_taper   = 3.5*um;
-EME_x_min   = EME_x_min_const + 0.5*um;
-width_prop  = width_prop_RDL;
-width_in    = width_in_RDL;
-Lz          = Lz_RDL;
-z           = z_RDL;
-res         = 1000; #resolution of polygon
-material    = material_core;
-setup_taper;
-
-len_taper   = 4*um;
-
-#BOX
-addrect;
-set("name","BOX");
-set("x",0);
-set("x span",Lx_Buried_Oxide);
-set("y",0);
-set("y span",Ly_Buried_Oxide);
-set("z max",0);
-set("z min",-Lz_Buried_Oxide);
-set("override mesh order from material database",true);
-set("mesh order",3);
-set("material",material_cladding);
-set("alpha",alpha);
-
-#Cladding
-addrect;
-set("name","Cladding");
-set("x",0);
-set("x span",Lx_Cladding);
-set("y",0);
-set("y span",Ly_Cladding);
-set("z min",0);
-set("z max",Lz_Cladding);
-set("override mesh order from material database",true);
-set("mesh order",3);
-set("material",material_cladding);
-set("alpha",alpha);
-
-# Set EME simulation
-addeme;
-set("wavelength" , wavelength);
-set("index" , 1);
-set("x min", EME_x_min_const);
-set("y min", EME_y_min);
-set("y max", EME_y_max);
-set("z min", EME_z_min);
-set("z max", EME_z_max);
-set("energy conservation", "make passive");
-set("use relative coordinates",0);
-set("display cells", 1);
-# set cell properties
-set("number of cell groups",3);
-set("group spans",[len_taper; len_prop; len_taper]);
-set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
-set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
-# mesh settings
-set("define y mesh by", "maximum mesh step");
-set("define z mesh by", "maximum mesh step");
-set("dy", mesh_step);
-set("dz", mesh_step);
-
-setactivesolver("EME");
-
-set("allow custom eigensolver settings", 1);
-select("EME::Cells::cell_1");
-seteigensolver("number of trial modes", Num_of_trial_modes);
-seteigensolver("use max index", 1);
-#seteigensolver("n", 1.996);
-
-# set up port upper left
-select("EME::Ports::port_1");
-set("port location","left");
-set("use full simulation span",1);
-#set("use relative coordinates",0);
-#set("y",0);
-#set("y span",Port_y_span);
-#set("z",z_upper);
-#set("z",z_upper-z_RDL);
-#set("z span",Port_z_span);
-set("mode selection","fundamental mode");
-set("offset",-2*um);
-
-# set up port lower left
-select("EME::Ports::port_2");
-set("port location","right");
-set("use full simulation span",1);
-#set("use relative coordinates",0);
-#set("y",0);
-#set("y span",Port_y_span);
-#set("z",z_lower-z_RDL);
-#set("z span",Port_z_span);
-set("mode selection","fundamental mode");
-set("offset",2*um);
-
-
-# set up port upper right
-#addemeport;
-#select("EME::Ports::port_3");
-#set("port location","right");
-#set("use full simulation span",1);
-#set("use relative coordinates",0);
-#set("y",0);
-#set("y span",Port_y_span);
-#set("z",z_upper-z_RDL);
-#set("z span",Port_z_span);
-#set("offset",0*um);
-
-## set up port lower right
-#addemeport;
-#set("port location","right");
-#set("use full simulation span",1);
-#set("use relative coordinates",0);
-#set("y",0);
-#set("y span",Port_y_span);
-#set("z",z_lower-z_RDL);
-#set("z span",Port_z_span);
-#set("offset",2*um);
-
-#addfde;
-#set("solver type","2D X normal");
-#set("x", -Lx_upper/2);
-#set("y",0);
-#set("y span",Port_y_span);
-#set("z",z_upper);
-#set("z span",Port_z_span);
-
-addemeindex;
-set("name","EMEindex");
-set("monitor type","2D Y-normal");
-set("x",0);
-set("x span",Lx_upper);
-set("y",0);
-set("z max",EME_z_max);
-set("z min",EME_z_min);
-
-addemeprofile;
-set("name","EMEprofile");
-set("monitor type","2D Y-normal");
-set("x",0);
-set("x span",(EME_x_max-EME_x_min_const)*1.2);
-set("y",0);
-set("z max",EME_z_max);
-set("z min",EME_z_min);
-
-#run;
-#emepropagate;
+    #write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
+    #write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");
+    #write(log_filename,"\n");
+    #Vertical_coupled_rings_EME_func;
+    
+    switchtolayout;
+    deleteall;
+    
+    # Create folders if they do not yet exist
+    #for(wavl_idx=1:num_sweep_pt){
+        #format short;
+        #wavelength = wavelength_array(wavl_idx);
+    
+        #folder_path = folder_name + num2str(wavelength*1e9);
+        #?"mkdir "+folder_path;
+        #system("mkdir "+folder_path);
+    #}
+    
+    EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3; 
+    rect_enabled = 1;
+    GDS_enabled = 0;
+    
+    # Upper racetrack Straight part
+    addrect;
+    set("name","Upper racetrack Straight part");
+    set("x min", EME_x_min - Lx_exten/2 - Lx_offset);
+    set("x max", EME_x_max + Lx_exten/2);
+    set("y",0);
+    set("y span",Ly_upper);
+    set("z",z_upper);
+    set("z span",Lz_upper);
+    set("override mesh order from material database",true);
+    set("mesh order",2);
+    set("material",material_core);
+    set("alpha",alpha);
+    set("enabled",rect_enabled);
+    
+    # Lower racetrack Straight part
+    addrect;
+    set("name","Lower racetrack Straight part");
+    set("x min", EME_x_min - Lx_exten/2);
+    set("x max", EME_x_max + Lx_exten/2 + Lx_offset);
+    set("y",0);
+    set("y span",Ly_lower);
+    set("z",z_lower);
+    set("z span",Lz_lower);
+    set("override mesh order from material database",true);
+    set("mesh order",2);
+    set("material",material_core);
+    set("enabled",rect_enabled);
+    
+    ##############################################
+    # RDL WG
+    ##############################################
+    structure_group_name = "RDL WG";
+    len_taper       = len_taper_RDL;
+    len_prop        = len_prop_RDL;
+    width_prop      = width_prop_RDL;
+    width_in        = width_in_RDL;
+    Lz              = Lz_RDL;
+    z               = z_RDL;
+    res             = 1000; #resolution of polygon
+    material        = material_core;
+    setup_taper;
+    
+    #BOX
+    addrect;
+    set("name","BOX");
+    set("x",0);
+    set("x span",Lx_Buried_Oxide);
+    set("y",0);
+    set("y span",Ly_Buried_Oxide);
+    set("z max",0);
+    set("z min",-Lz_Buried_Oxide);
+    set("override mesh order from material database",true);
+    set("mesh order",3);
+    set("material",material_cladding);
+    set("alpha",alpha);
+    
+    #Cladding
+    addrect;
+    set("name","Cladding");
+    set("x",0);
+    set("x span",Lx_Cladding);
+    set("y",0);
+    set("y span",Ly_Cladding);
+    set("z min",0);
+    set("z max",Lz_Cladding);
+    set("override mesh order from material database",true);
+    set("mesh order",3);
+    set("material",material_cladding);
+    set("alpha",alpha);
+    
+    # Set EME simulation
+    addeme;
+    set("wavelength" , wavelength);
+    set("index" , 1);
+    set("x min", EME_x_min);
+    set("y min", EME_y_min);
+    set("y max", EME_y_max);
+    set("z min", EME_z_min);
+    set("z max", EME_z_max);
+    set("energy conservation", "make passive");
+    set("use relative coordinates",0);
+    set("display cells", 1);
+    # set cell properties
+    set("number of cell groups",3);
+    set("group spans",[group_span1;group_span2;group_span3]);
+    set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
+    set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
+    # mesh settings
+    set("define y mesh by", "maximum mesh step");
+    set("define z mesh by", "maximum mesh step");
+    set("dy", mesh_step);
+    set("dz", mesh_step);
+    
+    set("allow custom eigensolver settings", 1);
+    select("EME::Cells::cell_1");
+    seteigensolver("number of trial modes", Num_of_trial_modes);
+    seteigensolver("use max index", 1);
+    #seteigensolver("n", 1.996);
+    
+    # set up port upper left
+    select("EME::Ports::port_1");
+    set("port location","left");
+    set("use full simulation span",1);
+    #set("use relative coordinates",0);
+    #set("y",0);
+    #set("y span",Port_y_span);
+    #set("z",z_upper);
+    #set("z",z_upper-z_RDL);
+    #set("z span",Port_z_span);
+    set("mode selection","fundamental mode");
+    set("offset",-Lx_offset/2-Lx_exten/2);
+    
+    # set up port lower left
+    select("EME::Ports::port_2");
+    set("port location","right");
+    set("use full simulation span",1);
+    #set("use relative coordinates",0);
+    #set("y",0);
+    #set("y span",Port_y_span);
+    #set("z",z_lower-z_RDL);
+    #set("z span",Port_z_span);
+    set("mode selection","fundamental mode");
+    set("offset",Lx_offset/2+Lx_exten/2);
+    
+    addemeindex;
+    set("name","EMEindex");
+    set("monitor type","2D Y-normal");
+    set("x min", EME_x_min-Lx_exten);
+    set("x max", EME_x_max+Lx_exten);
+    set("y",0);
+    set("z max",EME_z_max);
+    set("z min",EME_z_min);
+    
+    addemeprofile;
+    set("name","EMEprofile");
+    set("monitor type","2D Y-normal");
+    set("x min", EME_x_min-Lx_exten);
+    set("x max", EME_x_max+Lx_exten);
+    set("y",0);
+    set("z max",EME_z_max);
+    set("z min",EME_z_min);
+    
+    run;
+    emepropagate;
+}

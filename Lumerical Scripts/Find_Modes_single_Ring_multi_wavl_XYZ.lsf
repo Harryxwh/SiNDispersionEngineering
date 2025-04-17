@@ -9,13 +9,13 @@ nm = 1e-9;
 #Lx_WG = 1.547*um; #width of the WG       #gap_x = 8um
 #Lx_WG = 1.460*um; #width of the WG       #gap_x = 10um
 
-Lx_WG = 1*um; #height of the WG
+Lx_WG = 0.8*um; #height of the WG
 #Lx_WG = 8*um; #height of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
 
 Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 15*um; #height of the WG
+Ly_Cladding = 2*um; #height of the WG
 Lz_Cladding = 50*um; #length of the WG
 
 Lx_Buried_Oxide = 50*um;
@@ -27,8 +27,8 @@ Ly_FDE_min = -8*um;
 Ly_FDE_max = 8*um;
 
 mesh_step = 200e-9;
-mesh_cells_x = 500;
-mesh_cells_y = 400;
+mesh_cells_x = 1000;
+mesh_cells_y = 800;
 
 Lx_inner = 8*um;
 bend_radius_inner = 1000*um;

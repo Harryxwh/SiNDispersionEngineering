@@ -1,3 +1,14 @@
+#deleteall;
+#structure_group_name = "RDL WG";
+#len_taper       = 400*um;
+#len_prop        = 300*um;
+#width_prop      = 2.8*um;
+#width_in        = 0.8*um;
+#Lz              = 0.1*um;
+#z               = 5*um;
+#res             = 1000; #resolution of polygon
+#material        = material_core;
+
 ##############################################
 # taper
 
@@ -8,6 +19,9 @@
 ##############################################
 addstructuregroup;
 set("name",structure_group_name);
+set("x",0);
+set("y",0);
+set("z",0);
 EME_x_max = EME_x_min + 2*len_taper + len_prop + 2*x_taper_offset;
 
 # Taper
@@ -36,7 +50,7 @@ set("x min",EME_x_min + x_taper_offset + len_taper);
 set("x max",EME_x_min + x_taper_offset + len_taper + len_prop);
 set("y",0);
 set("y span",width_prop);
-set("z",0);
+set("z",z);
 set("z span",Lz);
 set("material",material);
 addtogroup(structure_group_name);
