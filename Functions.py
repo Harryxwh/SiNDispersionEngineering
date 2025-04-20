@@ -95,7 +95,7 @@ colors_list: format:['tab:red','tab:orange'...] each color corresp to a y data
 figsize: format: (x,y)
 fontsize: size of all the text
 ylim: format : (ymin, ymax). set the y range of the whole figure
-fill_color: whether to fill color in region of y>0
+AD_region_color: whether to fill color in region of y>0
 bbox_to_anchor: coordinates for the legends
 text: used to show comments
 dpi: 300 by default
@@ -140,7 +140,7 @@ def Plot_curve(data_arr,
     ymin = plt.ylim()[0]
     ymax = plt.ylim()[1]
 
-    if param_dict["fill_color"]:
+    if param_dict["AD_region_color"]:
         plt.axhspan(0, ymax, color='green', alpha=0.1,
                     label='Anamolous Dispersion Region')
         plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)

@@ -1,36 +1,6 @@
 '''
 Main program for the simulation of two coupled microrings or bent waveguides
 '''
-def Plot_field_profile(component,component_name,
-                       save_name='./results/field_profile.png',dpi=150):
-    fonttype = "Helvetica"
-    fontsize = 4
-    grid_linewidth = 1
-
-    fig, ax = plt.subplots(1,3,figsize=(8, 4),dpi=150)
-    plt.subplots_adjust(wspace =0.6, hspace =0.5)   #调整子图间距
-
-    plt.yticks(fontproperties = fonttype, size = fontsize)
-    plt.xticks(fontproperties = fonttype, size = fontsize)
-    plt.rcParams["font.family"] = fonttype
-    plt.rcParams.update({'font.size': fontsize})
-    plt.ylabel('Y', fontdict={'family' : fonttype, 'size' : fontsize})
-    plt.xlabel('X', fontdict={'family' : fonttype, 'size' : fontsize})
-    plt.legend()
-
-    name_list = ['Abs','Re','Im']
-    component_list = [np.abs(component),np.real(component),np.imag(component)]
-    for idx in range(3):
-        im = ax[idx].imshow(component_list[idx])
-        ax[idx].set_title(name_list[idx]+'('+component_name+')')
-        fig.colorbar(im,fraction=0.08, pad=0.05,orientation='vertical')
-        ax[idx].set_xlabel("X")
-        ax[idx].set_ylabel("Y")
-        ax[idx].invert_yaxis()
-        ax[idx].tick_params(axis='both',labelsize=5)
-    plt.savefig(save_name,dpi=dpi)
-    plt.show()
-    return
 
 '''
 class Waveguide()
@@ -121,35 +91,6 @@ class Parameter_sweeper():
                                         Plot_field=Plot_field, Plot_index=Plot_index)
         return Coupled_WG
 
-
-    def Plot_curve(self,X,Y_arr,Y_legends,
-                   X_label,Y_label,
-                   dpi=150):
-
-        #Plot parameters
-        fonttype = "Helvetica"
-        fontsize = 10
-        grid_linewidth = 0.8
-        plot_linewidth = 1.5
-        colors = ['tab:blue', 'tab:orange', 'tab:red', 'tab:green']
-        plt.figure(figsize=(5,4))
-        for idx in range(np.shape(Y_arr)[1]):
-            plt.plot(X,Y_arr[:,idx],label=Y_legends[idx],
-                     color=colors[idx], marker='o',
-                     linestyle='-', linewidth=plot_linewidth)
-        plt.yticks(fontproperties = fonttype, size = fontsize)
-        plt.xticks(fontproperties = fonttype, size = fontsize)
-        plt.rcParams["font.family"] = fonttype
-        plt.rcParams.update({'font.size': fontsize})
-        plt.ylabel(Y_label, fontdict={'family' : fonttype, 'size' : fontsize})
-        plt.xlabel(X_label, fontdict={'family' : fonttype, 'size' : fontsize})
-        plt.legend()
-        plt.grid(linewidth=grid_linewidth, alpha=0.3)
-        savename = "results/"+str(Y_label)+".png"
-        plt.savefig(savename,dpi=dpi)
-        plt.tight_layout()
-        plt.show()
-
     def Scan_wavl(self,gap_idx):
         beta_uncoupled_arr = []
         beta_coupled_arr   = []
@@ -172,38 +113,5 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr, beta_coupled_arr
 
-    def Dispersion(self):
-        fre_vec = self.c / self.wavl_vec
-        Diff_fre = np.diff(fre_vec,axis=0)
-        Diff_beta = np.diff(self.beta_array,axis=1)
-        FOD = np.multiply(Diff_beta, 1/(2 * np.pi) * np.reciprocal(Diff_fre))
-        self.Plot_curve(self.wavl_vec, FOD, "FOD")
 
-    #Load results from Di Yu
-    def Save_results(self,plot=True):
-        # filename = '../FDE/results/dispersion_ring_resonator.txt'
-        # n_eff_ring = np.loadtxt(filename,delimiter=',',dtype=float,skiprows=1)
-        # filename = '../FDE/results/dispersion_bus_waveguide.txt'
-        # n_eff_bus  = np.loadtxt(filename,delimiter=',',dtype=float,skiprows=1)
-        beta_uncoupled_arr, beta_coupled_arr  = self.Scan_wavl(gap_idx=0)
-        filename_uncoupled = "results/beta_uncoupled.txt"
-        filename_coupled = "results/beta_coupled.txt"
-        with open(filename_uncoupled,'w') as f:
-            for wavl_idx in range(len(self.wavl_vec)):
-                beta_str = str(np.real(beta_uncoupled_arr[wavl_idx,0])) + "," + \
-                            str(np.real(beta_uncoupled_arr[wavl_idx,1])) + "\n"
-                f.write(beta_str)
-
-        with open(filename_coupled,'w') as f:
-            for wavl_idx in range(len(self.wavl_vec)):
-                beta_str = str(np.real(beta_coupled_arr[wavl_idx,0])) + "," + \
-                            str(np.real(beta_coupled_arr[wavl_idx,1])) + "\n"
-                f.write(beta_str)
-
-        if plot == True:
-            self.Plot_curve(self.wavl_vec,
-                            np.c_[beta_uncoupled_arr,beta_coupled_arr],
-                            ['beta_uncoupled_1','beta_uncoupled_2',
-                            'beta_coupled_1','beta_coupled_2'],
-                            'wavelength(um)','beta - beta_ave(rad\\rad)')
 

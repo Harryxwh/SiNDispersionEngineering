@@ -17,7 +17,7 @@
     "ylim"              : [],
     "fonttype"          : "Helvetica",
     "fontsize"          : 10,
-    "fill_color"        : false,
+    "AD_region_color"        : false,
     "bbox_legend"       : [],
     "text"              : "",
     "linespacing"       : 1.2,
