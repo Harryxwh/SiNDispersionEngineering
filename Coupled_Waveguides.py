@@ -22,7 +22,7 @@ class Coupled_Waveguides():
     c           =   299792458
     u0          =   4 * np.pi * 1e-7
     n_air       =   1
-    n_si        =   3.48
+    # n_si        =   3.48
     component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
 
     def __init__(self, n_core, n_cladding,
@@ -165,8 +165,7 @@ class Coupled_Waveguides():
         WG1_x = self.Convert_to_num_of_cells(self.WG1_x - x_min_padded,axis='x')
         WG2_x = self.Convert_to_num_of_cells(self.WG2_x - x_min_padded,axis='x')
         Ly_cladding = self.Convert_to_num_of_cells(self.Ly_cladding - y_min_padded, axis='y')
-        Ly_BOX = max(self.Convert_to_num_of_cells(self.Ly_BOX - y_min_padded , axis='y'), 0)
-        return (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX)
+        return (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding)
 
     @property
     def WG_geometry_in_num_of_cells(self):
@@ -187,12 +186,12 @@ class Coupled_Waveguides():
         assert compressed_len_x > max(WG1_width+shift_x, WG2_width+shift_x)
 
         # The coordinate of WGs (unit: num of cells)
-        (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX)  = self.Structure_coordinates
+        (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding)  = self.Structure_coordinates
 
         # N(x,y):The overall index matrix
         self.N = np.ones(self.Compressed_shape) * self.n_cladding
         self.N[Ly_cladding:,:] = self.n_air
-        self.N[:Ly_BOX,:] = self.n_si
+        # self.N[:Ly_BOX,:] = self.n_si
         self.N[ int(WG1_y - WG1_height/2 -shift_y) :
                 int(WG1_y + WG1_height/2 -shift_y),
                 int(WG1_x - WG1_width/2  -shift_x) :
@@ -222,7 +221,7 @@ class Coupled_Waveguides():
                            save_name='./results/index_profile.jpg',dpi=300):
 
         colormap = "YlOrRd"
-        WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX  = self.Structure_coordinates
+        WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding  = self.Structure_coordinates
         WG1_width,WG1_height,WG2_width,WG2_height = self.WG_geometry_in_num_of_cells
         shift_x,shift_y = self.Calculate_shift
 
@@ -313,7 +312,7 @@ class Coupled_Waveguides():
             xticks,yticks = self.Convert_ticks(xticks_prev,yticks_prev)
 
             shift_x,shift_y = self.Calculate_shift
-            (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding,Ly_BOX) = self.Structure_coordinates
+            (WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding) = self.Structure_coordinates
             WG1_width,WG1_height,WG2_width,WG2_height = self.WG_geometry_in_num_of_cells
 
             # coordinates of WGs (unit: num of cells)

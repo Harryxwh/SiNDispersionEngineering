@@ -44,6 +44,7 @@ class Data_analyzer(Coupled_Waveguides):
         self.beta_coupled_arr = self.Load_coupled_data_CMT(filename_coupled, self.wavl_arr)
         if self.Lumerical_data_exist:
             self.beta_coupled_lumerical_arr, self.beta_ave_lumerical_arr = self.Load_coupled_data_Lumerical(filename_lumerical, self.wavl_arr)
+        self.beta_coupled_arr[:,1:] = self.beta_coupled_arr[:,1:]*2
 
         gap_x, gap_y = self.gap_arr
         if gap_x > 0:
@@ -358,7 +359,7 @@ class Data_analyzer(Coupled_Waveguides):
                     ","+"{:.2f})".format(self.gap_arr[1])
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
         if self.save_csv:
-            self.save_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
+            self.write_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
                         D_WG=D_WG_ave, D_supermode=D_supermode_2_intp,
                         filename_D_iso="./results/Dispersion_isolated_WG.csv",
                         filename_D_supermode="./results/Dispersion_coupled_WG.csv")

@@ -101,7 +101,7 @@ class Parameter_sweeper():
             beta_uncoupled = np.array([[Coupled_WG.beta_ang_1,
                                         Coupled_WG.beta_ang_2]]) - Coupled_WG.beta_ave
             beta_coupled, coeff_of_supermodes = Coupled_WG.Find_supermodes()
-            Coupled_WG.Export_kappa()
+            # Coupled_WG.Export_kappa()
 
             # For anti-sym modes, delta beta is always positive
             if beta_coupled[0,0] < 0:
