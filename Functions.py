@@ -63,7 +63,7 @@ def Plot_field_profile(component,component_name,
     return
 
 
-    # length of the arr will reduce by 2
+# length of the arr will reduce by 2
 def First_derivative_central_diff(y,x):
     # 计算差分
     dy = np.diff(y)  # y[i+1] - y[i]
@@ -130,29 +130,35 @@ def Plot_curve(data_arr,
 
     if len(param_dict["xlim"])>0:
         xlim = param_dict["xlim"]
-        plt.xlim(xlim[0],xlim[1])
+        plt.xlim(min(xlim),max(xlim))
     xmin = plt.xlim()[0]
     xmax = plt.xlim()[1]
 
     if len(param_dict["ylim"])>0:
         ylim = param_dict["ylim"]
-        plt.ylim(ylim[0],ylim[1])
+        plt.ylim(min(ylim),max(ylim))
     ymin = plt.ylim()[0]
     ymax = plt.ylim()[1]
 
-    if param_dict["AD_region_color"]:
+    if param_dict["AD_region_color"] and ymax>0:
         plt.axhspan(0, ymax, color='green', alpha=0.1,
                     label='Anamolous Dispersion Region')
         plt.axhline(0, color='gray', linestyle='--', linewidth=0.5)
         plt.ylim(ymin,ymax)
 
     if len(param_dict["xtickslabel"])>1:
-        plt.xticks(param_dict["xticks"],param_dict["xtickslabel"],
+        xticks = np.array(param_dict["xticks"])
+        xtickslabel = np.array(param_dict["xtickslabel"])
+        xticks_mask = np.where((xticks<=xmax) & (xticks>=xmin))
+        xticks = xticks[xticks_mask]
+
+        plt.xticks(xticks,xtickslabel,
                    fontproperties = param_dict["fonttype"],
                    size = param_dict["fontsize"])
+
     if len(param_dict["yticks"])>1:
         yticks = ticks_arr([ymin,ymax])
-        plt.yticks(param_dict["yticks"],param_dict["yticks"],
+        plt.yticks(yticks,yticks,
                    fontproperties = param_dict["fonttype"],
                    size = param_dict["fontsize"])
 

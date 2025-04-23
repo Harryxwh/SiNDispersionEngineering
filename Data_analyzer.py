@@ -44,7 +44,7 @@ class Data_analyzer(Coupled_Waveguides):
         self.beta_coupled_arr = self.Load_coupled_data_CMT(filename_coupled, self.wavl_arr)
         if self.Lumerical_data_exist:
             self.beta_coupled_lumerical_arr, self.beta_ave_lumerical_arr = self.Load_coupled_data_Lumerical(filename_lumerical, self.wavl_arr)
-        self.beta_coupled_arr[:,1:] = self.beta_coupled_arr[:,1:]*2
+        self.beta_coupled_arr[:,1:] = self.beta_coupled_arr[:,1:]
 
         gap_x, gap_y = self.gap_arr
         if gap_x > 0:
@@ -319,8 +319,8 @@ class Data_analyzer(Coupled_Waveguides):
                 "title"     : r"Propagation constant of coupled modes calculated using different methods",
                 "marker_list"   :["","",".",".","","","o","o"],
                 "linestyle_list":["--","--","","","-","-","",""],
-                "colors_list"   :['green','mediumblue','LightPink','crimson',
-                                  'LightPink','crimson','lightskyblue','steelblue']*2}
+                "colors_list"   :['lightcoral','skyblue','LightPink','crimson',
+                                  'LightPink','crimson','lightskyblue','dodgerblue']*2}
             Plot_curve(Y_data,**param_dict)
 
         Y_data = (np.c_[self.wavl_arr_intp[2:-2],
@@ -349,8 +349,8 @@ class Data_analyzer(Coupled_Waveguides):
                 "marker_list"       : ["","","","","",""]*2,
                 "plot_linewidth"    : 2,
                 "linestyle_list"    : ["--","--","-","-","-","-","-","-"]*2,
-                "colors_list"       : ['green','mediumblue',
-                                       'LightPink','crimson','lightskyblue','steelblue']*2,
+                "colors_list"       : ['lightcoral','skyblue','LightPink','crimson',
+                                        'lightskyblue','dodgerblue']*2,
                 "AD_region_color"   : True
             }
             Plot_curve(Y_data,**param_dict)

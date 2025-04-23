@@ -171,8 +171,8 @@ if __name__ == '__main__':
     filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_L_inner_8um_gap_4um.txt"
     filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_L_inner_8um_gap_4um.txt"
 
-    filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
-    filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
+    filename_uncoupled_gap5um   = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
+    filename_coupled_gap5um     = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
 
     filename_lumerical_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/Lumerical_supermodes_results_gapx_4um.txt"
     filename_lumerical_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/Lumerical_supermodes_results_gapx_5um.txt"
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um, param_filename,
     #                          save_csv=False, Lumerical_data_exist=True,
     #                          filename_lumerical=filename_lumerical_gap4um,num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=False, Lumerical_data_exist=False, num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+                            save_csv=True, Lumerical_data_exist=False, num_of_pts=200)
 
