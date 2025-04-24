@@ -30,9 +30,9 @@ class Data_analyzer(Coupled_Waveguides):
                  num_of_pts = 100):
         self.load_param(param_filename)
         self.num_of_pts = num_of_pts
-        self.wavl_arr = wavl_arr/1000   #unit: um
+        self.wavl_arr = wavl_arr/1000                       #unit: um
         self.wavl_arr_intp = np.linspace(np.min(self.wavl_arr),np.max(self.wavl_arr),
-                                         self.num_of_pts)  #unit: um
+                                         self.num_of_pts)   #unit: um
         self.gap_arr = gap_arr
         self.plot_curve = plot_curve
         self.Lumerical_data_exist = Lumerical_data_exist
@@ -44,7 +44,7 @@ class Data_analyzer(Coupled_Waveguides):
         self.beta_coupled_arr = self.Load_coupled_data_CMT(filename_coupled, self.wavl_arr)
         if self.Lumerical_data_exist:
             self.beta_coupled_lumerical_arr, self.beta_ave_lumerical_arr = self.Load_coupled_data_Lumerical(filename_lumerical, self.wavl_arr)
-        self.beta_coupled_arr[:,1:] = self.beta_coupled_arr[:,1:]
+        self.beta_coupled_arr[:,1:] = self.beta_coupled_arr[:,1:]*2
 
         gap_x, gap_y = self.gap_arr
         if gap_x > 0:
@@ -293,7 +293,7 @@ class Data_analyzer(Coupled_Waveguides):
         D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,self.wavl_arr_intp)
 
         Y_data = (np.c_[self.wavl_arr,
-                        self.beta_uncoupled_arr[:,1:3],
+                        self.beta_uncoupled_arr[:,1:2],
                         self.beta_coupled_arr[:,1:]],
                   np.c_[self.wavl_arr_intp,
                         self.beta_coupled_arr_intp[:,:]],)
@@ -308,7 +308,8 @@ class Data_analyzer(Coupled_Waveguides):
         if self.plot_curve:
             param_dict = {
                 "Y_legends":
-                ['Uncoupled inner ring','Uncoupled outer ring',
+                ['Uncoupled ring',
+                #  'Uncoupled outer ring',
                 'Supermode 1 (CMT)','Supermode 2 (CMT)',
                 'Supermode 1 (CMT) Interpolation',
                 'Supermode 2 (CMT) Interpolation',
@@ -316,11 +317,16 @@ class Data_analyzer(Coupled_Waveguides):
                 'beta_iso_inner','beta_iso_outer'],
                 "X_label"   : 'wavelength(um)',
                 "Y_label"   : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
-                "title"     : r"Propagation constant of coupled modes calculated using different methods",
-                "marker_list"   :["","",".",".","","","o","o"],
-                "linestyle_list":["--","--","","","-","-","",""],
-                "colors_list"   :['lightcoral','skyblue','LightPink','crimson',
-                                  'LightPink','crimson','lightskyblue','dodgerblue']*2}
+                # "title"     : r"Propagation constant of coupled modes calculated using different methods",
+                 "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
+                # "marker_list"   :["","",".",".","","","o","o"],
+                # "linestyle_list":["--","--","","","-","-","",""],
+                # "colors_list"   :['lightcoral','skyblue','LightPink','crimson',
+                #                   'LightPink','crimson','lightskyblue','dodgerblue']*2}
+                "marker_list"   :["",".",".","","","o","o"],
+                "linestyle_list":["--","","","-","-","",""],
+                "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*2
+            }
             Plot_curve(Y_data,**param_dict)
 
         Y_data = (np.c_[self.wavl_arr_intp[2:-2],
@@ -360,7 +366,7 @@ class Data_analyzer(Coupled_Waveguides):
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
         if self.save_csv:
             self.write_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
-                        D_WG=D_WG_ave, D_supermode=D_supermode_2_intp,
+                        D_WG=D_WG_ave, D_supermode=D_supermode_1_intp,
                         filename_D_iso="./results/Dispersion_isolated_WG.csv",
                         filename_D_supermode="./results/Dispersion_coupled_WG.csv")
 
