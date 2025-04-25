@@ -1,0 +1,198 @@
+switchtolayout;
+deleteall;
+
+um = 1e-6;
+nm = 1e-9;
+
+#Geometry
+
+#Inner Ring
+Lx_WG1 = 8*um; #width of the WG
+Ly_WG1 = 0.1*um; #height of the WG
+Lz_WG1 = 10*um; #length of the WG
+
+#Outer Ring
+Lx_WG2 = 2.808*um; #width of the WG
+Ly_WG2 = 0.1*um; #height of the WG
+Lz_WG2 = 10*um; #length of the WG
+
+Lx_Cladding = 50*um; #width of the WG
+Ly_Cladding = 2*um; #height of the WG
+Lz_Cladding = 50*um; #length of the WG
+
+Lx_Buried_Oxide = 50*um;
+Ly_Buried_Oxide = 14.5*um;
+Lz_Buried_Oxide = 50*um;
+
+Lx_FDE = 45*um;
+Ly_FDE_min = -10*um;
+Ly_FDE_max = 5*um;
+
+mesh_step = 200e-9;
+mesh_cells_x = 3000;
+mesh_cells_y = 1000;
+
+gap = 3*um;
+
+bend_radius_inner   =  1000*um;
+bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
+#bend_radius        =  bend_radius_inner;
+?"bend_radius = "   + num2str(bend_radius*1e6)+" um";
+
+material_core = "Si3N4 (Silicon Nitride) - Luke";
+material_cladding = "SiO2 (Glass) - Palik";
+
+Max_Mode_Idx = 2;
+
+folder_name = "Dispersion_2D_concentric_rings" + "\\";
+
+# Define wavelength of simulation
+gap_min         = 2.4*um;
+gap_max         = 2.9*nm;
+num_sweep_pt    = 6;
+gap_array       = linspace(gap_min,gap_max,num_sweep_pt);
+
+wavelength      = 1550*nm;
+
+# Create folders if they do not yet exist
+#for(wavl_idx=1:num_sweep_pt){
+    #format short;
+    #wavelength = wavelength_array(wavl_idx);
+
+    #folder_path = folder_name + num2str(wavelength*1e9);
+    #?"mkdir "+folder_path;
+    #system("mkdir "+folder_path);
+#}
+
+addrect;
+set("name","Inner Ring");
+set("x",-Lx_WG1/2 - gap/2);
+set("x span",Lx_WG1);
+set("y min",0);
+set("y max",Ly_WG1);
+#set("z",0);
+#set("z span",Lz_WG1);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
+
+#Outer Ring
+addrect;
+set("name","Outer Ring");
+set("x",Lx_WG2/2 + gap/2);
+set("x span",Lx_WG2);
+set("y min",0);
+set("y max",Ly_WG2);
+#set("z",0);
+#set("z span",Lz_WG2);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
+
+#BOX
+addrect;
+set("name","BOX");
+set("x",0);
+set("x span",Lx_Buried_Oxide);
+set("y max",0);
+set("y min",-Ly_Buried_Oxide);
+#set("z",0);
+#set("z span",Lz_Buried_Oxide);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+#Cladding
+addrect;
+set("name","Cladding");
+set("x",0);
+set("x span",Lx_Cladding);
+set("y min",0);
+set("y max",Ly_Cladding);
+#set("z",0);
+#set("z span",Lz_Cladding);
+set("override mesh order from material database",true);
+set("mesh order",3);
+set("material",material_cladding);
+
+addfde;
+set("solver type","2D Z normal");
+set("x",0*um);
+set("y",0);
+set("x span",Lx_FDE);
+set("y min",Ly_FDE_min);
+set("y max",Ly_FDE_max);
+#set("x min bc","Metal");
+#set("x max bc","Metal");
+#set("y min bc","Metal");
+#set("y max bc","Metal");
+set("x min bc","PML");
+set("x max bc","PML");
+set("y min bc","PML");
+set("y max bc","PML");
+set("define x mesh by","number of mesh cells");
+set("define y mesh by","number of mesh cells");
+set("mesh cells x",mesh_cells_x);
+set("mesh cells y",mesh_cells_y);
+setnamed("FDE","wavelength",wavelength);
+
+set("bent waveguide",1);
+set("bend location x", 0);
+set("bend location y", 0);
+set("bend location z", 0);
+set("bend radius",bend_radius);
+
+addmesh;
+set("name","mesh_waveguide");
+set("x min",-gap/2 - Lx_WG1 - 1*um);
+set("x max", gap/2 + Lx_WG2 + 1*um );
+set("y min",0 - 1*um);
+set("y max",Ly_WG1 + 1*um);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",0);
+set("set maximum mesh step",1);
+set("dx",10*nm);
+set("dy",10*nm);
+
+for(gap_idx=1:num_sweep_pt){
+
+    switchtolayout;
+
+    gap = gap_array(gap_idx);
+
+    format short;
+    D_filename  = folder_name+ "gapx_"+num2str(gap)+".txt";
+    if(fileexists(D_filename)){rm(D_filename);}
+
+    findmodes;
+
+    selectmode(2);
+    setanalysis("track selected mode",1);
+    setanalysis("detailed dispersion calculation",1);
+    setanalysis("store mode profiles while tracking",1);
+    setanalysis("stop wavelength",1.5*um);
+    setanalysis("number of points",10);
+    frequencysweep;
+
+    format long;
+    D        = getdata("frequencysweep","D");
+    f        = getdata("frequencysweep","f_D");
+    data_arr = [f,D];
+    write(D_filename,num2str(data_arr));
+
+    selectmode(2);
+    setanalysis("track selected mode",1);
+    setanalysis("detailed dispersion calculation",1);
+    setanalysis("store mode profiles while tracking",1);
+    setanalysis("stop wavelength",1.57*um);
+    setanalysis("number of points",4);
+    frequencysweep;
+
+    format long;
+    D        = getdata("frequencysweep","D");
+    f        = getdata("frequencysweep","f_D");
+    data_arr = [f,D];
+    write(D_filename,num2str(data_arr));
+
+}
