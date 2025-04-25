@@ -32,8 +32,6 @@ mesh_step = 200e-9;
 mesh_cells_x = 3000;
 mesh_cells_y = 1000;
 
-gap = 3*um;
-
 bend_radius_inner   =  1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
 #bend_radius        =  bend_radius_inner;
@@ -47,8 +45,8 @@ Max_Mode_Idx = 2;
 folder_name = "Dispersion_2D_concentric_rings" + "\\";
 
 # Define wavelength of simulation
-gap_min         = 2.4*um;
-gap_max         = 2.9*nm;
+gap_min         = 2.4   *um;
+gap_max         = 2.9   *um;
 num_sweep_pt    = 6;
 gap_array       = linspace(gap_min,gap_max,num_sweep_pt);
 
@@ -159,10 +157,11 @@ for(gap_idx=1:num_sweep_pt){
 
     switchtolayout;
 
-    gap = gap_array(gap_idx);
-
     format short;
-    D_filename  = folder_name+ "gapx_"+num2str(gap)+".txt";
+    gap = gap_array(gap_idx);
+    ?"gap = " + num2str(gap*1e6) +"um";
+
+    D_filename  = folder_name+ "gapx_"+num2str(gap*1e6)+"um.txt";
     if(fileexists(D_filename)){rm(D_filename);}
 
     findmodes;
