@@ -21,7 +21,7 @@ Methods:
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import namedtuple
-MIN_VALUE = np.complex128(10**(-20),0)      # value used as zero when padding the field profile
+MIN_VALUE = np.complex128(1e-20,0)      # value used as zero when padding the field profile
 
 
 class Waveguide():
