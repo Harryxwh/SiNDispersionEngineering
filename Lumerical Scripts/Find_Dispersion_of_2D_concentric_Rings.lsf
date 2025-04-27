@@ -174,7 +174,7 @@ for(gap_idx=1:num_sweep_pt){
     setanalysis("detailed dispersion calculation",1);
     setanalysis("store mode profiles while tracking",1);
     setanalysis("stop wavelength",1.6*um);
-    setanalysis("number of points",8);
+    setanalysis("number of points",10);
     frequencysweep;
 
     format long;
@@ -188,8 +188,8 @@ for(gap_idx=1:num_sweep_pt){
     setanalysis("track selected mode",1);
     setanalysis("detailed dispersion calculation",1);
     setanalysis("store mode profiles while tracking",1);
-    setanalysis("stop wavelength",1.49*um);
-    setanalysis("number of points",30);
+    setanalysis("stop wavelength",1.5*um);
+    setanalysis("number of points",10);
     frequencysweep;
 
     format long;
