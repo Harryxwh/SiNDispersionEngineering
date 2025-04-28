@@ -14,9 +14,9 @@ material_cladding = "SiO2 (Glass) - Palik";
 folder_name = "Dispersion_2D_concentric_rings" + "\\";
 
 # Define wavelength of simulation
-gap_min         = 2.4   *um;
-gap_max         = 2.9   *um;
-num_sweep_pt    = 6;
+gap_min         = 2.6   *um;
+gap_max         = 3.4   *um;
+num_sweep_pt    = 5;
 gap_array       = linspace(gap_min,gap_max,num_sweep_pt);
 
 wavelength      = 1550*nm;
@@ -32,7 +32,10 @@ for(gap_idx=1:num_sweep_pt){
     ?"gap = " + num2str(gap*1e6) +"um";
 
     D_filename  = folder_name+ "gapx_"+num2str(gap*1e6)+"um.txt";
+    #D_filename  = "Dispersion_of_isolated_inner_ring.txt";
     if(fileexists(D_filename)){rm(D_filename);}
+    write(D_filename,"Wavelength (microns), Dispersion (us/nm/km)");
+
     
     #Inner Ring
     Lx_WG1 = 8*um; #width of the WG
@@ -61,9 +64,21 @@ for(gap_idx=1:num_sweep_pt){
     #bend_radius        =  bend_radius_inner;
     ?"bend_radius = "   + num2str(bend_radius*1e6)+" um";
     
+    #addrect;
+    #set("name","Inner Ring");
+    #set("x",-Lx_WG1/2 - gap/2);
+    #set("x span",Lx_WG1);
+    #set("y min",0);
+    #set("y max",Ly_WG1);
+    ##set("z",0);
+    ##set("z span",Lz_WG1);
+    #set("override mesh order from material database",true);
+    #set("mesh order",2);
+    #set("material",material_core);
+    
     addrect;
     set("name","Inner Ring");
-    set("x",-Lx_WG1/2 - gap/2);
+    set("x",0);
     set("x span",Lx_WG1);
     set("y min",0);
     set("y max",Ly_WG1);
@@ -158,6 +173,21 @@ for(gap_idx=1:num_sweep_pt){
     setanalysis("track selected mode",1);
     setanalysis("detailed dispersion calculation",1);
     setanalysis("store mode profiles while tracking",1);
+    setanalysis("stop wavelength",1.6*um);
+    setanalysis("number of points",10);
+    frequencysweep;
+
+    format long;
+    D        = getdata("frequencysweep","D");
+    f        = getdata("frequencysweep","f_D");
+    data_arr = [flip(f,1),flip(D,1)];
+    write(D_filename,num2str(data_arr));
+
+
+    selectmode(2);
+    setanalysis("track selected mode",1);
+    setanalysis("detailed dispersion calculation",1);
+    setanalysis("store mode profiles while tracking",1);
     setanalysis("stop wavelength",1.5*um);
     setanalysis("number of points",10);
     frequencysweep;
@@ -168,18 +198,5 @@ for(gap_idx=1:num_sweep_pt){
     data_arr = [f,D];
     write(D_filename,num2str(data_arr));
 
-    selectmode(2);
-    setanalysis("track selected mode",1);
-    setanalysis("detailed dispersion calculation",1);
-    setanalysis("store mode profiles while tracking",1);
-    setanalysis("stop wavelength",1.57*um);
-    setanalysis("number of points",4);
-    frequencysweep;
-
-    format long;
-    D        = getdata("frequencysweep","D");
-    f        = getdata("frequencysweep","f_D");
-    data_arr = [f,D];
-    write(D_filename,num2str(data_arr));
-
+  
 }
