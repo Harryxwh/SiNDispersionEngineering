@@ -206,9 +206,9 @@ if __name__ == '__main__':
     # param_filename = "./Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 5
-    end_gap_x     = 5
-    num_of_gaps_x = 1
+    start_gap_x   = 2.5
+    end_gap_x     = 3.5
+    num_of_gaps_x = 11
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -227,7 +227,7 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
-    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
+    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -243,10 +243,10 @@ if __name__ == '__main__':
     #                          filename_uncoupled_gap3um, filename_coupled_gap3um, param_filename,
     #                          save_csv=False, FDE_data_exist=False,num_of_pts=100)
 
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-                            save_csv=True,save_mode = "AS", FDE_data_exist=False, num_of_pts=100)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-                            save_csv=True,save_mode = "S", FDE_data_exist=False, num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+    #                         save_csv=True,save_mode = "AS", FDE_data_exist=False, num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+    #                         save_csv=True,save_mode = "S", FDE_data_exist=False, num_of_pts=100)
 

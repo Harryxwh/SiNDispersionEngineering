@@ -197,19 +197,22 @@ def Interpol(x,y,x_intp):
 # Gives a better array of ticks than the defaults
 def ticks_arr(data_arr, small_ticks = False):
     # For data>0, the largest base. E.g. if max = 7875, largest base is 1000.
-    if small_ticks:
-        largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
-    else:
-        largest_divider_max = 10**int(np.log10(np.max(data_arr)))
-    ticks_arr = np.arange(largest_divider_max,
-                          (int(np.max(data_arr)/largest_divider_max)+1)*largest_divider_max,
-                          largest_divider_max)
+    ticks_arr = np.array([0,])
+    if np.max(data_arr)>0:
+        if small_ticks:
+            largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
+        else:
+            largest_divider_max = 10**int(np.log10(np.max(data_arr)))
+        posi_arr= np.arange(largest_divider_max,
+                            (int(np.max(data_arr)/largest_divider_max)+1)*largest_divider_max,
+                            largest_divider_max)
+        ticks_arr = np.r_[ticks_arr,posi_arr]
     # if min<0, than for data<0, the largest base.
     if np.min(data_arr)<0:
         largest_divider_min = 10**int(np.log10(-np.min(data_arr)))
         nega_arr = np.arange(int(np.min(data_arr)/largest_divider_min)*largest_divider_min,
                              0, largest_divider_min)
-        ticks_arr = np.r_[nega_arr,np.array([0,]),ticks_arr]
+        ticks_arr = np.r_[nega_arr,ticks_arr]
 
     return ticks_arr
 

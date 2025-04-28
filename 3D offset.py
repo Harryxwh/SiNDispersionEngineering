@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from Functions import *
+plt.ion()
 c = 3*1e8
 ng_1550     = 1.595643967049753
 freq_1550   = c/(1550*1e-9)
+g0          = 673
+Max_M_idx   = 3
+num_of_pts  = 10000
+D_2o        = -283 *1e3 * 2*np.pi      # unit: Hz
 
 def Control_angle_range_0_2_2pi(angle):
     mask_less = np.where(angle < 0)
@@ -127,7 +132,7 @@ def AD_range_func(m_arr,D_arr,M,FSR):
     zero_list_m_0           = zero_list[np.where(np.abs(zero_list) < M)]      # zeros around mode numer m = 0
     zero_list_m_0_p         = zero_list_m_0[zero_list_m_0>0]
     zero_list_m_0_m         = zero_list_m_0[zero_list_m_0<0]
-    if len(zero_list_m_0_p) > 0 and  len(zero_list_m_0_m) > 0  and D_arr[np.argmin(np.abs(m_arr))] > 0:
+    if len(zero_list_m_0_p) > 0 and  len(zero_list_m_0_m) > 0 and D_arr[np.argmin(np.abs(m_arr))] > 0:
         return (np.min(zero_list_m_0_p) - np.max(zero_list_m_0_m))*FSR * 1e-9 /100 * 0.8
     else:
         return 0
@@ -196,7 +201,7 @@ def Mode_nonconserved_coupling(Max_M_idx,M,
                     "colors_list"     : colors_list,
                     "xlim"            : (-Max_M_idx*M,Max_M_idx*M),
                     "ylim"            : ylim,
-                    "bbox_legend"     : (1.05,0.8)}
+                    "bbox_legend"     : (1.05,0.6)}
     if len(param_dict_)>0:
         for key,value in param_dict_.items():
             param_dict[key] = value
@@ -205,12 +210,10 @@ def Mode_nonconserved_coupling(Max_M_idx,M,
 
     Plot_curve(data_arr,**param_dict)
 
-def Optimized_2D_parallel(L1,Rtot,gL_product_arr,g0,D_iso):
+def Optimized_2D_parallel(m_arr_intp,L1,Rtot,gL_arr,g0,D_iso):
     # The optimal AD range if the same rings are put in 2D parallel structure
-    gL_product_arr = np.arange(0.1,1.6,0.1)
     epsilon_arr     = epsilon_func(L1, L1*Rtot_arr)
-    Lco_arr         = gL_product_arr  / g0
-    AD_range_2D_arr    = []
+    Lco_arr         = gL_arr  / g0
     L2      = L1 * Rtot
     D1      = c/(ng_1550 * L1) *2* np.pi
     D2      = c/(ng_1550 * L2) *2* np.pi
@@ -220,6 +223,7 @@ def Optimized_2D_parallel(L1,Rtot,gL_product_arr,g0,D_iso):
     FSR = (D1-D2)/(2*epsilon)
     M = 1/(2*epsilon)
 
+    AD_range_2D_arr = []
     for Lco in Lco_arr:
         Reson_freq_arr = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,Lco,epsilon)
         D_coupled_arr  = Dispersion_2D_num(m_arr_intp,Reson_freq_arr)
@@ -231,34 +235,33 @@ def Optimized_2D_parallel(L1,Rtot,gL_product_arr,g0,D_iso):
     flat_index = np.argmax(AD_range_2D_arr)
     max_index_2D = np.unravel_index(flat_index, np.shape(AD_range_2D_arr))
     best_AD_range_2D = AD_range_2D_arr[max_index_2D]
-    best_gL_2D = gL_product_arr[max_index_2D[1]]
+    best_gL_2D = gL_arr[max_index_2D[0]]
     return best_AD_range_2D, best_gL_2D
 
-def Optimize_3D_offset(L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D_iso):
+def Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D_iso):
     # The optimal AD range if the rings are put in 3D offset structure
     AD_range_arr = []
+    L1 = (L_str_A + L_bend)*2
+    L2 = (L_str_B + L_bend)*2
+    D1      = c/(ng_1550 * L1) *2* np.pi
+    D2      = c/(ng_1550 * L2) *2* np.pi
+    D_ave   = c/(ng_1550 * (L1+L2)/2) *2 *np.pi
+    epsilon = (L2-L1)/(L1+L2)
+    FSR     = (D1-D2)/(2*epsilon)
+    M       = 1/(2*epsilon)
+
     for deltaLs in deltaLs_arr:
+        deltaL_str  = L_str_B-L_str_A
+        deltaLL     = deltaL_str - deltaLs
+        LBS         = L_bend + max(deltaLs,0)
+        LBL         = L_bend + deltaLL
+        LAS         = L_bend
+        LAL         = L_bend - min(deltaLs,0)
+        Lco         = L_str_A + min(deltaLs,0)
 
-        AD_range_arr_given_gL = []
+        AD_range_arr_given_deltaL = []
         for gL in gL_arr:
-            Ruc1 =  (LA_bend+deltaL)/LB_bend     #LAL/LBS
-            Ruc2 =  (LB_bend+deltaL)/LA_bend     #LBL/LAS
             g_arr_eff   = g_arr_intp * gL /(g0*Lco)
-            LAL         = LAS   * Ruc
-            LBS         = LAS   * Rtot + Lco * (Rtot-1) / (1+Ruc)
-            LBL         = LBS   * Ruc
-
-
-            L1      = (Lco + LAS + LAL)*2
-            L2      = (Lco + LBS + LBL)*2
-            D1      = c/(ng_1550 * L1) *2* np.pi
-            D2      = c/(ng_1550 * L2) *2* np.pi
-            D_ave   = c/(ng_1550 * (L1+L2)/2) *2 *np.pi
-            epsilon = (L2-L1)/(L1+L2)
-            FSR     = (D1-D2)/(2*epsilon)
-            M       = 1/(2*epsilon)
-
-            m_arr_intp  = np.linspace(-Max_M_idx*M, Max_M_idx*M, num_of_pts)
 
             Y_p_2D      = Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
             Y_m_2D      = -Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
@@ -270,213 +273,170 @@ def Optimize_3D_offset(L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D_iso):
             D_3D        = Dispersion_3D(m_arr_intp,Y_m_3D)
             AD_range_res = AD_range_func(m_arr_intp[2:-2], D_3D+D_iso,
                                         M = M, FSR = D_ave/(2*np.pi))
-            AD_range_arr_given_gL.append(AD_range_res)
+            AD_range_arr_given_deltaL.append(AD_range_res)
 
-        AD_range_arr.append(AD_range_arr_given_gL)
+        AD_range_arr.append(AD_range_arr_given_deltaL)
 
-    AD_range_arr  = np.array(AD_range_arr)
-    flat_index = np.argmax(AD_range_arr)
-    max_index = np.unravel_index(flat_index, np.shape(AD_range_arr))
-    # largest AD_range
-    best_AD_range = AD_range_arr[max_index]
-    # best g_co * L_co
-    best_gL = gL_arr[max_index[1]]
-    best_Ruc = ratio_uc_arr[max_index[0]]
-    return best_gL,best_Ruc,best_AD_range
+    AD_range_arr    = np.array(AD_range_arr)
+    flat_index      = np.argmax(AD_range_arr)
+    max_index       = np.unravel_index(flat_index, np.shape(AD_range_arr))
+    best_AD_range   = AD_range_arr[max_index]
+    assert len(max_index)==2
+    best_gL         = gL_arr[max_index[1]]
+    best_deltaLs    = deltaLs_arr[max_index[0]]
 
-
-if __name__=="main":
-
-
-    Max_M_idx = 2
-    # ratio_tot_arr = np.linspace(1.0001,1.0091,10)
-    ratio_uc_arr    = np.linspace(1.001,1.03,40)
-    gL_arr          = np.linspace(0.6,1.6,41)
-
-    # Set the geometry of the two resonators
-    # unit: m
-    g0  = 673
-    LAS = 3.14/2    * 1e-3  # unit: m
-    Lco = 1.5       * 1e-3
-
-    Rtot= 1.01
-
-    D_2o    = -283 *1e3 * 2*np.pi      # unit: Hz
-    D_iso   = D_2o * np.ones(np.shape(m_arr_intp[2:-2]))
-
-    # Optimized parameters for 3D offset structures
-    best_gL_3D,Ruc,best_AD_range = Optimize_3D_offset(LAS,Lco,Rtot,gL_arr,ratio_uc_arr,g0,D_iso):
-
-    xticks = np.arange(0,len(gL_arr),5)
-    yticks = np.arange(0,len(ratio_uc_arr),5)
-
+    # Plot image
+    xticks = np.arange(0,len(gL_arr),1)
+    yticks = np.arange(0,len(deltaLs_arr),1)
     param_dict = {
             "point_color"   : 'yellow',
             "aspect"        : 0.5,
+            "figsize"       : [20,10],
             "xlabel"        : r"$g_{co}L_{co}$",
-            "ylabel"        : r"$R_{uc}$",
+            "ylabel"        : r"$\delta L_s (\mu m)$",
             "cbar_label"    : "Anomalous Dispersioin range (nm)",
             "cbar_small_ticks" : True,
             "figsize"       : (8,6),
-            "title"         : "Anomalous Dispersioin range for different parameters",
+            "title"         : "Anomalous Dispersion range of 3D offset structure when "+
+                                r"$R_{tot}$="+"{:.4f}".format(Rtot),
             "xticks"        : xticks,
             "yticks"        : yticks,
             "xtickslabel"   : ["{:.2f}".format(gL) for gL in gL_arr[xticks]],
-            "ytickslabel"   : ["{:.4f}".format(ep) for ep in ratio_uc_arr[yticks]],
+            "ytickslabel"   : ["{:.2f}".format(dLs*1e6) for dLs in deltaLs_arr[yticks]],
             "fontsize"      : 8,
     }
     Plot_im(AD_range_arr,**param_dict)
 
-    g_arr_eff   = g_arr_intp * best_gL_3D /(g0*Lco)
-    LAL         = LAS   * Ruc
-    LBS         = LAS   * Rtot + Lco * (Rtot-1) / (1+Ruc)
-    LBL         = LBS   * Ruc
-
-    L1      = (Lco + LAS + LAL)*2
-    L2      = (Lco + LBS + LBL)*2
-    D1      = c/(ng_1550 * L1) *2* np.pi
-    D2      = c/(ng_1550 * L2) *2* np.pi
-    D_ave   = c/(ng_1550 * (L1+L2)/2) *2 *np.pi
-    epsilon = (L2-L1)/(L1+L2)
-    FSR     = (D1-D2)/(2*epsilon)
-    M       = 1/(2*epsilon)
-    print("LAL = {:.3f}mm".format(LAL*1e3))
-    print("LBS = {:.3f}mm".format(LBS*1e3))
-    print("L1= {:.3f}mm".format(L1*1e3))
-    print("L2 = {:.3f}mm".format(L2*1e3))
-    print("M =", M)
-    print("D_ave = {:.3f} GHz".format(D_ave/1e9/(2*np.pi)))
-
-    m_arr_intp  = np.linspace(-Max_M_idx*M, Max_M_idx*M, num_of_pts)
-
-    Y_p_2D      = Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
-    Y_m_2D      = -Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
-    Y_p_3D      = Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
-    Y_m_3D      = -Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
-
-    data_arr = np.c_[Y_p_2D,Y_m_2D,Y_p_3D,Y_m_3D]
-    data_label_arr = ["","Supermodes of 2D parallel coupled rings",
-                    "","Supermodes of 3D parallel coupled rings",
-                    "3D numerical ?"]*3
-    text = r"$D_{ave}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n"\
-            "M = "+"{:.1f} ".format(M)+"\n"\
-            r"$R_{uc}$ = $L_{A,L}/L_{A,S}$ = $L_{B,L}/L_{B,S}$"+ " = {:.4f}".format(best_Ruc)+"\n"\
-            r"$R_{tot}$ = $L_B/L_A$"+ " = {:.4f}".format(Rtot)+"\n"+\
-            r"$g_{co}L_{co}$"+" = {:.2f}".format(best_gL_3D)
-    param_dict  = {"alpha_list": [1]*14+[0.6,0.6]+[1]*4,
-                "text":text,
-                "loc_text":(1.1,0.2),
-                "linespacing":1.8}
-    Mode_nonconserved_coupling(Max_M_idx,M,plot_coupled_curves=True,
-                            coupled_data_arr=data_arr,
-                            coupled_data_label_arr=data_label_arr,
-                            param_dict_ = param_dict,
-                            num_of_pts=num_of_pts,ylim=(-20,20))
+    return best_gL, best_deltaLs, best_AD_range
 
 
-    best_AD_range_2D, best_gL_2D = Optimized_2D_parallel(L1,Rtot,gL_product_arr,g0,D_iso)
+if __name__ == '__main__':
 
-    # Draw and compare 2D and 3D structures
-    D_iso       = D_2o * np.ones((np.shape(m_arr_intp)[0]-4,))
-    D_2D        = Dispersion_2D(m_arr_intp,D_ave,g_arr_eff,best_gL_2D/g0,epsilon)[2:-2]
-    D_3D        = Dispersion_3D(m_arr_intp,Y_m_3D)
-    data_arr       = np.flip(np.c_[D_2D+D_iso, D_3D+D_iso],axis=0)
-    data_label_arr = [r"$D_2$ 2D parallel rings (Optimized)",r"$D_2$ 3D offset rings (Optimized)"]
-    linestyle_list = ["-"]*10
+    Kappa_arr       = Load_kappa_data()
+    Kappa_arr       = np.flip(Kappa_arr,axis=0)
+    freq_arr        = Kappa_arr[:,0]
 
-    data_arr     = (np.c_[m_arr_intp[2:-2], data_arr/1e3/(2*np.pi)],)
-    xticks       = np.arange(-Max_M_idx,Max_M_idx+0.5, 0.5)*M
-    xtickslabels = np.array(["{:.0f}".format(3*1e8 / (freq_1550 + D_ave/(2*np.pi) * xtick) * 1e9) for xtick in xticks])
-    yticks       = ticks_arr(data_arr)
+    Rtot_arr        = np.linspace(1.0001,1.0091,10)
+    # Rtot_arr        = np.linspace(1.0041,1.0041,1)
 
-    text           = "3D offset structure:\n"+ \
-                    r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL) +"\n" +\
-                    r"$r_{uc}$ = "+"{:.4f}".format(best_Ruc) + "\n"+\
-                    "Optimal AD range: {:.2f} nm".format(AD_range_arr[max_index])+"\n"+\
-                    "2D parallel structure:\n"+ \
-                    r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_2D) +"\n" +\
-                    "Optimal AD range: {:.2f} nm".format(best_AD_range)
+    gL_arr          = np.linspace(0.6,1.6,11)
 
-    param_dict = {
-        "Y_legends"     : data_label_arr,
-        "X_label"       : 'wavelength (nm)',
-        "Y_label"       : r"$D_2$/(2$\pi$) (kHz)",
-        "title"         : "Dispersion with optimized design of 3D offset coupled rings",
-        "figsize"       : (10,6),
-        "marker_list"   : [""]*15,
-        "linestyle_list": linestyle_list,
-        "colors_list"   : ["lightcoral"]+['Orange']+['lightskyblue']+['deepskyblue']+['black']*10,
-        "xticks"        : xticks,
-        "xtickslabel"   : np.flip(xtickslabels),
-        "yticks"        : yticks,
-        "alpha_list"    :[0.6,1,1],
-        "plot_linewidth": [2,2],
-        # "xlim"          : (-3*M,3*M+1),
-        # "xlim"          : (-2*M,2*M+1),
-        "ylim"          : (-6000,6000),
-        "AD_region_color"    : True,
-        # "bbox_legend"   : (0.9,0.9),
-        "text"          : text,
-        # "linespacing"   : 1.5,
-        "loc_text"      : (0.2,0.6),
-        "linespacing"   : 1.8
-    }
-    Plot_curve(data_arr,**param_dict)
-    def Diff_LAL_LBS(Ruc,Rtot,LAS,Lco):
-        LAL         = LAS   * Ruc
-        LBS         = LAS   * Rtot + Lco * (Rtot-1) / (1+Ruc)
-        return LBS - LAL
-
-    Rtot_arr = np.flip(np.linspace(1.0001,1.01,100))
-    Ruc_arr  = np.linspace(1.0001,1.01,100)
-    # A,B =   np.meshgrid(Rtot_arr,Ruc_arr)
-    # L_arr_mesh = np.column_stack((A.ravel(), B.ravel()))
-    Diff_im_arr = []
+    # Set the geometry of the two resonators
+    # unit: m
     for Rtot in Rtot_arr:
-        Diff_fixed_Rtot = []
-        for Ruc in Ruc_arr:
-            Diff_fixed_Rtot.append(Diff_LAL_LBS(Ruc,Rtot,LAS = LAS, Lco = Lco))
-        Diff_im_arr.append(Diff_fixed_Rtot)
-    Diff_im_arr = np.array(Diff_im_arr)
-    Diff_im_arr_zero_loc_list = []
-    for i in range(np.shape(Diff_im_arr)[0]):
-        line = Diff_im_arr[i,:]
 
-        for j in range(len(line)-1):
-            if line[j] * line[j+1] < 0:
-                shift = np.abs(line[j])/(np.abs(line[j])+np.abs(line[j+1]))
-                Diff_im_arr_zero_loc_list.append([j+shift,i,Ruc_arr[i],Rtot_arr[j]])
+        L_bend      = 3.14  *1e-3
+        L_str_A     = 1.61  *1e-3
+        L_str_B     = (L_bend+L_str_A)*Rtot - L_bend
+        deltaL_str  = L_str_B-L_str_A
+        L1          = (L_str_A+L_bend) *2
+        L2          = L1 * Rtot
 
-    # Diff_im_arr_neg_mask = np.where(Diff_im_arr<0)
-    # Diff_im_arr[Diff_im_arr_neg_mask] = -np.log10(-Diff_im_arr[Diff_im_arr_neg_mask])
-    # Diff_im_arr_neg_mask = np.where(Diff_im_arr>0)
-    # Diff_im_arr[Diff_im_arr_neg_mask] = np.log10(Diff_im_arr[Diff_im_arr_neg_mask])
+        # -L_strA < deltaLs < 0.5 * DeltaL_str
+        deltaLs_arr     = np.linspace(-L_str_A*0.03,0.5*deltaL_str,20) *1e-6   #unit: m
 
-    Diff_im_arr_zero_loc_list = np.array(Diff_im_arr_zero_loc_list)
-    Diff_im_arr_zero_loc_list[:5,:]
-    coefficients = np.polyfit(Diff_im_arr_zero_loc_list[:,2], Diff_im_arr_zero_loc_list[:,3], 1)
-    coefficients
-    Diff_arr_fit = coefficients[0]*Diff_im_arr_zero_loc_list[:,2]+coefficients[1]
+        D1      = c/(ng_1550 * L1) *2* np.pi
+        D2      = c/(ng_1550 * L2) *2* np.pi
+        D_ave   = c/(ng_1550 * (L1+L2)/2) *2 *np.pi
+        epsilon = (L2-L1)/(L1+L2)
+        FSR     = (D1-D2)/(2*epsilon)
+        M       = 1/(2*epsilon)
+        M_tick  = 0.5       # smallest tick of M when ploting
+        m_arr_intp      = np.linspace(-Max_M_idx*M, Max_M_idx*M, num_of_pts)
+        freq_arr_intp   = freq_1550 + m_arr_intp * D_ave/(2*np.pi)
+        g_arr_intp      = Interpolation(freq_arr,Kappa_arr[:,1],freq_arr_intp)
+        D_iso           = D_2o * np.ones((np.shape(m_arr_intp)[0]-4,))
 
-    xticks = np.arange(0,len(Ruc_arr),10)
-    yticks = np.arange(0,len(Rtot_arr),10)
+        #################################################################
+        # Optimized parameters for 3D offset structures
+        #################################################################
+        best_gL_3D, best_deltaLs_3D, best_AD_range_3D = Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,
+                                                                        L_bend,gL_arr,deltaLs_arr,g0,D_iso)
 
-    param_dict = {
-            "point_color"   : 'black',
-            "point_size"    : 5,
-            "norm"          : 'zero_divided',
-            "colormap"      : "bwr",
-            "aspect"        : 0.5,
-            "xlabel"        : r"$R_{uc}$",
-            "ylabel"        : r"$R_{tot}$",
-            "cbar_label"    : r"$L_{BS}-L_{AL}$",
-            "cbar_small_ticks" : False,
+        deltaLL     = deltaL_str - best_deltaLs_3D
+        LBS         = L_bend + max(best_deltaLs_3D,0)
+        LBL         = L_bend + deltaLL
+        LAS         = L_bend
+        LAL         = L_bend - min(best_deltaLs_3D,0)
+        Lco         = L_str_A + min(best_deltaLs_3D,0)
+        g_arr_eff   = g_arr_intp * best_gL_3D /(g0*Lco)
+
+        Y_p_2D      = Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
+        Y_m_2D      = -Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
+        Y_p_3D      = Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
+        Y_m_3D      = -Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
+
+        data_arr = np.c_[Y_p_2D,Y_m_2D,Y_p_3D,Y_m_3D]
+        data_label_arr = ["","Supermodes of 2D parallel coupled rings",
+                        "","Supermodes of 3D parallel coupled rings"]*3
+        text = r"$D_{ave}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n"\
+                "M = "+"{:.1f} ".format(M)+"\n"\
+                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D)+"\n"\
+                r"$R_{tot}$ = $L_B/L_A$"+ " = {:.4f}".format(Rtot)+"\n"+\
+                r"$g_{co}L_{co}$"+" = {:.2f}".format(best_gL_3D)
+        param_dict  = {"alpha_list": [1]*14+[0.6,0.6]+[1]*4,
+                        "text":text,
+                        "loc_text":(1.1,0.2),
+                        "linespacing":1.8,
+                        "title": "Resonant frequency of 3D coupled rings when "+
+                            r"$R_{tot}$="+"{:.4f}".format(Rtot)}
+        Mode_nonconserved_coupling(Max_M_idx,M,plot_coupled_curves=True,
+                                coupled_data_arr=data_arr,
+                                coupled_data_label_arr=data_label_arr,
+                                param_dict_ = param_dict,
+                                num_of_pts=num_of_pts,ylim=(-20,20))
+
+        #################################################################
+        # Optimized parameters for 2D parallel structures
+        #################################################################
+        best_AD_range_2D, best_gL_2D = Optimized_2D_parallel(m_arr_intp,L1,Rtot,gL_arr,g0,D_iso)
+
+        # Draw and compare 2D and 3D structures
+        Reson_freq_arr_2D = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)
+        D_2D        = Dispersion_2D_num(m_arr_intp,Reson_freq_arr_2D)
+        # D_2D        = Dispersion_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)[2:-2]
+        D_3D        = Dispersion_3D(m_arr_intp,Y_m_3D)
+        data_arr    = np.flip(np.c_[D_2D+D_iso, D_3D+D_iso],axis=0)
+        data_arr    = (np.c_[m_arr_intp[2:-2], data_arr/1e3/(2*np.pi)],)
+
+        data_label_arr = [r"$D_2$ 2D parallel rings (Optimized)",r"$D_2$ 3D offset rings (Optimized)"]
+        linestyle_list = ["-"]*10
+        xticks       = np.arange(-Max_M_idx, Max_M_idx+M_tick, M_tick)*M
+        xtickslabels = np.array(["{:.0f}".format(3*1e8 / (freq_1550 + D_ave/(2*np.pi)
+                                                          * xtick) * 1e9) for xtick in xticks])
+        yticks       = ticks_arr(data_arr)
+
+        text  = "3D offset structure:\n"+ \
+                r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_3D) +"\n" +\
+                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D*1e6)+r" $\mu m$"+"\n"\
+                "Optimal AD range: {:.2f} nm".format(best_AD_range_3D)+"\n"+\
+                "2D parallel structure:\n"+ \
+                r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_2D) +"\n" +\
+                "Optimal AD range: {:.2f} nm".format(best_AD_range_2D)
+
+        param_dict = {
+            "Y_legends"     : data_label_arr,
+            "X_label"       : 'wavelength (nm)',
+            "Y_label"       : r"$D_2$/(2$\pi$) (kHz)",
+            "title"         : "Optimized Dispersion of 2D and 3D structures when "+
+                                    r"$R_{tot}$="+"{:.4f}".format(Rtot),
             "figsize"       : (10,6),
-            "title"         : "Length regime of 3D offset rings",
+            "marker_list"   : [""]*15,
+            "linestyle_list": linestyle_list,
+            "colors_list"   : ["lightcoral"]+['Orange']+['lightskyblue']+['deepskyblue']+['black']*10,
             "xticks"        : xticks,
+            "xtickslabel"   : np.flip(xtickslabels),
             "yticks"        : yticks,
-            "xtickslabel"   : ["{:.4f}".format(Ruc) for Ruc in Ruc_arr[xticks]],
-            "ytickslabel"   : ["{:.4f}".format(Rtot) for Rtot in Rtot_arr[yticks]],
-            "fontsize"      : 8,
-    }
-    Plot_im(Diff_im_arr,point_arr = Diff_im_arr_zero_loc_list, **param_dict)
+            "alpha_list"    :[0.6,1,1],
+            "plot_linewidth": [2,2],
+            # "xlim"          : (-3*M,3*M+1),
+            "xlim"          : (-M,M+1),
+            "ylim"          : (-2000,2000),
+            "AD_region_color"    : True,
+            # "bbox_legend"   : (0.9,0.9),
+            "text"          : text,
+            # "linespacing"   : 1.5,
+            "loc_text"      : (0.2,0.6),
+            "linespacing"   : 1.8
+        }
+        Plot_curve(data_arr,**param_dict)
