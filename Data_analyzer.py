@@ -303,68 +303,83 @@ class Data_analyzer(Coupled_Waveguides):
 
         wavl_arr_FDE    = self.Load_isolated_dispersion_Lumerical()[:,0]
         D_WG1_FDE       = self.Load_isolated_dispersion_Lumerical()[:,1]
-        D_WG1_intp      = self.Interpolation(wavl_arr_FDE,D_WG1_FDE,self.wavl_arr_intp)[2:-2]
+        # D_WG2_FDE       = D_WG1_FDE
+        # D_WG1_intp      = self.Interpolation(wavl_arr_FDE,D_WG1_FDE,self.wavl_arr_intp)[2:-2]
+        _, D_WG1_intp   = self.Polynomial_fit(wavl_arr_FDE, D_WG1_FDE.reshape(-1,1),
+                                              self.wavl_arr_intp, 3, num_of_pts)
+        D_WG1_intp      = D_WG1_intp.reshape(-1,1)[2:-2]
         D_WG2_intp      = D_WG1_intp
 
         # Dispersion of coupled WGs using CMT
-        beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
-                                    self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
-        beta_CMT_supermode2      = (self.beta_coupled_arr[:,2] +
-                                    self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
-        beta_CMT_supermode1_intp = (self.beta_coupled_arr_intp[:,0] +
-                                    self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
-        beta_CMT_supermode2_intp = (self.beta_coupled_arr_intp[:,1] +
-                                    self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
+        # beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
+        #                             self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
+        # beta_CMT_supermode2      = (self.beta_coupled_arr[:,2] +
+        #                             self.beta_uncoupled_arr[:,3])  / R_ave         # unit: rad/m
+        # beta_CMT_supermode1_intp = (self.beta_coupled_arr_intp[:,0] +
+        #                             self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
+        # beta_CMT_supermode2_intp = (self.beta_coupled_arr_intp[:,1] +
+        #                             self.beta_uncoupled_arr_intp[:,2])  / R_ave    # unit: rad/m
+        beta_CMT_supermode1      = self.beta_coupled_arr[:,1]  / R_ave         # unit: rad/m
+        beta_CMT_supermode2      = self.beta_coupled_arr[:,2]   / R_ave         # unit: rad/m
+        beta_CMT_supermode1_intp = self.beta_coupled_arr_intp[:,0]  / R_ave    # unit: rad/m
+        beta_CMT_supermode2_intp = self.beta_coupled_arr_intp[:,1]   / R_ave    # unit: rad/m
 
-        D_supermode_1, Beta_1_supermode_1 = self.Calculate_dispersion_D(beta_CMT_supermode1,self.wavl_arr)
-        D_supermode_2, Beta_1_supermode_2 = self.Calculate_dispersion_D(beta_CMT_supermode2,self.wavl_arr)
         D_supermode_1_intp, Beta_1_supermode_1_intp = self.Calculate_dispersion_D(beta_CMT_supermode1_intp,self.wavl_arr_intp)
         D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,self.wavl_arr_intp)
 
+        # Adding the isolated dispersion
+        D_supermode_1_intp = 2*D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
+        D_supermode_2_intp = 2*D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
+        # D_supermode_1_intp = D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
+        # D_supermode_2_intp = D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
+
         Y_data = (np.c_[self.wavl_arr,
-                        self.beta_uncoupled_arr[:,1:2],
+                        self.beta_uncoupled_arr[:,1:3],
                         self.beta_coupled_arr[:,1:]],
                   np.c_[self.wavl_arr_intp,
                         self.beta_coupled_arr_intp[:,:]],)
         if self.FDE_data_exist:
             Y_data = Y_data + (self.beta_coupled_lumerical_arr,)
 
-        gap_info = "gap="+"{:.2f}".format(self.gap_arr[0])+\
-                    ","+"{:.2f}".format(self.gap_arr[1])
-        gap_info = gap_info.replace(".","_")
+        gap_info = " gap="+"({:.1f}um".format(self.gap_arr[0])+\
+                    ","+"{:.1f}um)".format(self.gap_arr[1])
+        # gap_info = gap_info.replace(".","_")
 
         # Plot propagation const curve
         if self.plot_curve:
             param_dict = {
                 "Y_legends":
                 [
-                # 'Uncoupled inner ring',
-                # 'Uncoupled outer ring',
-                'Uncoupled ring',
+                'Uncoupled inner ring',
+                'Uncoupled outer ring',
+                # 'Uncoupled ring',
+                # 'Supermode 1','Supermode 2',
+                # 'Supermode 1 Interpolation',
+                # 'Supermode 2 Interpolation',
                 'Supermode 1 (CMT)','Supermode 2 (CMT)',
                 'Supermode 1 (CMT) Interpolation',
                 'Supermode 2 (CMT) Interpolation',
                 'Supermode 1 (FDE)','Supermode 2 (FDE)',
                 'beta_iso_inner','beta_iso_outer'],
-                "X_label"   : 'wavelength(um)',
+                "X_label"   : r'wavelength($\mu m)$',
                 "Y_label"   : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
-                # "title"     : r"Propagation constant of coupled modes calculated using different methods",
-                 "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
-                # "marker_list"   :["","",".",".","","","o","o"],
-                # "linestyle_list":["--","--","","","-","-","",""],
-                # "colors_list"   :['lightcoral','skyblue',
-                #                   'LightPink','crimson',
-                #                   'LightPink','crimson',
-                #                   'lightskyblue','dodgerblue']*2
-                "marker_list"   :["",".",".","","","o","o"],
-                "linestyle_list":["--","","","-","-","",""],
-                "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*2
+                "title"     : r"Propagation constant of coupled modes of 2D concentric rings",
+                #  "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
+                "marker_list"   :["","",".",".","","","o","o"],
+                "linestyle_list":["dashed","dashdot","","","-","-","",""],
+                "colors_list"   :['mediumturquoise','skyblue',
+                                  'LightPink','crimson',
+                                  'LightPink','crimson',
+                                  'lightskyblue','dodgerblue']*2
+                # "marker_list"   :["",".",".","","","o","o"],
+                # "linestyle_list":["--","","","-","-","",""],
+                # "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*5
             }
             Plot_curve(Y_data,**param_dict)
 
         Y_data = (np.c_[self.wavl_arr_intp[2:-2],
                         D_WG1_intp,
-                        # D_WG2_intp,
+                        D_WG2_intp,
                         D_supermode_1_intp, D_supermode_2_intp],)
 
         # Dispersion of coupled WGs using FDE (if exist)
@@ -381,24 +396,26 @@ class Data_analyzer(Coupled_Waveguides):
         if self.plot_curve:
             param_dict = {
                 "Y_legends"         : [
-                                    # 'Inner Ring','Outer Ring',
-                                    'Isolated Ring',
+                                    'Inner Ring','Outer Ring',
+                                    # 'Uncoupled Ring',
+                                    # 'Supermode 1','Supermode 2',
                                     'Supermode 1 (CMT)','Supermode 2 (CMT)',
-                                    'Supermode 1 (FDE)','Supermode 2 (FDE)']*2,
+                                    'Supermode 1 (FDE)','Supermode 2 (FDE)']*5,
                 "X_label"           : r'wavelength($\mu m$)',
                 "Y_label"           : r'$D(ps/nm/km)$',
-                "title"             : "Dispersion of coupled modes using different methods" + gap_info,
-                "marker_list"       : ["","","","","",""]*2,
-                # "linestyle_list"    : ["--","--","-","-","-","-","-","-"]*2,
-                # "colors_list"       : ['lightcoral','skyblue','LightPink','crimson',
-                #                         'lightskyblue','dodgerblue']*2,
-                "linestyle_list"    : ["--","-","-","-","-","-","-"]*2,
-                "colors_list"       : ['lightcoral','orange','dodgerblue','blue']*2,
+                "title"             : r"Dispersion of coupled modes of 2D concentric rings",
+                # "title"             : "Dispersion of 3D vertical stacked rings when gap="+ r"$2\mu m$",
+                "marker_list"       : ["","","","","",""]*5,
+                "linestyle_list"    : ["dashed","dashdot","-","-","-","-","-","-"]*2,
+                "colors_list"       : ['mediumturquoise','skyblue','LightPink','crimson',
+                                        'lightskyblue','dodgerblue']*2,
+                # "linestyle_list"    : ["--","-","-","-","-","-","-"]*5,
+                # "colors_list"       : ['lightcoral','orange','dodgerblue','blue']*5,
                 "AD_region_color"   : True
             }
             Plot_curve(Y_data,**param_dict)
 
-        gap_label = "({:.2f}".format(self.gap_arr[0])+\
+        gap_label = self.save_mode+" Double ({:.2f}".format(self.gap_arr[0])+\
                     ","+"{:.2f})".format(self.gap_arr[1])
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
         if self.save_csv:

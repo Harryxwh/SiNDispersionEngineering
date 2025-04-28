@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import TwoSlopeNorm
 from scipy.interpolate import CubicSpline
 import json
 
@@ -226,11 +227,15 @@ def Plot_im(data_arr, point_arr = [],
 
     fig, ax = plt.subplots(figsize=param_dict["figsize"],
                            dpi = param_dict["dpi"])
-    im      = ax.imshow(data_arr,cmap = param_dict["colormap"],
-                        aspect=param_dict["aspect"])
+    if param_dict["norm"] == "zero_divided":
+        norm = TwoSlopeNorm(vmin=np.min(data_arr), vcenter=0, vmax=np.max(data_arr))
+    else:
+        norm = None
+    im  = ax.imshow(data_arr,cmap = param_dict["colormap"],
+                    norm=norm,aspect=param_dict["aspect"])
     if len(point_arr) > 0:
         ax.scatter(point_arr[:,0],point_arr[:,1],
-                   s=10, c=param_dict["point_color"], marker='^')
+                   s=param_dict["point_size"], c=param_dict["point_color"], marker='^')
 
     # shrink: 缩放比例，pad: 间距
     cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],

@@ -5,6 +5,8 @@
     "colormap"          : "Blues",
     "aspect"            : 10,
     "point_color"       : "b",
+    "point_size"        : 10,
+    "norm"              : "",
     "xlabel"            : "",
     "ylabel"            : "",
     "xticks"            : [],
