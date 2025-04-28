@@ -17,5 +17,6 @@
     "cbar_small_ticks"  : false,
     "cbar_orientation"  : "horizontal",
     "shrink"            : 0.9,
-    "pad"               : 0.1
+    "pad"               : 0.1,
+    "foldername"        : ""
 }

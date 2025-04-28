@@ -133,6 +133,8 @@ if __name__ == '__main__':
                     "InnerRing_L_inner_8um_1535_1565_31wavls"
     foldername1 = "../data/Mode Profiles/"+\
                     "InnerRing_L_inner_8um_1400_1700_31wavls"
+    foldername1 = "../data/Mode Profiles/"+\
+                    "InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
     foldername2 = "../data/Mode Profiles/"+\
                     "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
     foldername2 = "../data/Mode Profiles/"+\
@@ -191,10 +193,11 @@ if __name__ == '__main__':
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    wavl_arr = np.linspace(1500,1600,11)
+    # wavl_arr = np.linspace(1500,1600,11)
     # wavl_arr = np.linspace(1535,1565,31)
     # wavl_arr = np.linspace(1540,1560,21)
     # wavl_arr = np.linspace(1480,1620,15)
+    wavl_arr = np.linspace(1505,1600,20)
 
     # param_filename = "./Param_vertical.csv"
     param_filename = "./Param_L_inner_8.csv"
@@ -203,9 +206,9 @@ if __name__ == '__main__':
     # param_filename = "./Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 2.5
-    end_gap_x     = 3.5
-    num_of_gaps_x = 11
+    start_gap_x   = 3
+    end_gap_x     = 3
+    num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -224,7 +227,7 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
-    sweeper.Scan_gap(calc_needed=False, num_of_wavl_pts=100)
+    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -237,9 +240,10 @@ if __name__ == '__main__':
     #                          save_csv=False, FDE_data_exist=True,
     #                          filename_FDE=filename_FDE_gap4um,num_of_pts=100)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=True, FDE_data_exist=False, num_of_pts=200)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap3um, filename_coupled_gap3um, param_filename,
     #                          save_csv=False, FDE_data_exist=False,num_of_pts=100)
+
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+    #                         save_csv=True, FDE_data_exist=False, num_of_pts=200)
 

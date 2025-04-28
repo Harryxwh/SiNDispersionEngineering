@@ -148,6 +148,19 @@ class Data_analyzer(Coupled_Waveguides):
         beta_coupled_lumerical_arr[:,2] = beta_coupled_lumerical_arr_ori[:,2] - beta_ave_arr
         return beta_coupled_lumerical_arr, beta_ave_arr
 
+    def Load_isolated_dispersion_Lumerical(self,filename_FDE="../data/Dispersion_of_isolated_inner_ring.txt"):
+        D_lumerical_arr = []
+        with open(filename_FDE,'r') as f:
+            data_lumerical = f.readlines()
+            for line in data_lumerical[1:]:
+                fre         = float(line.split('\t')[0].strip())            # unit: Hz
+                D           = float(line.split('\t')[1].strip()) * 1e6      # unit: ps/km/nm
+                wavl        = self.c/fre * 1e6                              # unit: um
+                D_lumerical_arr.append([wavl,D])
+        D_lumerical_arr = np.array(D_lumerical_arr)
+        D_lumerical_arr = np.flip(D_lumerical_arr,axis=0)
+        return D_lumerical_arr
+
     def Polynomial_fit(self,x, y_arr, x_fit, order = 1, num_of_fit_pts  = 100):
         num_of_columns  = np.shape(y_arr)[1]
         coeffi_array    = np.zeros((order+1,num_of_columns))
@@ -211,7 +224,7 @@ class Data_analyzer(Coupled_Waveguides):
         # D           = - 2*np.pi * Data_analyzer.c*1e-3 / (wavl_arr[2:-2]*1e9)**2 * Beta_2
         return D, Beta_1
 
-    def write_csv(self, gap, wavl_arr, D_WG, D_supermode,
+    def Write_csv(self, gap, wavl_arr, D_WG, D_supermode,
                   filename_D_iso, filename_D_supermode):
 
         if not os.path.exists(filename_D_iso):
@@ -230,7 +243,7 @@ class Data_analyzer(Coupled_Waveguides):
         df_coupled[gap] = D_supermode
         df_coupled.to_csv(filename_D_supermode, index=False, encoding="utf-8")
 
-    def calc_Dispersion_using_data_from_FDE(self,wavl_arr_lumerical,
+    def Calc_Dispersion_using_data_from_FDE(self,wavl_arr_lumerical,
                                             wavl_arr_lumerical_intp,
                                             num_of_pts):
         # unit: m
@@ -244,7 +257,7 @@ class Data_analyzer(Coupled_Waveguides):
         # Interpolating beta_ave in the range of wavl_arr_lumerical
         coeffi_array, beta_ave_intp =  self.Polynomial_fit(wavl_arr_lumerical,
                                     self.beta_ave_lumerical_arr.reshape(-1,1),
-                                    wavl_arr_lumerical_intp, order=4, num_of_fit_pts=num_of_pts)
+                                    wavl_arr_lumerical_intp, order=3, num_of_fit_pts=num_of_pts)
 
         beta_coupled_lumerical_arr_intp  = self.Interpolation(wavl_arr_lumerical,
                                             self.beta_coupled_lumerical_arr[:,1:],
@@ -273,7 +286,7 @@ class Data_analyzer(Coupled_Waveguides):
         coeffi_array, self.beta_uncoupled_arr_intp = self.Polynomial_fit(self.wavl_arr,
                                                         self.beta_uncoupled_arr[:,1:],
                                                         self.wavl_arr_intp,
-                                                        4, num_of_pts)
+                                                        3, num_of_pts)
         # Dispersion of Isolated WGs
         beta_uncoupled_WG1 = (self.beta_uncoupled_arr[:,1]+self.beta_uncoupled_arr[:,3])  / R_WG1     # unit: rad/m
         beta_uncoupled_WG2 = (self.beta_uncoupled_arr[:,2]+self.beta_uncoupled_arr[:,3])  / R_WG2     # unit: rad/m
@@ -283,10 +296,15 @@ class Data_analyzer(Coupled_Waveguides):
         beta_uncoupled_WG2_intp = (self.beta_uncoupled_arr_intp[:,1]+
                                 self.beta_uncoupled_arr_intp[:,2])  / R_WG2     # unit: rad/m
 
-        D_WG1, Beta_1_WG1 = self.Calculate_dispersion_D(beta_uncoupled_WG1,self.wavl_arr)
-        D_WG1_intp, Beta_1_WG1_intp = self.Calculate_dispersion_D(beta_uncoupled_WG1_intp,self.wavl_arr_intp)
-        D_WG2, Beta_1_WG2 = self.Calculate_dispersion_D(beta_uncoupled_WG2,self.wavl_arr)
-        D_WG2_intp, Beta_1_WG2_intp = self.Calculate_dispersion_D(beta_uncoupled_WG2_intp,self.wavl_arr_intp)
+        # D_WG1, Beta_1_WG1 = self.Calculate_dispersion_D(beta_uncoupled_WG1,self.wavl_arr)
+        # D_WG1_intp, Beta_1_WG1_intp = self.Calculate_dispersion_D(beta_uncoupled_WG1_intp,self.wavl_arr_intp)
+        # D_WG2, Beta_1_WG2 = self.Calculate_dispersion_D(beta_uncoupled_WG2,self.wavl_arr)
+        # D_WG2_intp, Beta_1_WG2_intp = self.Calculate_dispersion_D(beta_uncoupled_WG2_intp,self.wavl_arr_intp)
+
+        wavl_arr_FDE    = self.Load_isolated_dispersion_Lumerical()[:,0]
+        D_WG1_FDE       = self.Load_isolated_dispersion_Lumerical()[:,1]
+        D_WG1_intp      = self.Interpolation(wavl_arr_FDE,D_WG1_FDE,self.wavl_arr_intp)[2:-2]
+        D_WG2_intp      = D_WG1_intp
 
         # Dispersion of coupled WGs using CMT
         beta_CMT_supermode1      = (self.beta_coupled_arr[:,1] +
@@ -304,7 +322,7 @@ class Data_analyzer(Coupled_Waveguides):
         D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,self.wavl_arr_intp)
 
         Y_data = (np.c_[self.wavl_arr,
-                        self.beta_uncoupled_arr[:,1:3],
+                        self.beta_uncoupled_arr[:,1:2],
                         self.beta_coupled_arr[:,1:]],
                   np.c_[self.wavl_arr_intp,
                         self.beta_coupled_arr_intp[:,:]],)
@@ -319,7 +337,10 @@ class Data_analyzer(Coupled_Waveguides):
         if self.plot_curve:
             param_dict = {
                 "Y_legends":
-                ['Uncoupled inner ring','Uncoupled outer ring',
+                [
+                # 'Uncoupled inner ring',
+                # 'Uncoupled outer ring',
+                'Uncoupled ring',
                 'Supermode 1 (CMT)','Supermode 2 (CMT)',
                 'Supermode 1 (CMT) Interpolation',
                 'Supermode 2 (CMT) Interpolation',
@@ -327,22 +348,23 @@ class Data_analyzer(Coupled_Waveguides):
                 'beta_iso_inner','beta_iso_outer'],
                 "X_label"   : 'wavelength(um)',
                 "Y_label"   : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
-                "title"     : r"Propagation constant of coupled modes calculated using different methods",
-                #  "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
-                "marker_list"   :["","",".",".","","","o","o"],
-                "linestyle_list":["--","--","","","-","-","",""],
-                "colors_list"   :['lightcoral','skyblue',
-                                  'LightPink','crimson',
-                                  'LightPink','crimson',
-                                  'lightskyblue','dodgerblue']*2
-                # "marker_list"   :["",".",".","","","o","o"],
-                # "linestyle_list":["--","","","-","-","",""],
-                # "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*2
+                # "title"     : r"Propagation constant of coupled modes calculated using different methods",
+                 "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
+                # "marker_list"   :["","",".",".","","","o","o"],
+                # "linestyle_list":["--","--","","","-","-","",""],
+                # "colors_list"   :['lightcoral','skyblue',
+                #                   'LightPink','crimson',
+                #                   'LightPink','crimson',
+                #                   'lightskyblue','dodgerblue']*2
+                "marker_list"   :["",".",".","","","o","o"],
+                "linestyle_list":["--","","","-","-","",""],
+                "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*2
             }
             Plot_curve(Y_data,**param_dict)
 
         Y_data = (np.c_[self.wavl_arr_intp[2:-2],
-                        D_WG1_intp, D_WG2_intp,
+                        D_WG1_intp,
+                        # D_WG2_intp,
                         D_supermode_1_intp, D_supermode_2_intp],)
 
         # Dispersion of coupled WGs using FDE (if exist)
@@ -351,24 +373,27 @@ class Data_analyzer(Coupled_Waveguides):
             wavl_arr_lumerical_intp = np.linspace(np.min(wavl_arr_lumerical),
                                                 np.max(wavl_arr_lumerical),
                                                 num_of_pts)
-            D_lumerical_supermode_1_intp, D_lumerical_supermode_2_intp =self.calc_Dispersion_using_data_from_FDE(wavl_arr_lumerical,wavl_arr_lumerical_intp,num_of_pts)
+            D_lumerical_supermode_1_intp, D_lumerical_supermode_2_intp =self.Calc_Dispersion_using_data_from_FDE(wavl_arr_lumerical,wavl_arr_lumerical_intp,num_of_pts)
             Y_data = Y_data + (np.c_[wavl_arr_lumerical_intp[2:-2],
                       D_lumerical_supermode_1_intp,D_lumerical_supermode_2_intp],)
 
         # Plot dispersion curve
         if self.plot_curve:
             param_dict = {
-                "Y_legends"         : ['Inner Ring','Outer Ring',
+                "Y_legends"         : [
+                                    # 'Inner Ring','Outer Ring',
+                                    'Isolated Ring',
                                     'Supermode 1 (CMT)','Supermode 2 (CMT)',
                                     'Supermode 1 (FDE)','Supermode 2 (FDE)']*2,
                 "X_label"           : r'wavelength($\mu m$)',
                 "Y_label"           : r'$D(ps/nm/km)$',
                 "title"             : "Dispersion of coupled modes using different methods" + gap_info,
                 "marker_list"       : ["","","","","",""]*2,
-                "plot_linewidth"    : 2,
-                "linestyle_list"    : ["--","--","-","-","-","-","-","-"]*2,
-                "colors_list"       : ['lightcoral','skyblue','LightPink','crimson',
-                                        'lightskyblue','dodgerblue']*2,
+                # "linestyle_list"    : ["--","--","-","-","-","-","-","-"]*2,
+                # "colors_list"       : ['lightcoral','skyblue','LightPink','crimson',
+                #                         'lightskyblue','dodgerblue']*2,
+                "linestyle_list"    : ["--","-","-","-","-","-","-"]*2,
+                "colors_list"       : ['lightcoral','orange','dodgerblue','blue']*2,
                 "AD_region_color"   : True
             }
             Plot_curve(Y_data,**param_dict)
@@ -381,7 +406,7 @@ class Data_analyzer(Coupled_Waveguides):
                 D_supermode = D_supermode_2_intp
             else:
                 D_supermode = D_supermode_1_intp
-            self.write_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
+            self.Write_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
                         D_WG=D_WG_ave, D_supermode=D_supermode,
                         filename_D_iso="./results/Dispersion_isolated_WG.csv",
                         filename_D_supermode="./results/Dispersion_coupled_WG.csv")

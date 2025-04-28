@@ -109,7 +109,7 @@ def Plot_curve(data_arr,
     for key,value in kwargs.items():
         param_dict[key] = value
 
-    savename = "results/"+str(param_dict["title"])+".jpg"
+    savename = param_dict["foldername"]+str(param_dict["title"])+".jpg"
     idx = 0
     plt.figure(figsize=param_dict["figsize"])
     for data_idx in range(len(data_arr)):
@@ -121,7 +121,8 @@ def Plot_curve(data_arr,
                     color = param_dict["colors_list"][idx],
                     marker = param_dict["marker_list"][idx],
                     linestyle = param_dict["linestyle_list"][idx],
-                    linewidth = param_dict["plot_linewidth"])
+                    linewidth = param_dict["plot_linewidth"][idx],
+                    alpha = param_dict["alpha_list"][idx])
             idx = idx + 1
 
     plt.rcParams["font.family"] = param_dict["fonttype"]
@@ -151,6 +152,7 @@ def Plot_curve(data_arr,
         xtickslabel = np.array(param_dict["xtickslabel"])
         xticks_mask = np.where((xticks<=xmax) & (xticks>=xmin))
         xticks = xticks[xticks_mask]
+        xtickslabel = xtickslabel[xticks_mask]
 
         plt.xticks(xticks,xtickslabel,
                    fontproperties = param_dict["fonttype"],
