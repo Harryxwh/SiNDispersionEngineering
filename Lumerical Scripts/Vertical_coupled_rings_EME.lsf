@@ -1,26 +1,34 @@
 um = 1e-6;
 nm = 1e-9;
 
-len_taper_RDL_start     =   100 *um;
-len_taper_RDL_end       =   700 *um;
-num_of_pts_len_taper    =   7;
+len_taper_RDL_start     =   200 *um;
+len_taper_RDL_end       =   200 *um;
+num_of_pts_len_taper    =   1;
 len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
 
 num_of_cells_taper = 10;
 num_of_cells_prop  = 1;
 
-num_of_pts_sweep_prop   = 701;
-EME_prop_start          = 300*um;
-EME_prop_stop           = 1600*um;
+num_of_pts_sweep_prop   = 991;
+EME_prop_start          = 100*um;
+EME_prop_stop           = 10000*um;
 
 mesh_step = 50*nm;
 
 #Geometry
 
+#RDL WG
+width_in_RDL        = 0.8   *um;    # width of the input side of the taper
+width_prop_RDL      = 2.8   *um;    # width of the output side of the taper
+len_prop_RDL        = 400   *um;    # length of the straight propagation region
+Lz_RDL              = 0.1   *um;    # thickness of the WG
+z_RDL               = 4.3   *um;    # z of the WG
+x_taper_offset      = 1     *um;
+
 #Upper and Lower WG
 Ly_upper = 2.8*um;  #width of the WG
 Lz_upper = 0.1*um;  #thickness of the WG
-z_upper  = 10*um;
+z_upper  = z_RDL*2;
 
 Ly_lower = 2.8*um;  #width of the WG
 Lz_lower = 0.1*um;  #thickness of the WG
@@ -28,14 +36,6 @@ z_lower  = 0*um;
 
 Lx_exten = 4*um;    #extension length in x direction
 Lx_offset= 1*um;    #offset in x direc
-
-#RDL WG
-width_in_RDL        = 0.8   *um;    # width of the input side of the taper
-width_prop_RDL      = 2.8   *um;    # width of the output side of the taper
-len_prop_RDL        = 400   *um;    # length of the straight propagation region
-Lz_RDL              = 0.1   *um;    # thickness of the WG
-z_RDL               = 5     *um;      # z of the WG
-x_taper_offset      = 1     *um;
 
 #Cladding and BOX
 Lx_Cladding         = 2000*um;    #length of the Cladding
@@ -263,17 +263,17 @@ for (i = 1: num_of_pts_len_taper)
     setemeanalysis("stop", EME_prop_stop);
     setemeanalysis("number of points",num_of_pts_sweep_prop);
     
-    # run propagation sweep tool
-    emesweep;
+    ## run propagation sweep tool
+    #emesweep;
     
-    # get propagation sweep result
-    S = getemesweep('S');
+    ## get propagation sweep result
+    #S = getemesweep('S');
     
-    # plot S21 vs group span
-    s21_abs_sq = abs(S.s21)^2;
-    format long;
-    for(i =1:num_of_pts_sweep_prop){
-        write(data_filename,num2str(s21_abs_sq(i)));
-    }
+    ## plot S21 vs group span
+    #s21_abs_sq = abs(S.s21)^2;
+    #format long;
+    #for(i =1:num_of_pts_sweep_prop){
+        #write(data_filename,num2str(s21_abs_sq(i)));
+    #}
 
 }
