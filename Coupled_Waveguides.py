@@ -276,16 +276,13 @@ class Coupled_Waveguides():
         num_of_plots = len(field_coefficients)
         figsize =  (40, 6*num_of_plots)
 
-
         name_list = ['Abs','Re','Im']
         # name_list = ['Re']
 
         fig, ax = plt.subplots(num_of_plots,len(name_list),figsize=figsize,dpi=dpi)
         plt.subplots_adjust(left=0.05, right=0.95, wspace =0.1, hspace =0.2)   #调整子图间距
 
-
         for plot_idx in range(num_of_plots):
-
             coeffis =   field_coefficients[plot_idx]
             field   =   coeffis[0]*self.Field_dict_uncoupled[field_name][0] +\
                         coeffis[1]*self.Field_dict_uncoupled[field_name][1]

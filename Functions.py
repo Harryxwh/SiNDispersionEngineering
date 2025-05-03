@@ -30,36 +30,77 @@ def find_zero(X,Y):
             zero_idx_arr.append(idx)
     return zero_arr,zero_idx_arr
 
-def Plot_field_profile(component,component_name,
-                       save_name='./results/field_profile.png',dpi=300):
-    fonttype = "Helvetica"
-    fontsize = 4
-    grid_linewidth = 1
-    colormap = "jet"
+def Plot_field_profile(field,field_name,
+                    default_param_filename = "Param_plot_field_profile.json",
+                    *args, **kwargs):
 
-    fig, ax = plt.subplots(1,3,figsize=(10, 4),dpi=dpi)
+    with open(default_param_filename,'r', encoding='UTF-8') as f:
+        param_dict = json.load(f)
+
+    for key,value in kwargs.items():
+        param_dict[key] = value
+
+    component_list = param_dict["component_list"]
+    field_list     = []
+    if "Abs" in component_list:
+        field_list.append(np.abs(field))
+    if "Re" in component_list:
+        field_list.append(np.real(field))
+    if "Im" in component_list:
+        field_list.append(np.imag(field))
+
+    fig, ax = plt.subplots(1,len(field_list),
+                           figsize=param_dict["figsize"],dpi=param_dict["dpi"])
     plt.subplots_adjust(left=0.05, right=0.95, wspace =0.3, hspace =0.6)   #调整子图间距
+    # plt.yticks(np.shape(field)[0],
+    #            fontproperties = param_dict["fonttype"],
+    #            size = param_dict["fontsize"])
+    # plt.xticks(fontproperties = param_dict["fonttype"], size = param_dict["fontsize"])
 
-    plt.yticks(np.shape(component[0])[0],fontproperties = fonttype, size = fontsize)
-    plt.xticks(fontproperties = fonttype, size = fontsize)
-    plt.rcParams["font.family"] = fonttype
-    plt.rcParams.update({'font.size': fontsize})
-    plt.ylabel('Y', fontdict={'family' : fonttype, 'size' : fontsize})
-    plt.xlabel('X', fontdict={'family' : fonttype, 'size' : fontsize})
+    # plt.ylabel('Y', fontdict={'family' : param_dict["fonttype"],
+    #                           'size' : param_dict["fontsize"]})
+    # plt.xlabel('X', fontdict={'family' : param_dict["fonttype"],
+    #                           'size' : param_dict["fontsize"]})
+
+    plt.rcParams["font.family"] = param_dict["fonttype"]
+    plt.rcParams.update({'font.size': param_dict["fontsize"]})
     plt.legend()
+    if len(component_list) > 1:
+        for idx in range(len(component_list)):
+            im = ax[idx].imshow(field_list[idx], cmap=param_dict["colormap"])
+            ax[idx].set_title(component_list[idx]+'('+field_name+')')
+            cbar = fig.colorbar(im, ax=ax[idx], orientation=param_dict["cbar_orientation"],
+                                label=param_dict["cbar_label"],
+                                shrink=param_dict["shrink"], pad=param_dict["pad"])
+            cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
+            cbar.set_label(param_dict["cbar_label"],size=param_dict["fontsize"])
+            ax[idx].set_xlabel("X",label)
+            ax[idx].set_ylabel("Y")
+            ax[idx].invert_yaxis()
+            ax[idx].tick_params(axis='both',labelsize=param_dict["fontsize"])
+            ax[idx].set_xticks(param_dict["xticks"])
+            ax[idx].set_xticklabels(param_dict["xtickslabel"],fontsize=param_dict["fontsize"])
+            ax[idx].set_yticks(param_dict["yticks"])
+            ax[idx].set_yticklabels(param_dict["ytickslabel"],fontsize=param_dict["fontsize"])
+    else:
+        im = ax.imshow(field_list[0], cmap=param_dict["colormap"])
+        ax.set_title(component_list[0]+'('+field_name+')')
+        cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],
+                            label=param_dict["cbar_label"],
+                            shrink=param_dict["shrink"], pad=param_dict["pad"])
+        cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
+        cbar.set_label(param_dict["cbar_label"],size=param_dict["fontsize"])
+        ax.set_xlabel("X",fontsize= param_dict["fontsize"])
+        ax.set_ylabel("Y",fontsize= param_dict["fontsize"])
+        ax.invert_yaxis()
+        ax.tick_params(axis='both',labelsize=param_dict["fontsize"])
+        ax.set_xticks(param_dict["xticks"])
+        ax.set_xticklabels(param_dict["xtickslabel"],fontsize=param_dict["fontsize"])
+        ax.set_yticks(param_dict["yticks"])
+        ax.set_yticklabels(param_dict["ytickslabel"],fontsize=param_dict["fontsize"])
 
-    name_list = ['Abs','Re','Im']
-    component_list = [np.abs(component),np.real(component),np.imag(component)]
-    for idx in range(3):
-        im = ax[idx].imshow(component_list[idx], cmap=colormap)
-        ax[idx].set_title(name_list[idx]+'('+component_name+')')
-        cbar = fig.colorbar(im, ax=ax[idx], orientation='vertical',
-                            label='', shrink=0.3, pad=0.02)
-        ax[idx].set_xlabel("X")
-        ax[idx].set_ylabel("Y")
-        ax[idx].invert_yaxis()
-        ax[idx].tick_params(axis='both',labelsize=5)
-    plt.savefig(save_name,dpi=dpi)
+    plt.savefig(param_dict["foldername"]+param_dict["title"],
+                dpi=param_dict["dpi"])
     plt.show()
     return
 
@@ -94,7 +135,7 @@ marker_list: format:["",".","o"...] each markers corresp to a y data
 linestyle_list: format:["-","--","dotted"...] each linestyle corresp to a y data
 colors_list: format:['tab:red','tab:orange'...] each color corresp to a y data
 figsize: format: (x,y)
-fontsize: size of all the text
+param_dict["fontsize"]: size of all the text
 ylim: format : (ymin, ymax). set the y range of the whole figure
 AD_region_color: whether to fill color in region of y>0
 bbox_to_anchor: coordinates for the legends
@@ -228,7 +269,7 @@ def Plot_im(data_arr, point_arr = [],
     for key,value in kwargs.items():
         param_dict[key] = value
 
-    fig, ax = plt.subplots(figsize=param_dict["figsize"],
+    fig, ax = plt.subplots(figsize=(param_dict["figsize"][0],param_dict["figsize"][1]),
                            dpi = param_dict["dpi"])
     if param_dict["norm"] == "zero_divided":
         norm = TwoSlopeNorm(vmin=np.min(data_arr), vcenter=0, vmax=np.max(data_arr))
@@ -238,14 +279,14 @@ def Plot_im(data_arr, point_arr = [],
                     norm=norm,aspect=param_dict["aspect"])
     if len(point_arr) > 0:
         ax.scatter(point_arr[:,0],point_arr[:,1],
-                   s=param_dict["point_size"], c=param_dict["point_color"], marker='^')
+                   s=param_dict["point_size"], c=param_dict["point_color"], marker=param_dict["point_marker"])
 
     # shrink: 缩放比例，pad: 间距
     cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],
                         shrink=param_dict["shrink"], pad=param_dict["pad"])
     cbar.set_ticks(ticks_arr(data_arr,param_dict["cbar_small_ticks"]))
     cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
-    cbar.set_label(param_dict["cbar_label"])
+    cbar.set_label(param_dict["cbar_label"],size=param_dict["fontsize"])
 
     if len(param_dict["ytickslabel"]) >0:
         plt.yticks(param_dict["yticks"],
@@ -258,8 +299,8 @@ def Plot_im(data_arr, point_arr = [],
                    fontproperties = param_dict["fonttype"],
                    size = param_dict["fontsize"])
 
-    plt.xlabel(param_dict["xlabel"])
-    plt.ylabel(param_dict["ylabel"])
-    plt.title(param_dict["title"])
+    plt.xlabel(param_dict["xlabel"],size = param_dict["fontsize"])
+    plt.ylabel(param_dict["ylabel"],size = param_dict["fontsize"])
+    plt.title(param_dict["title"],size = param_dict["fontsize"]*1.5)
     plt.savefig("./results/"+param_dict["title"]+".jpg")
     plt.show()

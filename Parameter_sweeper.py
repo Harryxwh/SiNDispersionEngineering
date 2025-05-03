@@ -137,16 +137,16 @@ class Parameter_sweeper():
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
     # calc_needed: True for initial run, False if beta files already exist.
-    def Scan_gap(self,calc_needed = True, num_of_wavl_pts = 100):
+    def Scan_gap(self,calc_needed = True, foldername="", num_of_wavl_pts = 100):
         for gap_idx in range(len(self.gap)):
             gap_x, gap_y = self.gap[gap_idx]
 
-            filename_uncoupled = "data/beta_uncoupled_gap_"\
+            filename_uncoupled = "beta_uncoupled_gap_"\
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
-            filename_coupled   = "data/beta_coupled_gap_" \
+            filename_coupled   = "beta_coupled_gap_" \
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
-            filename_coupled = "../" + filename_coupled.replace(".","_")+ ".txt"
-            filename_uncoupled = "../" + filename_uncoupled.replace(".","_") + ".txt"
+            filename_coupled = "../data/" +foldername + filename_coupled.replace(".","_")+ ".txt"
+            filename_uncoupled = "../data/" +foldername +filename_uncoupled.replace(".","_") + ".txt"
             if calc_needed:
                 beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
                             filename_uncoupled=filename_uncoupled,

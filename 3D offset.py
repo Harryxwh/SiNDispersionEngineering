@@ -53,7 +53,7 @@ def Eigenvalue_arg(freq,g,Lco,LAS,LAL,LBS,LBL,include_theory=False):
     Ang_p       = Control_angle_range_0_2_2pi(np.angle(0.5*(F + 1j * np.sqrt((Sum**2-Diff**2) - F**2))) + Ang_offset) - np.pi
     Ang_m       = Control_angle_range_0_2_2pi(np.angle(0.5*(F - 1j * np.sqrt((Sum**2-Diff**2) - F**2))) + Ang_offset) - np.pi
 
-    flip_mask   = np.where(Ang_p < Ang_m)
+    flip_mask               = np.where(Ang_p < Ang_m)
     Ang_pre                 = np.c_[Ang_p, Ang_m]
     Ang_pre[flip_mask]      = np.flip(Ang_pre[flip_mask],axis=1)
     if include_theory:
@@ -225,8 +225,9 @@ def Optimized_2D_parallel(m_arr_intp,L1,Rtot,gL_arr,g0,D_iso):
 
     AD_range_2D_arr = []
     for Lco in Lco_arr:
-        Reson_freq_arr = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,Lco,epsilon)
-        D_coupled_arr  = Dispersion_2D_num(m_arr_intp,Reson_freq_arr)
+        Reson_freq_arr  = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,Lco,epsilon)
+        # D_coupled_arr  = Dispersion_2D_num(m_arr_intp,Reson_freq_arr)
+        D_coupled_arr   = Dispersion_2D(m_arr_intp,D_ave,g_arr_intp,Lco,epsilon)
         AD_range_2D_res = AD_range_func(m_arr_intp[2:-2], D_coupled_arr + D_iso,
                                         M = M, FSR = D_ave/(2*np.pi))
         AD_range_2D_arr.append(AD_range_2D_res)
@@ -286,24 +287,22 @@ def Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D
     best_deltaLs    = deltaLs_arr[max_index[0]]
 
     # Plot image
-    xticks = np.arange(0,len(gL_arr),1)
-    yticks = np.arange(0,len(deltaLs_arr),1)
+    xticks = np.arange(0,len(gL_arr),2)
+    yticks = np.arange(0,len(deltaLs_arr),2)
     param_dict = {
-            "point_color"   : 'yellow',
             "aspect"        : 0.5,
-            "figsize"       : [20,10],
-            "xlabel"        : r"$g_{co}L_{co}$",
+            "figsize"       : (40,4.5),
+            "xlabel"        : r"$g_{co} (m^{-1})$",
             "ylabel"        : r"$\delta L_s (\mu m)$",
             "cbar_label"    : "Anomalous Dispersioin range (nm)",
             "cbar_small_ticks" : True,
-            "figsize"       : (8,6),
-            "title"         : "Anomalous Dispersion range of 3D offset structure when "+
+            "title"         : "Optimizing Anomalous Dispersion range when "+
                                 r"$R_{tot}$="+"{:.4f}".format(Rtot),
             "xticks"        : xticks,
             "yticks"        : yticks,
-            "xtickslabel"   : ["{:.2f}".format(gL) for gL in gL_arr[xticks]],
+            "xtickslabel"   : ["{:.0f}".format(gL/Lco) for gL in gL_arr[xticks]],
             "ytickslabel"   : ["{:.2f}".format(dLs*1e6) for dLs in deltaLs_arr[yticks]],
-            "fontsize"      : 8,
+            "fontsize"      : 6,
     }
     Plot_im(AD_range_arr,**param_dict)
 
@@ -316,7 +315,7 @@ if __name__ == '__main__':
     Kappa_arr       = np.flip(Kappa_arr,axis=0)
     freq_arr        = Kappa_arr[:,0]
 
-    Rtot_arr        = np.linspace(1.0001,1.0091,10)
+    Rtot_arr        = np.linspace(1.0010,1.0100,10)
     # Rtot_arr        = np.linspace(1.0041,1.0041,1)
 
     gL_arr          = np.linspace(0.6,1.6,11)
@@ -333,7 +332,7 @@ if __name__ == '__main__':
         L2          = L1 * Rtot
 
         # -L_strA < deltaLs < 0.5 * DeltaL_str
-        deltaLs_arr     = np.linspace(-L_str_A*0.03,0.5*deltaL_str,20) *1e-6   #unit: m
+        deltaLs_arr     = np.linspace(-L_str_A*0.03,0.5*deltaL_str,20)   #unit: m
 
         D1      = c/(ng_1550 * L1) *2* np.pi
         D2      = c/(ng_1550 * L2) *2* np.pi
@@ -361,19 +360,30 @@ if __name__ == '__main__':
         Lco         = L_str_A + min(best_deltaLs_3D,0)
         g_arr_eff   = g_arr_intp * best_gL_3D /(g0*Lco)
 
-        Y_p_2D      = Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
-        Y_m_2D      = -Reson_freq_2D(m_arr_intp,D_ave,g_arr_eff,2*Lco,epsilon)
         Y_p_3D      = Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
         Y_m_3D      = -Reson_freq_3D(m_arr_intp,D_ave,g_arr_eff,Lco,LAS,LAL,LBS,LBL)
 
+        #################################################################
+        # Optimized parameters for 2D parallel structures
+        #################################################################
+        best_AD_range_2D, best_gL_2D = Optimized_2D_parallel(m_arr_intp,L1,Rtot,gL_arr,g0,D_iso)
+
+        # Compare Reson freq of 2D and 3D structures
+        Y_p_2D      = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)
+        Y_m_2D      = -Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)
+
         data_arr = np.c_[Y_p_2D,Y_m_2D,Y_p_3D,Y_m_3D]
-        data_label_arr = ["","Supermodes of 2D parallel coupled rings",
-                        "","Supermodes of 3D parallel coupled rings"]*3
-        text = r"$D_{ave}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n"\
+        data_label_arr = ["","2D parallel structure",
+                        "","3D offset structure"]*3
+        text = r"$R_{tot}$ = $L_B/L_A$"+ " = {:.4f}".format(Rtot)+"\n"+\
+                r"$D_{ave}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n" +\
                 "M = "+"{:.1f} ".format(M)+"\n"\
-                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D)+"\n"\
-                r"$R_{tot}$ = $L_B/L_A$"+ " = {:.4f}".format(Rtot)+"\n"+\
-                r"$g_{co}L_{co}$"+" = {:.2f}".format(best_gL_3D)
+                "3D offset structure:\n"+ \
+                r"$g_{co}$"+"= {:.2f} ".format(best_gL_3D/Lco)+r"$m^{-1}$" +"\n" +\
+                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D*1e6)+r" $\mu m$"+"\n"\
+                "2D parallel structure:\n"+ \
+                r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_2D)
+
         param_dict  = {"alpha_list": [1]*14+[0.6,0.6]+[1]*4,
                         "text":text,
                         "loc_text":(1.1,0.2),
@@ -386,14 +396,8 @@ if __name__ == '__main__':
                                 param_dict_ = param_dict,
                                 num_of_pts=num_of_pts,ylim=(-20,20))
 
-        #################################################################
-        # Optimized parameters for 2D parallel structures
-        #################################################################
-        best_AD_range_2D, best_gL_2D = Optimized_2D_parallel(m_arr_intp,L1,Rtot,gL_arr,g0,D_iso)
-
-        # Draw and compare 2D and 3D structures
-        Reson_freq_arr_2D = Reson_freq_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)
-        D_2D        = Dispersion_2D_num(m_arr_intp,Reson_freq_arr_2D)
+        # Compare Dispersion of 2D and 3D structures
+        D_2D        = Dispersion_2D_num(m_arr_intp,Y_p_2D)
         # D_2D        = Dispersion_2D(m_arr_intp,D_ave,g_arr_intp,best_gL_2D/g0,epsilon)[2:-2]
         D_3D        = Dispersion_3D(m_arr_intp,Y_m_3D)
         data_arr    = np.flip(np.c_[D_2D+D_iso, D_3D+D_iso],axis=0)
@@ -407,7 +411,7 @@ if __name__ == '__main__':
         yticks       = ticks_arr(data_arr)
 
         text  = "3D offset structure:\n"+ \
-                r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_3D) +"\n" +\
+                r"$g_{co}$"+"= {:.2f} ".format(best_gL_3D/Lco)+r"$m^{-1}$" +"\n" +\
                 r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D*1e6)+r" $\mu m$"+"\n"\
                 "Optimal AD range: {:.2f} nm".format(best_AD_range_3D)+"\n"+\
                 "2D parallel structure:\n"+ \
@@ -431,12 +435,12 @@ if __name__ == '__main__':
             "plot_linewidth": [2,2],
             # "xlim"          : (-3*M,3*M+1),
             "xlim"          : (-M,M+1),
-            "ylim"          : (-2000,2000),
+            "ylim"          : (-2000,2500),
             "AD_region_color"    : True,
             # "bbox_legend"   : (0.9,0.9),
             "text"          : text,
             # "linespacing"   : 1.5,
-            "loc_text"      : (0.2,0.6),
+            "loc_text"      : (0.1,0.6),
             "linespacing"   : 1.8
         }
         Plot_curve(data_arr,**param_dict)

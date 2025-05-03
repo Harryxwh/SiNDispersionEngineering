@@ -1,12 +1,11 @@
 {
     "figsize"           : [10,6],
     "dpi"               : 300,
-    "title"             : "Plot image",
-    "colormap"          : "Blues",
-    "aspect"            : 10,
-    "point_color"       : "b",
-    "point_size"        : 10,
-    "point_marker"      : "^",
+    "title"             : "Plot field profile",
+    "component_name"    : "Ex",
+    "component_list"    : ["Abs","Re","Im"],
+    "colormap"          : "jet",
+    "grid_linewidth"    : 1,
     "norm"              : "",
     "xlabel"            : "",
     "ylabel"            : "",
@@ -15,11 +14,11 @@
     "xtickslabel"       : [],
     "ytickslabel"       : [],
     "fonttype"          : "Helvetica",
-    "fontsize"          : 5,
+    "fontsize"          : 4,
     "cbar_label"        : "",
     "cbar_small_ticks"  : false,
     "cbar_orientation"  : "horizontal",
-    "shrink"            : 0.9,
-    "pad"               : 0.1,
-    "foldername"        : ""
+    "shrink"            : 0.8,
+    "pad"               : 0.2,
+    "foldername"        : "./results/"
 }

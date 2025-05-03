@@ -40,6 +40,7 @@ if __name__ == '__main__':
                   "Straight_WG_width_2_8um_1480_1620_15wavls"+"/1550"
     foldername2 = "../data/Mode Profiles/"+\
                   "Straight_WG_width_2_8um_1480_1620_15wavls"+"/1550"
+
     # CoupledWG = Coupled_Waveguides(1.99,1.45,
     #                             gap_x = 2, gap_y = 0,
     #                             wavelength=1.55e-6,
@@ -170,18 +171,20 @@ if __name__ == '__main__':
     ##############################################################
 
     ################## Horizontal double rings ###################
-    filename_uncoupled_gap3um = "../data/beta_uncoupled_gap_3_000_0_000.txt"
-    filename_coupled_gap3um = "../data/beta_coupled_gap_3_000_0_000.txt"
+    filename_uncoupled_gap3um = "../data/Dispersion_scan_near_3um_CMT/beta_uncoupled_gap_3_000_0_000.txt"
+    filename_coupled_gap3um = "../data/Dispersion_scan_near_3um_CMT/beta_coupled_gap_3_000_0_000.txt"
+
+    filename_uncoupled_gap2_8um = "../data/Dispersion_scan_near_3um_CMT/beta_uncoupled_gap_2_800_0_000.txt"
+    filename_coupled_gap2_8um = "../data/Dispersion_scan_near_3um_CMT/beta_coupled_gap_2_800_0_000.txt"
 
     filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_L_inner_8um_gap_4um.txt"
     filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_L_inner_8um_gap_4um.txt"
 
-    filename_uncoupled_gap5um   = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
-    filename_coupled_gap5um     = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
+    filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
+    filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
 
     filename_FDE_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/Lumerical_supermodes_results_gapx_4um.txt"
     filename_FDE_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/Lumerical_supermodes_results_gapx_5um.txt"
-
     ##############################################################
 
     ################## Vertical double rings #####################
@@ -193,14 +196,14 @@ if __name__ == '__main__':
 
     # unit: nm
     # wavl_arr = np.linspace(1400,1700,31)
-    wavl_arr = np.linspace(1500,1600,11)
+    # wavl_arr = np.linspace(1500,1600,11)
     # wavl_arr = np.linspace(1535,1565,31)
     # wavl_arr = np.linspace(1540,1560,21)
     # wavl_arr = np.linspace(1480,1620,15)
-    # wavl_arr = np.linspace(1505,1600,20)
+    wavl_arr = np.linspace(1505,1595,19)
 
-    param_filename = "./Param_vertical.csv"
-    # param_filename = "./Param_L_inner_8.csv"
+    # param_filename = "./Param_vertical.csv"
+    param_filename = "./Param_L_inner_8.csv"
     # param_filename = "./Param_L_inner_2_8.csv"
     # param_filename = "./Param_800x400.csv"
     # param_filename = "./Param_straight_2_8.csv"
@@ -227,26 +230,34 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
-    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
+    # sweeper.Scan_gap(calc_needed=False, foldername = "Dispersion_scan_near_3um_CMT/", num_of_wavl_pts=1000)
+    # sweeper.Scan_gap(calc_needed=False, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap5um, filename_coupled_gap5um, param_filename,
-    #                          save_csv=False, FDE_data_exist=True,
+    #                          save_csv=False, FDE_beta_exist=True,
     #                          filename_FDE=filename_FDE_gap5um,num_of_pts=200)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um, param_filename,
-    #                          save_csv=False, FDE_data_exist=True,
-    #                          filename_FDE=filename_FDE_gap4um,num_of_pts=100)
+    #                          save_csv=False, FDE_beta_exist=True,
+    #                          filename_FDE_beta=filename_FDE_gap4um,num_of_pts=100)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap3um, filename_coupled_gap3um, param_filename,
-    #                          save_csv=False, FDE_data_exist=False,num_of_pts=100)
+    #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
+    #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_3um.txt",
+    #                          num_of_pts=150)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                             filename_uncoupled_gap2_8um, filename_coupled_gap2_8um, param_filename,
+                             save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
+                             filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_2.8um.txt",
+                             num_of_pts=100)
 
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=True,save_mode = "AS", FDE_data_exist=False, num_of_pts=100)
+    #                         save_csv=True,save_mode = "AS", FDE_beta_exist=False, num_of_pts=100)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=True,save_mode = "S", FDE_data_exist=False, num_of_pts=100)
+    #                         save_csv=True,save_mode = "S", FDE_beta_exist=False, num_of_pts=100)
 
