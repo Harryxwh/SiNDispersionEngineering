@@ -1,19 +1,28 @@
+###############################################################################
+# This script is used to find the eigenmodes of two identical rings that are vertically coupled.
+# Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
 switchtolayout;
 deleteall;
 
 um = 1e-6;
 nm = 1e-9;
 
-#Ring
-Lx_WG = 2.8*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 10*um; #length of the WG
+# Ring
+Lx_WG = 2.8*um; # width of the WG
+Ly_WG = 0.1*um; # height of the WG
+Lz_WG = 10*um; # length of the WG
 
 Lx_Cladding = 50*um;    #width of the Cladding
 Ly_Cladding = 2*um;     #height of the Cladding
 Lz_Cladding = 50*um;    #length of the Cladding
 
-Lx_Buried_Oxide = 50*um;    #width of the BOX
+Lx_Buried_Oxide = 50*um;    # width of the BOX
 Ly_Buried_Oxide = 14.5*um;  #height of the BOX
 Lz_Buried_Oxide = 50*um;    #length of the BOX
 
@@ -53,7 +62,6 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
-
 
 # Upper Ring
 addrect;
@@ -97,6 +105,7 @@ set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
 
+# FDE solver region
 addfde;
 set("solver type","2D Z normal");
 set("x",0*um);
@@ -138,11 +147,11 @@ set("dy",10*nm);
 
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
-# results combined in one file
+# Results combined in one file
 info_total_filename  = folder_name + "Lumerical_supermodes_results.txt";
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 
-#print header
+# Print header
 write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+ ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
@@ -157,7 +166,7 @@ for(wavl_idx=1:num_sweep_pt){
     folder_path = folder_name + num2str(wavelength*1e9);
     info_filename = folder_path+ "\Mode_info.txt";          # result for one wavl within folder for each wavelength
     if(fileexists(info_filename)){rm(info_filename);}
-    #print header
+    # Print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
     findmodes;

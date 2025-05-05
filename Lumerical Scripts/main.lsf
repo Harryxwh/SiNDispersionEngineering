@@ -10,17 +10,17 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 2.8*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+Lx_WG = 2.8*um; # width of the WG
+Ly_WG = 0.1*um; # height of the WG
+Lz_WG = 50*um; # length of the WG
 
-Lx_Cladding = 50*um; #width of the cladding
-Ly_Cladding = 20*um; #height of the cladding
-Lz_Cladding = 50*um; #length of the cladding
+Lx_Cladding = 50*um; # width of the cladding
+Ly_Cladding = 20*um; # height of the cladding
+Lz_Cladding = 50*um; # length of the cladding
 
-Lx_Buried_Oxide = 50*um; #width of the BOX
-Ly_Buried_Oxide = 15*um; #width of the BOX
-Lz_Buried_Oxide = 50*um; #width of the BOX
+Lx_Buried_Oxide = 50*um; # width of the BOX
+Ly_Buried_Oxide = 15*um; # width of the BOX
+Lz_Buried_Oxide = 50*um; # width of the BOX
 
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -10*um;
@@ -28,7 +28,7 @@ Ly_FDE_max  = 10*um;
 
 y_min = 0*um;
 
-mesh_step       = 200e-9;
+
 mesh_cells_x    = 1500;
 mesh_cells_y    = 1000;
 
@@ -51,7 +51,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_modes_of_single_ring_at_multi_wavls_func;
 
 
 ################################################
@@ -62,17 +62,17 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 2.7*um;   #width of the WG
-Ly_WG = 0.1*um;     #height of the WG
-Lz_WG = 50*um;      #length of the WG
+Lx_WG = 2.7*um;   # width of the WG
+Ly_WG = 0.1*um;     # height of the WG
+Lz_WG = 50*um;      # length of the WG
 
-Lx_Cladding = 50*um; #width of the cladding
-Ly_Cladding = 20*um; #height of the cladding
-Lz_Cladding = 50*um; #length of the cladding
+Lx_Cladding = 50*um; # width of the cladding
+Ly_Cladding = 20*um; # height of the cladding
+Lz_Cladding = 50*um; # length of the cladding
 
-Lx_Buried_Oxide = 50*um; #width of the BOX
-Ly_Buried_Oxide = 15*um; #width of the BOX
-Lz_Buried_Oxide = 50*um; #width of the BOX
+Lx_Buried_Oxide = 50*um; # width of the BOX
+Ly_Buried_Oxide = 15*um; # width of the BOX
+Lz_Buried_Oxide = 50*um; # width of the BOX
 
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -10*um;
@@ -105,7 +105,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-#Find_Modes_single_Ring_multi_wavl_XYZ_func;
+#Find_modes_of_single_ring_at_multi_wavls_func;
 
 
 ################################################
@@ -145,16 +145,16 @@ wavelength  = 1550*nm;
 um = 1e-6;
 nm = 1e-9;
 
-Ly_lower = 0.1*um;  #height of the WG
-Lz_lower = 50*um;   #length of the WG
+Ly_lower = 0.1*um;  # height of the WG
+Lz_lower = 50*um;   # length of the WG
 
-Lx_Cladding = 50*um; #width of the cladding
-Ly_Cladding = 20*um; #height of the cladding
-Lz_Cladding = 50*um; #length of the cladding
+Lx_Cladding = 50*um; # width of the cladding
+Ly_Cladding = 20*um; # height of the cladding
+Lz_Cladding = 50*um; # length of the cladding
 
-Lx_Buried_Oxide = 50*um; #width of the BOX
-Ly_Buried_Oxide = 15*um; #width of the BOX
-Lz_Buried_Oxide = 50*um; #width of the BOX
+Lx_Buried_Oxide = 50*um; # width of the BOX
+Ly_Buried_Oxide = 15*um; # width of the BOX
+Lz_Buried_Oxide = 50*um; # width of the BOX
 
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -10*um;
@@ -199,22 +199,18 @@ um = 1e-6;
 nm = 1e-9;
 
 # Upper Ring
-Lx_WG = 2.8*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 10*um;  #length of the WG
+Lx_WG = 2.8*um; # width of the WG
+Ly_WG = 0.1*um; # height of the WG
 
 # Lower Ring
-Lx_WG = 2.7*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 10*um;  #length of the WG
+Lx_WG = 2.7*um; # width of the WG
+Ly_WG = 0.1*um; # height of the WG
 
-Lx_Cladding = 50*um; #width of the cladding
-Ly_Cladding = 20*um; #height of the cladding
-Lz_Cladding = 50*um; #length of the cladding
+Lx_Cladding = 50*um; # width of the cladding
+Ly_Cladding = 20*um; # height of the cladding
 
-Lx_Buried_Oxide = 50*um; #width of the BOX
-Ly_Buried_Oxide = 15*um; #width of the BOX
-Lz_Buried_Oxide = 50*um; #width of the BOX
+Lx_Buried_Oxide = 50*um; # width of the BOX
+Ly_Buried_Oxide = 15*um; # height of the BOX
 
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -10*um;
@@ -229,7 +225,7 @@ mesh_cells_y = 300;
 gap = 0.2*um;
 ?"gap = "+num2str(gap*1e6)+" um";
 
-bend_waveguide = 0;
+bend_waveguide = 0;     # staight wavguides
 bend_radius =  1000*um;
 ?"bend_radius = "+num2str(bend_radius*1e6)+" um";
 
@@ -241,7 +237,6 @@ folder_name = "DoubleRingSuperModes_vertical_L_inner_2_8um_gap_0_2um" + "\\";
 wavelength_min  = 1400*nm;
 wavelength_max  = 1700*nm;
 num_sweep_pt    = 16;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 ################################################
 # conduct simulation

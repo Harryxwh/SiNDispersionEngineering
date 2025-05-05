@@ -26,11 +26,11 @@ z_RDL               = 4.3   *um;    # z of the WG
 x_taper_offset      = 1     *um;
 
 #Upper and Lower WG
-Ly_upper = 2.8*um;  #width of the WG
+Ly_upper = 2.8*um;  # width of the WG
 Lz_upper = 0.1*um;  #thickness of the WG
 z_upper  = z_RDL*2;
 
-Ly_lower = 2.8*um;  #width of the WG
+Ly_lower = 2.8*um;  # width of the WG
 Lz_lower = 0.1*um;  #thickness of the WG
 z_lower  = 0*um;
 

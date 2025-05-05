@@ -6,15 +6,15 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 2.8*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+Lx_WG = 2.8*um; # width of the WG
+Ly_WG = 0.1*um; # height of the WG
+Lz_WG = 50*um; # length of the WG
 y_min = 0;
 gap_x = 2.4*um;
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um; # width of the WG
+Ly_Cladding = 2*um; # height of the WG
+Lz_Cladding = 50*um; # length of the WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 14.5*um;
@@ -24,7 +24,7 @@ Lx_FDE      = 30*um;
 Ly_FDE_min  = -8*um;
 Ly_FDE_max  = 4*um;
 
-mesh_step       = 200e-9;
+
 mesh_cells_x    = 500;
 mesh_cells_y    = 200;
 
@@ -41,7 +41,7 @@ wavelength_max      = 1550*nm;
 num_sweep_pt        = 1;
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-#Material
+# Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
@@ -198,7 +198,7 @@ setnamed("FDE","wavelength",1550*nm);
     #info_filename = folder_path+ "\Mode_info.txt";
     #if(fileexists(info_filename)){rm(info_filename);}
 
-    ##print header
+    ## Print header
     #write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
 
     #for (mode_idx=1:Max_Mode_Idx){
@@ -225,7 +225,7 @@ setnamed("FDE","wavelength",1550*nm);
         #info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
         #write(info_filename,info);
 
-        ##Fundamental mode
+        ## Fundamental mode
         #if(mode_idx == 1){
             #wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
             #neff_log = "Effective index: " + num2str(real(neff));
@@ -235,7 +235,7 @@ setnamed("FDE","wavelength",1550*nm);
             #?beta_log;
             #write(log_filename,wave_log + "\n" + neff_log + "\n" + beta_log + "\n");
         #}
-        ##write mode profile matrix
+        ## Write mode profile matrix
         #for (j=1:6){
             #format short;
             #filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";

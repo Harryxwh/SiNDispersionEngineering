@@ -48,15 +48,15 @@ for(gap_idx=1:num_sweep_pt){
 
     # Geometry
     # Inner Ring
-    Lx_WG1 = 8*um; #width of the WG
-    Ly_WG1 = 0.1*um; #height of the WG
-    Lz_WG1 = 10*um; #length of the WG
+    Lx_WG1 = 8*um; # width of the WG
+    Ly_WG1 = 0.1*um; # height of the WG
+    Lz_WG1 = 10*um; # length of the WG
 
     # Outer Ring
     # Calculate the width of the outer ring satisfying the phase matching condition
     # The formula comes from a polynomial fit of simulation data
     Lx_WG2 = (9.92857*(gap*1e6)^2 - 242.2928*(gap*1e6) + 3399.5714) * nm;
-    Ly_WG2 = 0.1*um; #height of the WG
+    Ly_WG2 = 0.1*um; # height of the WG
 
     Lx_Cladding = 50*um;            # width of the cladding layer
     Ly_Cladding = 2*um;             # height of the cladding layer

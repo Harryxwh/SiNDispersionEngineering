@@ -2,12 +2,12 @@
 
 #Upper and Lower WG
 Lx_upper = 16*um;   #length of the straight part of racetrack
-Ly_upper = 2.8*um;  #width of the WG
+Ly_upper = 2.8*um;  # width of the WG
 Lz_upper = 0.1*um;  #thickness of the WG
 z_upper  = 10*um;
 
 Lx_lower = 16*um;   #length of the straight part of racetrack
-Ly_lower = 2.8*um;  #width of the WG
+Ly_lower = 2.8*um;  # width of the WG
 Lz_lower = 0.1*um;  #thickness of the WG
 z_lower  = 0*um;
 

@@ -4,12 +4,12 @@ deleteall;
 um = 1e-6;
 nm = 1e-9;
 
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+Ly_WG = 0.1*um; # height of the WG
+Lz_WG = 50*um; # length of the WG
 
-Lx_Cladding = 50*um; #length of the WG
-Ly_Cladding = 2*um; #width of the WG
-Lz_Cladding = 50*um; #height of the WG
+Lx_Cladding = 50*um; # length of the WG
+Ly_Cladding = 2*um; # width of the WG
+Lz_Cladding = 50*um; # height of the WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 8*um;

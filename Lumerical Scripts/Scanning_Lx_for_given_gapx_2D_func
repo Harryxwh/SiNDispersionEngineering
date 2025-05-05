@@ -1,5 +1,72 @@
+###############################################################################
+# This script is a function used to find the propagation constant of the outer ring when the gap between the two rings is changed at a given wavelength
+# Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
+
+# Parameters:
+
+# Outer ring
+# Ly_WG             :   height of the WG1
+
+# Upper Ring
+# Lx_WG2            :   width of the WG2
+# Ly_WG2            :   height of the WG2
+
+# Cladding layer
+# Lx_Cladding       :   width of the claddin layer
+# Ly_Cladding       :   height of the cladding layer
+
+# Box layer
+# Lx_Buried_Oxide   :   width of the BOX layer
+# Ly_Buried_Oxide   :   height of the BOX layer
+
+# Geometry of the inner ring is fixed
+# Lx_inner_ring     :   width of the inner ring
+# bend_radius_inner :   bending radius of the inner ring
+
+# FDE region
+# Lx_FDE            :   width of the FDE solver region
+# Ly_FDE_min        :   ymin of the FDE solver region
+# Ly_FDE_max        :   ymax of the FDE solver region
+
+# Mesh settings
+# mesh_cells_x      :   num of mesh cells in x direction
+# mesh_cells_y      :   num of mesh cells in y direction
+
+# gap               :   gap between the horizontal surfaces of the two WGs
+
+# bend_radius_inner :   bending radius of the inner WG
+
+# material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
+# material_cladding :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
+
+# Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
+
+# filename          :   name of the file to store the data. e.g. "Scanning_Lx_around2um_L_inner_2_8um_gap_3um.txt"
+
+# Define wavelength of simulation
+# wavelength        :
+
+# Parameter sweep of width of outer ring
+# Lx_start          :   start of the width of outer ring
+# Lx_end            :   end of the width of outer ring
+# num_of_pts_Lx     :   number of sweeping points
+
+# gap               :   the distance between two the sidewalls of the rings is fixed
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
+switchtolayout;
 switchtolayout;
 deleteall;
+
+Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
+beta_ang_array  = zeros(num_of_pts_Lx);
+
+if(fileexists(filename)){rm(filename);}
+write(filename,"Lx,beta_ang");
 
 for (Lx_idx = 1:num_of_pts_Lx)
 {
@@ -104,4 +171,5 @@ for (Lx_idx = 1:num_of_pts_Lx)
     write(filename,Beta_ang_given_Lx);
     ?"\n";
 }
+
 plot(Lx_arr*1e6,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");

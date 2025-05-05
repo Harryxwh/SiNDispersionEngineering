@@ -1,3 +1,16 @@
+###############################################################################
+# This is the main program used to analyze the 2D coupled rings
+
+# Functions called by this main program include:
+# 1. Find_modes_of_single_ring_at_multi_wavls_func : used to find the eigenmodes of a single bent waveguide (ring) at different wavelengths.
+# 2. Scanning_Lx_for_given_gapx_2D_func : used to find width of the outer ring satisfying the phase matching condition so that coupling can happen.
+# 3. Find_modes_of_horizontally_coupled_double_rings_func : used to find the eigenmodes of two horizontally coupled bent waveguides (ring) at different wavelengths.
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
 ################################################
 # setting up parameters for Eigenmode calc for straight WG
 # Straight_WG_width_2_8um
@@ -6,23 +19,21 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 2.8*um; #width of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+Lx_WG = 2.8*um;             # width of the WG
+Ly_WG = 0.1*um;             # height of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um;        # width of the Cladding
+Ly_Cladding = 2*um;         # height of the Cladding
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
+Lx_Buried_Oxide = 50*um;    # width of the BOX
+Ly_Buried_Oxide = 14.5*um;  # height of the BOX
 
+# FDE solver region
 Lx_FDE      = 30*um;
 Ly_FDE_min  = -8*um;
 Ly_FDE_max  = 4*um;
 
-mesh_step       = 200e-9;
+# Meshing settings
 mesh_cells_x    = 2000;
 mesh_cells_y    = 800;
 
@@ -34,9 +45,8 @@ bend_radius     = 1000*um;
 wavelength_min      = 1480*nm;
 wavelength_max      = 1620*nm;
 num_sweep_pt        = 15;
-wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-#Material
+# Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
@@ -46,11 +56,10 @@ folder_name = "Straight_WG_width_2_8um" + "\\";
 log_filename = folder_name + "Find_Modes_straight_WG_multi_wavl_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
-
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_modes_of_single_ring_at_multi_wavls_func;
 
 
 ################################################
@@ -61,17 +70,14 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 1.793*um;   #width of the WG
-Ly_WG = 0.1*um;     #height of the WG
-Lz_WG = 50*um;      #length of the WG
+Lx_WG = 1.793*um;       # width of the WG
+Ly_WG = 0.1*um;         # height of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um;    #width of the Cladding
+Ly_Cladding = 2*um;     #height of the Cladding
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
+Lx_Buried_Oxide = 50*um;    # width of the BOX
+Ly_Buried_Oxide = 14.5*um;  #height of the BOX
 
 Lx_FDE = 30*um;
 Ly_FDE_min = -8*um;
@@ -92,9 +98,8 @@ bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
 wavelength_min = 1500*nm;
 wavelength_max = 1600*nm;
 num_sweep_pt   = 11;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-#Material
+# Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
@@ -107,7 +112,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-#Find_Modes_single_Ring_multi_wavl_XYZ_func;
+#Find_modes_of_single_ring_at_multi_wavls_func;
 
 
 ################################################
@@ -119,17 +124,14 @@ um = 1e-6;
 nm = 1e-9;
 
 # Geometry
-Lx_WG = 2.8*um;   #width of the WG ????
-Ly_WG = 0.1*um;     #height of the WG
-Lz_WG = 50*um;      #length of the WG
+Lx_WG = 2.8*um;     # width of the WG
+Ly_WG = 0.1*um;     # height of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um; # width of the WG
+Ly_Cladding = 2*um; # height of the WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 30*um;
 Ly_FDE_min = -8*um;
@@ -151,9 +153,8 @@ bend_radius =  bend_radius_inner;
 wavelength_min = 1500*nm;
 wavelength_max = 1600*nm;
 num_sweep_pt = 21;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-#Material
+# Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
@@ -166,7 +167,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 ################################################
 # conduct simulation
 ################################################
-# Find_Modes_single_Ring_multi_wavl_XYZ_func;
+# Find_modes_of_single_ring_at_multi_wavls_func;
 
 
 ################################################
@@ -180,16 +181,13 @@ wavelength  = 1550*nm;
 um = 1e-6;
 nm = 1e-9;
 
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+Ly_WG = 0.1*um; # height of the WG
 
-Lx_Cladding = 50*um; #length of the WG
-Ly_Cladding = 2*um; #width of the WG
-Lz_Cladding = 50*um; #height of the WG
+Lx_Cladding = 50*um; # length of the WG
+Ly_Cladding = 2*um; # width of the WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 14.5*um;
-Lz_Buried_Oxide = 50*um;
 
 Lx_FDE = 30*um;
 Ly_FDE_min = -8*um;
@@ -217,7 +215,6 @@ material_cladding = "SiO2 (Glass) - Palik";
 
 # Results array and file
 beta_ang_array  = zeros(num_of_pts_Lx);
-format short;
 filename = "Scanning_Lx_around2um_L_inner_2_8um_gap_3um.txt";
 if(fileexists(filename)){rm(filename);}
 write(filename,"Lx,beta_ang");
@@ -238,18 +235,18 @@ nm = 1e-9;
 # Geometry
 
 # Inner Ring
-Lx_WG1 = 2.8*um; #width of the WG
-Ly_WG1 = 0.1*um; #height of the WG
-Lz_WG1 = 10*um; #length of the WG
+Lx_WG1 = 2.8*um; # width of the WG
+Ly_WG1 = 0.1*um; # height of the WG
+Lz_WG1 = 10*um; # length of the WG
 
 # Outer Ring
-Lx_WG2 = 1.793*um; #width of the WG
-Ly_WG2 = 0.1*um; #height of the WG
-Lz_WG2 = 10*um; #length of the WG
+Lx_WG2 = 1.793*um; # width of the WG
+Ly_WG2 = 0.1*um; # height of the WG
+Lz_WG2 = 10*um; # length of the WG
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
+Lx_Cladding = 50*um; # width of the WG
+Ly_Cladding = 2*um; # height of the WG
+Lz_Cladding = 50*um; # length of the WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 14.5*um;
@@ -281,9 +278,8 @@ folder_name = "DoubleRingSuperModes_L_inner_2_8_gap_5um_1500_1600_21wavls" + "\\
 wavelength_min = 1500*nm;
 wavelength_max = 1600*nm;
 num_sweep_pt = 21;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 ################################################
 # conduct simulation
 ################################################
-#Find_Modes_of_Double_Rings_Horizontal_func;
+# Find_modes_of_horizontally_coupled_double_rings_func;

@@ -1,18 +1,23 @@
 ##############################################
 # setup_RDL
+# Description: This function is used to add a taper structure in the lumerical software
 
 # parameters:
-# structure_group_name: name of the RDL group
-# len_taper: length of the adiabatic taper region
-# len_prop: length of the straight propagtion region
-# width_in: width of the narrow side of the taper
-# width_prop: width of the wide side of the taper
-# res: num of pts when drawing the linear taper
-# Lz: thickness of the RDL WG
-# z: z coordinate of the RDL WG
-# x_min: starting point of the RDL region
-# x_taper_offset: offset of the starting point of the taper in +x direction
-# material: material of the RDL WG
+# structure_group_name      : name of the RDL group
+# len_taper                 : length of the adiabatic taper region
+# len_prop                  : length of the straight propagtion region
+# width_in                  : width of the narrow side of the taper
+# width_prop                : width of the wide side of the taper
+# res                       : num of pts when drawing the linear taper
+# Lz                        : thickness of the RDL WG
+# z                         : z coordinate of the RDL WG
+# x_min                     : starting point of the RDL region
+# x_taper_offset            : offset of the starting point of the taper in +x direction
+# material                  : material of the RDL WG
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
 ##############################################
 
 addstructuregroup;

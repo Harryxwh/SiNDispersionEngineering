@@ -4,11 +4,11 @@
 
 # Parameters:
 
-# Inner Ring
+# Lower Ring
 # Lx_WG1            :   width of the WG1
 # Ly_WG1            :   height of the WG1
 
-# Outer Ring
+# Upper Ring
 # Lx_WG2            :   width of the WG2
 # Ly_WG2            :   height of the WG2
 
@@ -52,6 +52,9 @@
 
 switchtolayout;
 deleteall;
+
+# Setup the wavelength array
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Lower Ring
 addrect;
@@ -174,7 +177,7 @@ for(wavl_idx=1:num_sweep_pt){
     folder_path = folder_name + num2str(wavelength*1e9);
     info_filename = folder_path+ "\Mode_info.txt";          # result for one wavl within folder for each wavelength
     if(fileexists(info_filename)){rm(info_filename);}
-    #print header
+    # Print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
     findmodes;

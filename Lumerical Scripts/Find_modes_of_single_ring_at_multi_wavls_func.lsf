@@ -1,86 +1,75 @@
+###############################################################################
+# This script is a function used to find the eigenmodes of a single bent waveguide
+# Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
+
+# Parameters:
+
+# WG
+# Lx_WG             :   width of the WG
+# Ly_WG             :   height of the WG
+
+# Cladding layer
+# Lx_Cladding       :   width of the claddin layer
+# Ly_Cladding       :   height of the cladding layer
+
+# Box layer
+# Lx_Buried_Oxide   :   width of the BOX layer
+# Ly_Buried_Oxide   :   height of the BOX layer
+
+# FDE region
+# Lx_FDE            :   width of the FDE solver region
+# Ly_FDE_min        :   ymin of the FDE solver region
+# Ly_FDE_max        :   ymax of the FDE solver region
+
+# Mesh settings
+# mesh_cells_x      :   num of mesh cells in x direction
+# mesh_cells_y      :   num of mesh cells in y direction
+
+# bend_radius_inner :   bending radius of the inner WG
+
+# material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
+# material_cladding :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
+
+# Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
+
+# folder_name       :   name of the folder to store the data. e.g. "data//"
+
+# Define wavelength of simulation
+# wavelength_min    :   starting wavelength
+# wavelength_max    :   stoping wavelength
+# num_sweep_pt      :   num pf wavelength points to calculate
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
 switchtolayout;
 deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-#Lx_WG = 2.8*um; #width of the WG        #Inner WG
-#Lx_WG = 1.989*um; #width of the WG     #gap_x = 4um
-#Lx_WG = 1.798*um; #width of the WG     #gap_x = 5um
-#Lx_WG = 1.547*um; #width of the WG       #gap_x = 8um
-#Lx_WG = 1.460*um; #width of the WG       #gap_x = 10um
 
-Lx_WG = 0.8*um; #height of the WG
-#Lx_WG = 8*um; #height of the WG
-Ly_WG = 0.1*um; #height of the WG
-Lz_WG = 50*um; #length of the WG
+# Setup the wavelength array
+wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-Lx_Cladding = 50*um; #width of the WG
-Ly_Cladding = 2*um; #height of the WG
-Lz_Cladding = 50*um; #length of the WG
-
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 15*um;
-Lz_Buried_Oxide = 50*um;
-
-Lx_FDE = 20*um;
-Ly_FDE_min = -8*um;
-Ly_FDE_max = 8*um;
-
-mesh_step = 200e-9;
-mesh_cells_x = 1000;
-mesh_cells_y = 800;
-
-Lx_inner = 8*um;
-bend_radius_inner = 1000*um;
-gap = 3*um;
-
-bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
-#bend_radius =  bend_radius_inner;
-?"bend_radius = "+num2str(bend_radius*1e6)+" um";
-
-Max_Mode_Idx = 1;
-
-# Define wavelength of simulation
-wavelength_min = 1550*nm;
-wavelength_max = 1550*nm;
-num_sweep_pt = 1;
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
-
-# Material
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
-
-folder_name = "OuterRingDesigned_L_inner_8um_gap_3um_2762nm_1500_1600_21wavls" + "\\";
-log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
-if(fileexists(log_filename)){rm(log_filename);}
-
+# Record parameters in log file
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
-write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
+write(log_filename,"Lx_WG = " + num2str(Lx_WG) + "Ly_WG = " + num2str(Ly_WG) + "\n");
 
-# Create folders if they do not yet exist
-#for(wavl_idx=1:num_sweep_pt){
-    #format short;
-    #wavelength = wavelength_array(wavl_idx);
-
-    #folder_path = folder_name + num2str(wavelength*1e9);
-    #?"mkdir "+folder_path;
-    #system("mkdir "+folder_path);
-#}
-
-#WG
+# WG
 addrect;
 set("name","WG");
 set("x",0);
 set("x span",Lx_WG);
-set("y min",0);
-set("y max",Ly_WG);
+set("y min",y_min);
+set("y max",y_min+Ly_WG);
 #set("z",0);
 #set("z span",Lz_WG);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
-
 
 # BOX
 addrect;
@@ -89,8 +78,6 @@ set("x",0);
 set("x span",Lx_Buried_Oxide);
 set("y max",0);
 set("y min",-Ly_Buried_Oxide);
-#set("z",0);
-#set("z span",Lz_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
@@ -102,13 +89,11 @@ set("x",0);
 set("x span",Lx_Cladding);
 set("y min",0);
 set("y max",Ly_Cladding);
-#set("z",0);
-#set("z span",Lz_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
 
-
+# FDE solver region
 addfde;
 set("solver type","2D Z normal");
 set("x",0*um);
@@ -116,10 +101,6 @@ set("y",0);
 set("x span",Lx_FDE);
 set("y min",Ly_FDE_min);
 set("y max",Ly_FDE_max);
-#set("x min bc","Metal");
-#set("x max bc","Metal");
-#set("y min bc","Metal");
-#set("y max bc","Metal");
 set("x min bc","PML");
 set("x max bc","PML");
 set("y min bc","PML");
@@ -129,16 +110,17 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
-set("bent waveguide", 1);
-set("bend location x", 0);
-set("bend location y", 0);
-set("bend location z", 0);
-set("bend radius",bend_radius);
+# If the waveguide is bent, set the bending radius
+set("bent waveguide",bend_waveguide);
+if (bend_waveguide == 1){
+    set("bend location x", 0);
+    set("bend location y", 0);
+    set("bend location z", 0);
+    set("bend radius",bend_radius);
+}
 
 # Create arrays to store results
-neff_array = zeros(num_sweep_pt);
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
-
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -150,21 +132,20 @@ for(wavl_idx=1:num_sweep_pt){
     findmodes;
 
     format short;
-
     folder_path = folder_name + num2str(wavelength*1e9);
     info_filename = folder_path+ "\Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
 
-    #print header
+    # Print header
     write(info_filename,"modeidx,neff,ng,loss,polarization,beta_ang");
 
     for (mode_idx=1:Max_Mode_Idx){
 
         format short;
-        neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
-        ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
-        loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
-        polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
+        neff            = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+        ng              = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
+        loss            = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
+        polarization    = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
 
         beta_ang = real(2*pi/wavelength * bend_radius * neff);
 
@@ -182,7 +163,7 @@ for(wavl_idx=1:num_sweep_pt){
         info = info + num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
         write(info_filename,info);
 
-        #Fundamental mode
+        # Fundamental mode
         if(mode_idx == 1){
             wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
             neff_log = "Effective index: " + num2str(real(neff));
@@ -192,7 +173,8 @@ for(wavl_idx=1:num_sweep_pt){
             ?beta_log;
             write(log_filename,wave_log + "\n" + neff_log + "\n" + beta_log + "\n");
         }
-        #write mode profile matrix
+
+        # Write mode profile matrix
         for (j=1:6){
             format short;
             filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
