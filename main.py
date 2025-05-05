@@ -164,10 +164,10 @@ if __name__ == '__main__':
     ##############################################################
 
     ################## Vertical double rings #####################
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    foldername1 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
     ##############################################################
 
     ################## Horizontal double rings ###################
@@ -195,12 +195,12 @@ if __name__ == '__main__':
     ##############################################################
 
     # unit: nm
-    # wavl_arr = np.linspace(1400,1700,31)
+    wavl_arr = np.linspace(1400,1700,31)
     # wavl_arr = np.linspace(1500,1600,11)
     # wavl_arr = np.linspace(1535,1565,31)
     # wavl_arr = np.linspace(1540,1560,21)
     # wavl_arr = np.linspace(1480,1620,15)
-    wavl_arr = np.linspace(1505,1595,19)
+    # wavl_arr = np.linspace(1505,1595,19)
 
     # param_filename = "./Param_vertical.csv"
     param_filename = "./Param_L_inner_8.csv"
@@ -209,14 +209,14 @@ if __name__ == '__main__':
     # param_filename = "./Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 2.5
-    end_gap_x     = 3.5
-    num_of_gaps_x = 11
+    start_gap_x   = 0
+    end_gap_x     = 0
+    num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0
-    end_gap_y     = 0
-    num_of_gaps_y = 1
+    start_gap_y   = 0.1
+    end_gap_y     = 0.9
+    num_of_gaps_y = 5
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
     A,B = np.meshgrid(gap_arr_x,gap_arr_y)
@@ -231,7 +231,7 @@ if __name__ == '__main__':
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
     # sweeper.Scan_gap(calc_needed=False, foldername = "Dispersion_scan_near_3um_CMT/", num_of_wavl_pts=1000)
-    # sweeper.Scan_gap(calc_needed=False, num_of_wavl_pts=1000)
+    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
@@ -248,11 +248,11 @@ if __name__ == '__main__':
     #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
     #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_3um.txt",
     #                          num_of_pts=150)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                             filename_uncoupled_gap2_8um, filename_coupled_gap2_8um, param_filename,
-                             save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
-                             filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_2.8um.txt",
-                             num_of_pts=100)
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+    #                          filename_uncoupled_gap2_8um, filename_coupled_gap2_8um, param_filename,
+    #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
+    #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_2.8um.txt",
+    #                          num_of_pts=100)
 
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,

@@ -84,14 +84,14 @@ def Plot_field_profile(field,field_name,
             ax[idx].set_yticklabels(param_dict["ytickslabel"],fontsize=param_dict["fontsize"])
     else:
         im = ax.imshow(field_list[0], cmap=param_dict["colormap"])
-        ax.set_title(component_list[0]+'('+field_name+')')
+        ax.set_title(param_dict["title"]+ ": " +component_list[0]+ '('+field_name+')')
         cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],
                             label=param_dict["cbar_label"],
                             shrink=param_dict["shrink"], pad=param_dict["pad"])
         cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
         cbar.set_label(param_dict["cbar_label"],size=param_dict["fontsize"])
-        ax.set_xlabel("X",fontsize= param_dict["fontsize"])
-        ax.set_ylabel("Y",fontsize= param_dict["fontsize"])
+        ax.set_xlabel(param_dict["xlabel"],fontsize= param_dict["fontsize"])
+        ax.set_ylabel(param_dict["ylabel"],fontsize= param_dict["fontsize"])
         ax.invert_yaxis()
         ax.tick_params(axis='both',labelsize=param_dict["fontsize"])
         ax.set_xticks(param_dict["xticks"])
@@ -99,7 +99,7 @@ def Plot_field_profile(field,field_name,
         ax.set_yticks(param_dict["yticks"])
         ax.set_yticklabels(param_dict["ytickslabel"],fontsize=param_dict["fontsize"])
 
-    plt.savefig(param_dict["foldername"]+param_dict["title"],
+    plt.savefig(param_dict["foldername"]+param_dict["title"]+".jpg",
                 dpi=param_dict["dpi"])
     plt.show()
     return
@@ -201,10 +201,19 @@ def Plot_curve(data_arr,
                    size = param_dict["fontsize"])
 
     if len(param_dict["yticks"])>1:
+        yticks = np.array(param_dict["yticks"])
+        yticks_mask = np.where((yticks<=ymax) & (yticks>=ymin))
+        yticks = yticks[yticks_mask]
+        ytickslabels = ["{:.2f}".format(ytick) for ytick in yticks]
+        plt.yticks(yticks,ytickslabels,
+                    fontproperties = param_dict["fonttype"],
+                    size = param_dict["fontsize"])
+    elif param_dict["autoset_yticks"] == 1:
         yticks = ticks_arr([ymin,ymax])
-        plt.yticks(yticks,yticks,
-                   fontproperties = param_dict["fonttype"],
-                   size = param_dict["fontsize"])
+        ytickslabels = ["{:.2f}".format(ytick) for ytick in yticks]
+        plt.yticks(yticks,ytickslabels,
+                    fontproperties = param_dict["fonttype"],
+                    size = param_dict["fontsize"])
 
     plt.ylabel(param_dict["Y_label"],
                fontdict={'family' : param_dict["fonttype"],
@@ -302,5 +311,5 @@ def Plot_im(data_arr, point_arr = [],
     plt.xlabel(param_dict["xlabel"],size = param_dict["fontsize"])
     plt.ylabel(param_dict["ylabel"],size = param_dict["fontsize"])
     plt.title(param_dict["title"],size = param_dict["fontsize"]*1.5)
-    plt.savefig("./results/"+param_dict["title"]+".jpg")
+    plt.savefig(param_dict["foldername"]+param_dict["title"]+".jpg")
     plt.show()

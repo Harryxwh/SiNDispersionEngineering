@@ -14,6 +14,7 @@
     "xticks"            : [],
     "xtickslabel"       : [],
     "yticks"            : [],
+    "autoset_yticks"   : 1,
     "xlim"              : [],
     "ylim"              : [],
     "fonttype"          : "Helvetica",
