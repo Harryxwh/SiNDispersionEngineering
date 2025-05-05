@@ -151,7 +151,7 @@ def Plot_curve(data_arr,
     for key,value in kwargs.items():
         param_dict[key] = value
 
-    savename = param_dict["foldername"]+str(param_dict["title"])+".jpg"
+    savename = param_dict["foldername"]+str(param_dict["title"])+".pdf"
     idx = 0
     plt.figure(figsize=param_dict["figsize"])
     for data_idx in range(len(data_arr)):
@@ -234,7 +234,8 @@ def Plot_curve(data_arr,
                 bbox=dict(boxstyle="round,pad=0.9", fc="white", alpha=0.9))
     plt.grid(linewidth=param_dict["grid_linewidth"], alpha=0.3)
     plt.tight_layout()
-    plt.savefig(savename,dpi=param_dict["dpi"])
+    plt.savefig(savename,format='pdf',dpi=param_dict["dpi"])
+
     if param_dict["plot_show"]:
         plt.show()
 

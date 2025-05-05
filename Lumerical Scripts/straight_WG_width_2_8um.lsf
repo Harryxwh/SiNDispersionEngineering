@@ -5,7 +5,7 @@
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 2.8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
@@ -106,7 +106,7 @@ set("material",material_core);
 
 copy(5.2*um,0,0);
 
-#BOX
+# BOX
 addrect;
 set("name","BOX");
 set("x",0);
@@ -119,7 +119,7 @@ set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
 
-#Cladding
+# Cladding
 addrect;
 set("name","Cladding");
 set("x",0);

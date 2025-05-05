@@ -72,7 +72,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("mesh order",2);
     set("material",material_core);
 
-    #BOX
+    # BOX
     addrect;
     set("name","BOX");
     set("x",0);
@@ -85,7 +85,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("mesh order",3);
     set("material",material_cladding);
 
-    #Cladding
+    # Cladding
     addrect;
     set("name","Cladding");
     set("x",0);
@@ -114,7 +114,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("mesh cells x",mesh_cells_x);
     set("mesh cells y",mesh_cells_y);
 
-    set("bent waveguide",1);
+    set("bent waveguide", 1);
     set("bend location x", 0);
     set("bend location y", 0);
     set("bend location z", 0);

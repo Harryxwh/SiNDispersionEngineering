@@ -33,7 +33,7 @@ set("mesh order",2);
 set("material",material_core);
 
 
-#BOX
+# BOX
 addrect;
 set("name","BOX");
 set("x",0);
@@ -46,7 +46,7 @@ set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
 
-#Cladding
+# Cladding
 addrect;
 set("name","Cladding");
 set("x",0);

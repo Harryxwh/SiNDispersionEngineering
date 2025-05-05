@@ -61,14 +61,14 @@ for (r_idx = 1:num_of_pts_r)
     ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
 
     for(Lx_idx=1:num_of_pts_Lx){
-        
+
         switchtolayout;
         deleteall;
 
         #Lx_WG = Lx_arr(Lx_idx);
         Lx_WG = 2*(bend_radius-bend_radius_start-gap);
         ?"Lx_WG = " + num2str(Lx_WG*1e6)+" um";
-        
+
         #WG
         addrect;
         set("name","WG");
@@ -82,7 +82,7 @@ for (r_idx = 1:num_of_pts_r)
         set("mesh order",2);
         set("material",material_core);
 
-        #BOX
+        # BOX
         addrect;
         set("name","BOX");
         set("x",0);
@@ -95,7 +95,7 @@ for (r_idx = 1:num_of_pts_r)
         set("mesh order",3);
         set("material",material_cladding);
 
-        #Cladding
+        # Cladding
         addrect;
         set("name","Cladding");
         set("x",0);
@@ -124,7 +124,7 @@ for (r_idx = 1:num_of_pts_r)
         set("mesh cells x",mesh_cells_x);
         set("mesh cells y",mesh_cells_y);
 
-        set("bent waveguide",1);
+        set("bent waveguide", 1);
         set("bend location x", 0);
         set("bend location y", 0);
         set("bend location z", 0);
@@ -133,11 +133,11 @@ for (r_idx = 1:num_of_pts_r)
         findmodes;
 
         mode_idx    = 1;    #fundamental mode
-        neff        = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));    
+        neff        = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
         neff_array(Lx_idx) = real(neff);
         format long;
         ?"neff = " + num2str(real(neff));
-       
+
     }
 
     format long;

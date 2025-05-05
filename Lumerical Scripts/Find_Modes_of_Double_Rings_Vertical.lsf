@@ -55,7 +55,7 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 #}
 
 
-#Upper Ring
+# Upper Ring
 addrect;
 set("name","Upper Ring");
 set("x",0);
@@ -68,10 +68,10 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
-#Lower Ring
+# Lower Ring
 copy(0,-(gap+Ly_WG),0);
 
-#BOX
+# BOX
 addrect;
 set("name","BOX");
 set("x",0);
@@ -84,7 +84,7 @@ set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_cladding);
 
-#Cladding
+# Cladding
 addrect;
 set("name","Cladding");
 set("x",0);
@@ -117,7 +117,7 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
-set("bent waveguide",1);
+set("bent waveguide", 1);
 set("bend location x", 0);
 set("bend location y", 0);
 set("bend location z", 0);

@@ -5,7 +5,7 @@
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 2.8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
@@ -60,7 +60,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 1.793*um;   #width of the WG
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
@@ -118,7 +118,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 2.8*um;   #width of the WG ????
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
@@ -176,7 +176,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 
 wavelength  = 1550*nm;
 
-#Geometry
+# Geometry
 um = 1e-6;
 nm = 1e-9;
 
@@ -235,14 +235,14 @@ write(filename,"Lx,beta_ang");
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 
-#Inner Ring
+# Inner Ring
 Lx_WG1 = 2.8*um; #width of the WG
 Ly_WG1 = 0.1*um; #height of the WG
 Lz_WG1 = 10*um; #length of the WG
 
-#Outer Ring
+# Outer Ring
 Lx_WG2 = 1.793*um; #width of the WG
 Ly_WG2 = 0.1*um; #height of the WG
 Lz_WG2 = 10*um; #length of the WG

@@ -11,7 +11,7 @@ deleteall;
     #system("mkdir "+folder_path);
 #}
 
-EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3; 
+EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3;
 rect_enabled = 1;
 GDS_enabled = 0;
 
@@ -58,7 +58,7 @@ res             = 1000; #resolution of polygon
 material        = material_core;
 setup_taper;
 
-#BOX
+# BOX
 addrect;
 set("name","BOX");
 set("x",0);
@@ -72,7 +72,7 @@ set("mesh order",3);
 set("material",material_cladding);
 set("alpha",alpha);
 
-#Cladding
+# Cladding
 addrect;
 set("name","Cladding");
 set("x",0);

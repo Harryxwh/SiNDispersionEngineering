@@ -41,7 +41,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         set("mesh order",2);
         set("material",material_core);
 
-        #BOX
+        # BOX
         addrect;
         set("name","BOX");
         set("x",0);
@@ -54,7 +54,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         set("mesh order",3);
         set("material",material_cladding);
 
-        #Cladding
+        # Cladding
         addrect;
         set("name","Cladding");
         set("x",0);
@@ -87,7 +87,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         set("mesh cells x",mesh_cells_x);
         set("mesh cells y",mesh_cells_y);
 
-        set("bent waveguide",1);
+        set("bent waveguide", 1);
         set("bend location x", 0);
         set("bend location y", 0);
         set("bend location z", 0);
@@ -114,7 +114,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         #NOTE: Angular propagation constant is the value with physical meaning. It is important to notice that the definition of neff here is dependent on the bending radius R.
         Beta_ang    = real(2*pi/wavelength * neff * bend_radius);
         beta_ang_array(Lx_idx) = Beta_ang;
- 
+
         ?"Beta_ang = " + num2str(real(Beta_ang));
 
         format long;

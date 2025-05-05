@@ -15,7 +15,7 @@ EME_prop_stop           = 10000*um;
 
 mesh_step = 50*nm;
 
-#Geometry
+# Geometry
 
 #RDL WG
 width_in_RDL        = 0.8   *um;    # width of the input side of the taper
@@ -37,7 +37,7 @@ z_lower  = 0*um;
 Lx_exten = 4*um;    #extension length in x direction
 Lx_offset= 1*um;    #offset in x direc
 
-#Cladding and BOX
+# Cladding and BOX
 Lx_Cladding         = 2000*um;    #length of the Cladding
 Ly_Cladding         = 50*um;    #width of the Cladding
 Lz_Cladding         = 20*um;    #thickness of the Cladding
@@ -84,32 +84,32 @@ for (i = 1: num_of_pts_len_taper)
     filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
     data_filename   = foldername + filename;
     if(fileexists(data_filename)){rm(data_filename);}
-    
+
     group_span1     = len_taper_RDL + x_taper_offset;
     group_span2     = len_prop_RDL;
-    group_span3     = len_taper_RDL + x_taper_offset;    
-    
+    group_span3     = len_taper_RDL + x_taper_offset;
+
     format short;
     write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
     write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");
     write(log_filename,"\n");
-    
+
     switchtolayout;
     deleteall;
-    
+
     # Create folders if they do not yet exist
     #for(wavl_idx=1:num_sweep_pt){
         #format short;
         #wavelength = wavelength_array(wavl_idx);
-    
+
         #folder_path = folder_name + num2str(wavelength*1e9);
         #?"mkdir "+folder_path;
         #system("mkdir "+folder_path);
     #}
-    
-    EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3; 
+
+    EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3;
     rect_enabled = 1;
-    
+
     # Upper racetrack Straight part
     addrect;
     set("name","Upper racetrack Straight part");
@@ -124,7 +124,7 @@ for (i = 1: num_of_pts_len_taper)
     set("material",material_core);
     set("alpha",alpha);
     set("enabled",rect_enabled);
-    
+
     # Lower racetrack Straight part
     addrect;
     set("name","Lower racetrack Straight part");
@@ -138,7 +138,7 @@ for (i = 1: num_of_pts_len_taper)
     set("mesh order",2);
     set("material",material_core);
     set("enabled",rect_enabled);
-    
+
     ##############################################
     # RDL WG
     ##############################################
@@ -153,8 +153,8 @@ for (i = 1: num_of_pts_len_taper)
     res             = 10000; #resolution of polygon
     material        = material_core;
     setup_RDL;
-    
-    #BOX
+
+    # BOX
     addrect;
     set("name","BOX");
     set("x",0);
@@ -167,8 +167,8 @@ for (i = 1: num_of_pts_len_taper)
     set("mesh order",3);
     set("material",material_cladding);
     set("alpha",alpha);
-    
-    #Cladding
+
+    # Cladding
     addrect;
     set("name","Cladding");
     set("x",0);
@@ -181,7 +181,7 @@ for (i = 1: num_of_pts_len_taper)
     set("mesh order",3);
     set("material",material_cladding);
     set("alpha",alpha);
-    
+
     # Set EME simulation
     addeme;
     set("wavelength" , wavelength);
@@ -204,12 +204,12 @@ for (i = 1: num_of_pts_len_taper)
     set("define z mesh by", "maximum mesh step");
     set("dy", mesh_step);
     set("dz", mesh_step);
-    
+
     set("allow custom eigensolver settings", 1);
     select("EME::Cells::cell_1");
     seteigensolver("number of trial modes", Num_of_trial_modes);
     seteigensolver("use max index", 1);
-    
+
     # set up port upper left
     select("EME::Ports::port_1");
     set("port location","left");
@@ -222,7 +222,7 @@ for (i = 1: num_of_pts_len_taper)
     #set("z span",Port_z_span);
     set("mode selection","fundamental mode");
     set("offset",-Lx_offset/2-Lx_exten/2);
-    
+
     # set up port lower left
     select("EME::Ports::port_2");
     set("port location","right");
@@ -234,7 +234,7 @@ for (i = 1: num_of_pts_len_taper)
     #set("z span",Port_z_span);
     set("mode selection","fundamental mode");
     set("offset",Lx_offset/2+Lx_exten/2);
-    
+
     addemeindex;
     set("name","EMEindex");
     set("monitor type","2D Y-normal");
@@ -243,7 +243,7 @@ for (i = 1: num_of_pts_len_taper)
     set("y",0);
     set("z max",EME_z_max);
     set("z min",EME_z_min);
-    
+
     addemeprofile;
     set("name","EMEprofile");
     set("monitor type","2D Y-normal");
@@ -252,23 +252,23 @@ for (i = 1: num_of_pts_len_taper)
     set("y",0);
     set("z max",EME_z_max);
     set("z min",EME_z_min);
-    
+
     run;
     emepropagate;
-    
+
     num_of_pts_sweep_prop   = num_of_pts_sweep_prop;
     setemeanalysis("propagation sweep",1);
     setemeanalysis("parameter","group span 2");
     setemeanalysis("start",EME_prop_start);
     setemeanalysis("stop", EME_prop_stop);
     setemeanalysis("number of points",num_of_pts_sweep_prop);
-    
+
     ## run propagation sweep tool
     #emesweep;
-    
+
     ## get propagation sweep result
     #S = getemesweep('S');
-    
+
     ## plot S21 vs group span
     #s21_abs_sq = abs(S.s21)^2;
     #format long;

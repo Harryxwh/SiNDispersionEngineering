@@ -1,4 +1,4 @@
-#Geometry
+# Geometry
 
 #Upper and Lower WG
 Lx_upper = 16*um;   #length of the straight part of racetrack
@@ -22,7 +22,7 @@ Lz_RDL              = 0.1   *um;    # thickness of the WG
 z_RDL               = 5     *um;      # z of the WG
 x_taper_offset      = 1     *um;
 
-#Cladding and BOX
+# Cladding and BOX
 Lx_Cladding         = 80*um;    #length of the Cladding
 Ly_Cladding         = 50*um;    #width of the Cladding
 Lz_Cladding         = 20*um;    #thickness of the Cladding
@@ -68,11 +68,11 @@ for (i = 1: num_of_pts_len_taper)
     filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
     data_filename   = foldername + filename;
     if(fileexists(data_filename)){rm(data_filename);}
-    
+
     group_span1     = len_taper_RDL + x_taper_offset;
     group_span2     = len_prop_RDL;
-    group_span3     = len_taper_RDL + x_taper_offset;    
-    
+    group_span3     = len_taper_RDL + x_taper_offset;
+
     format short;
     write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
     write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");

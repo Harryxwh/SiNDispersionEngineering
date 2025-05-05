@@ -1,19 +1,30 @@
+###############################################################################
+# This script is used to find the dispersion of the eigenmode of two horizontally coupled rings.
+# This is a direct calculation of the supermodes of coupled WGs
+# Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
 switchtolayout;
 deleteall;
 
 um = 1e-6;
 nm = 1e-9;
-    
-mesh_step = 200e-9;
+
+# Mesh settings
 mesh_cells_x = 3000;
 mesh_cells_y = 1000;
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
 material_cladding = "SiO2 (Glass) - Palik";
 
+# name of the folder to store data
 folder_name = "Dispersion_2D_concentric_rings" + "\\";
 
-# Define wavelength of simulation
+# Scanning the gap between the sidewalls of the two WGs
 gap_min         = 2.6   *um;
 gap_max         = 3.4   *um;
 num_sweep_pt    = 5;
@@ -25,83 +36,65 @@ for(gap_idx=1:num_sweep_pt){
 
     switchtolayout;
     deleteall;
-    #Geometry
-    
+
     format short;
     gap = gap_array(gap_idx);
     ?"gap = " + num2str(gap*1e6) +"um";
 
+    # File to store the dispersion curve at given gap
     D_filename  = folder_name+ "gapx_"+num2str(gap*1e6)+"um.txt";
-    #D_filename  = "Dispersion_of_isolated_inner_ring.txt";
     if(fileexists(D_filename)){rm(D_filename);}
     write(D_filename,"Wavelength (microns), Dispersion (us/nm/km)");
 
-    
-    #Inner Ring
+    # Geometry
+    # Inner Ring
     Lx_WG1 = 8*um; #width of the WG
     Ly_WG1 = 0.1*um; #height of the WG
     Lz_WG1 = 10*um; #length of the WG
-    
-    #Outer Ring
-    Lx_WG2 = (9.92857*(gap*1e6)^2 - 242.2928*(gap*1e6) + 3399.5714) * nm; #width of the WG
+
+    # Outer Ring
+    # Calculate the width of the outer ring satisfying the phase matching condition
+    # The formula comes from a polynomial fit of simulation data
+    Lx_WG2 = (9.92857*(gap*1e6)^2 - 242.2928*(gap*1e6) + 3399.5714) * nm;
     Ly_WG2 = 0.1*um; #height of the WG
-    Lz_WG2 = 10*um; #length of the WG
-    
-    Lx_Cladding = 50*um; #width of the WG
-    Ly_Cladding = 2*um; #height of the WG
-    Lz_Cladding = 50*um; #length of the WG
-    
-    Lx_Buried_Oxide = 50*um;
-    Ly_Buried_Oxide = 14.5*um;
-    Lz_Buried_Oxide = 50*um;
-    
-    Lx_FDE = 45*um;
-    Ly_FDE_min = -10*um;
-    Ly_FDE_max = 5*um;
-    
+
+    Lx_Cladding = 50*um;            # width of the cladding layer
+    Ly_Cladding = 2*um;             # height of the cladding layer
+
+    Lx_Buried_Oxide = 50*um;        # width of the BOX layer
+    Ly_Buried_Oxide = 14.5*um;      # height of the BOX layer
+
+    Lx_FDE = 45*um;                 # width of the FDE solver region
+    Ly_FDE_min = -10*um;            # ymin of the FDE solver region
+    Ly_FDE_max = 5*um;              # ymax of the FDE solver region
+
     bend_radius_inner   =  1000*um;
     bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-    #bend_radius        =  bend_radius_inner;
     ?"bend_radius = "   + num2str(bend_radius*1e6)+" um";
-    
-    #addrect;
-    #set("name","Inner Ring");
-    #set("x",-Lx_WG1/2 - gap/2);
-    #set("x span",Lx_WG1);
-    #set("y min",0);
-    #set("y max",Ly_WG1);
-    ##set("z",0);
-    ##set("z span",Lz_WG1);
-    #set("override mesh order from material database",true);
-    #set("mesh order",2);
-    #set("material",material_core);
-    
+
+    # Inner Ring
     addrect;
     set("name","Inner Ring");
-    set("x",0);
+    set("x",-Lx_WG1/2 - gap/2);
     set("x span",Lx_WG1);
     set("y min",0);
     set("y max",Ly_WG1);
-    #set("z",0);
-    #set("z span",Lz_WG1);
     set("override mesh order from material database",true);
     set("mesh order",2);
     set("material",material_core);
-    
-    #Outer Ring
+
+    # Outer Ring
     addrect;
     set("name","Outer Ring");
     set("x",Lx_WG2/2 + gap/2);
     set("x span",Lx_WG2);
     set("y min",0);
     set("y max",Ly_WG2);
-    #set("z",0);
-    #set("z span",Lz_WG2);
     set("override mesh order from material database",true);
     set("mesh order",2);
     set("material",material_core);
-    
-    #BOX
+
+    # BOX
     addrect;
     set("name","BOX");
     set("x",0);
@@ -113,8 +106,8 @@ for(gap_idx=1:num_sweep_pt){
     set("override mesh order from material database",true);
     set("mesh order",3);
     set("material",material_cladding);
-    
-    #Cladding
+
+    # Cladding
     addrect;
     set("name","Cladding");
     set("x",0);
@@ -126,7 +119,8 @@ for(gap_idx=1:num_sweep_pt){
     set("override mesh order from material database",true);
     set("mesh order",3);
     set("material",material_cladding);
-    
+
+    # FDE solver region
     addfde;
     set("solver type","2D Z normal");
     set("x",0*um);
@@ -134,10 +128,6 @@ for(gap_idx=1:num_sweep_pt){
     set("x span",Lx_FDE);
     set("y min",Ly_FDE_min);
     set("y max",Ly_FDE_max);
-    #set("x min bc","Metal");
-    #set("x max bc","Metal");
-    #set("y min bc","Metal");
-    #set("y max bc","Metal");
     set("x min bc","PML");
     set("x max bc","PML");
     set("y min bc","PML");
@@ -147,13 +137,13 @@ for(gap_idx=1:num_sweep_pt){
     set("mesh cells x",mesh_cells_x);
     set("mesh cells y",mesh_cells_y);
     setnamed("FDE","wavelength",wavelength);
-    
-    set("bent waveguide",1);
+
+    set("bent waveguide", 1);
     set("bend location x", 0);
     set("bend location y", 0);
     set("bend location z", 0);
     set("bend radius",bend_radius);
-    
+
     addmesh;
     set("name","mesh_waveguide");
     set("x min",-gap/2 - Lx_WG1 - 1*um);
@@ -165,11 +155,15 @@ for(gap_idx=1:num_sweep_pt){
     set("override z mesh",0);
     set("set maximum mesh step",1);
     set("dx",10*nm);
-    set("dy",10*nm);    
-    
+    set("dy",10*nm);
+
     findmodes;
 
+    # Selecting the anti-symmetric mode
     selectmode(2);
+
+    # Starting from wavl as defined in "wavelength" (e.g. 1550*nm)
+    # Scanning longer wavls
     setanalysis("track selected mode",1);
     setanalysis("detailed dispersion calculation",1);
     setanalysis("store mode profiles while tracking",1);
@@ -178,12 +172,14 @@ for(gap_idx=1:num_sweep_pt){
     frequencysweep;
 
     format long;
+    # The unit is us/nm/km (need another factor of 1e-6 to become ps/nm/km)
     D        = getdata("frequencysweep","D");
+    # The unit is Hz
     f        = getdata("frequencysweep","f_D");
-    data_arr = [flip(f,1),flip(D,1)];
+    data_arr = [flip(f,1),flip(D,1)];       # the arrays need to be fliped to keep the whole file sorted
     write(D_filename,num2str(data_arr));
 
-
+    # Scanning shorter wavls
     selectmode(2);
     setanalysis("track selected mode",1);
     setanalysis("detailed dispersion calculation",1);
@@ -193,10 +189,11 @@ for(gap_idx=1:num_sweep_pt){
     frequencysweep;
 
     format long;
+    # The unit is us/nm/km (need another factor of 1e-6 to become ps/nm/km)
     D        = getdata("frequencysweep","D");
+    # The unit is Hz
     f        = getdata("frequencysweep","f_D");
     data_arr = [f,D];
     write(D_filename,num2str(data_arr));
 
-  
 }

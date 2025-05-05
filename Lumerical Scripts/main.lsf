@@ -9,7 +9,7 @@ material_cladding = "SiO2 (Glass) - Palik";
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 2.8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 50*um; #length of the WG
@@ -61,7 +61,7 @@ if(fileexists(log_filename)){rm(log_filename);}
 um = 1e-6;
 nm = 1e-9;
 
-#Geometry
+# Geometry
 Lx_WG = 2.7*um;   #width of the WG
 Ly_WG = 0.1*um;     #height of the WG
 Lz_WG = 50*um;      #length of the WG
@@ -141,7 +141,7 @@ Scan_len_taper_RDL;
 ################################################
 wavelength  = 1550*nm;
 
-#Geometry
+# Geometry
 um = 1e-6;
 nm = 1e-9;
 
@@ -198,12 +198,12 @@ filename = "Scanning_L_lower_and_gapx_width_0_1_0_4_gapx_2_5_3_5.txt";
 um = 1e-6;
 nm = 1e-9;
 
-#Upper Ring
+# Upper Ring
 Lx_WG = 2.8*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um;  #length of the WG
 
-#Lower Ring
+# Lower Ring
 Lx_WG = 2.7*um; #width of the WG
 Ly_WG = 0.1*um; #height of the WG
 Lz_WG = 10*um;  #length of the WG
