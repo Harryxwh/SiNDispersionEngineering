@@ -1,9 +1,9 @@
 ###############################################################################
 # This is the main program used to analyze the vertical coupled rings using EME
 
-# Functions and parameters:
-# 1. len_taper_RDL_arr : array of taper lengths to sweep.
-# 2. EME propagation sweep: sweeps the propagation length and calculates S-parameters.
+# Parameters that can be swept:
+# 1. length of the taper region
+# 2. length of the coupling region
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
@@ -20,20 +20,21 @@ nm = 1e-9;
 ###############################################################################
 Parameters
 ###############################################################################
-
+# sweep the length of the taper region
 len_taper_RDL_start     =   200 *um;
 len_taper_RDL_end       =   200 *um;
 num_of_pts_len_taper    =   1;
 len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
 
-num_of_cells_taper      = 10;
-num_of_cells_prop       = 1;
-
+# sweep the length of the coupling region
 num_of_pts_sweep_prop   = 991;
 EME_prop_start          = 100*um;
 EME_prop_stop           = 10000*um;
 
-mesh_step = 50*nm;
+num_of_cells_taper      = 10;   # number of cells in the taper region
+num_of_cells_prop       = 1;    # number of cells in the coupling region. (only 1 since the width does not change)
+
+mesh_step           = 50*nm;
 
 # Geometry
 width_in_RDL        = 0.8*um;    # width of the input side of the taper
@@ -75,7 +76,7 @@ EME_z_max           = 20*um;
 # Taper and propagation sweep
 len_taper_RDL_start = 200*um;
 len_taper_RDL_end   = 200*um;
-num_of_pts_len_taper = 1;
+num_of_pts_len_taper= 1;
 len_taper_RDL_arr   = linspace(len_taper_RDL_start, len_taper_RDL_end, num_of_pts_len_taper);
 
 num_of_cells_taper  = 10;
@@ -159,9 +160,7 @@ for (i = 1: num_of_pts_len_taper)
     set("material",material_core);
     set("enabled",rect_enabled);
 
-    ##############################################
     # RDL WG
-    ##############################################
     structure_group_name = "RDL WG";
     x_min           = EME_x_min;
     len_taper       = len_taper_RDL;
@@ -223,7 +222,6 @@ for (i = 1: num_of_pts_len_taper)
     set("define z mesh by", "maximum mesh step");
     set("dy", mesh_step);
     set("dz", mesh_step);
-
 
     # Eigensolver settings
     set("allow custom eigensolver settings", 1);

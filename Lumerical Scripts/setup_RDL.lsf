@@ -1,6 +1,6 @@
 ##############################################
 # setup_RDL
-# Description: This function is used to add a taper structure in the lumerical software
+# Description: This function is used to add a taper structure in the lumerical simulation
 
 # parameters:
 # structure_group_name      : name of the RDL group

@@ -1,21 +1,12 @@
 Num_of_pts = 101;
-
-wavelength=linspace(1500,1600,Num_of_pts); #设定选取波段，采样数量
-
-f = c/(wavelength*1e-9); # 计算频率，国际单位制
-
-n = getindex("Si3N4 (Silicon Nitride) - Luke", f); #读取折射率
-
-#n = getindex("SiO2 (Glass) - Palik", f); #读取折射率
-
+wavelength=linspace(1500,1600,Num_of_pts);
+f = c/(wavelength*1e-9);
+n = getindex("Si3N4 (Silicon Nitride) - Luke", f);
+#n = getindex("SiO2 (Glass) - Palik", f);
 n_real = real(n);
-
 n_imag = imag(n);
-
 file_name = "./Si3N4_index_Luke.txt";
-
 if(fileexists(filename)){rm(filename);}
-
 for (i=1:Num_of_pts)
 {
     write(file_name, num2str(wavelength(i))+" "+num2str(n_real(i))+" "+num2str(n_imag(i)));

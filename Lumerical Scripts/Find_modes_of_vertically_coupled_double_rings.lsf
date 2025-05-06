@@ -1,83 +1,89 @@
 ###############################################################################
-# This script is used to find the eigenmodes of two identical rings that are vertically coupled.
-# Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
+# This script is used to find the eigenmodes of two vertically coupled rings.
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
 # Email: harryxwh@gmail.com
 ###############################################################################
 
+# Housekeeping
 switchtolayout;
 deleteall;
 
+# Define units
 um = 1e-6;
 nm = 1e-9;
 
-# Ring
-Lx_WG = 2.8*um; # width of the WG
-Ly_WG = 0.1*um; # height of the WG
-Lz_WG = 10*um; # length of the WG
+###############################################################################
+# Parameters
+###############################################################################
 
-Lx_Cladding = 50*um;    #width of the Cladding
-Ly_Cladding = 2*um;     #height of the Cladding
-Lz_Cladding = 50*um;    #length of the Cladding
+# Geometry
+Lx_WG             = 2.8*um;    # width of the WG
+Ly_WG             = 0.1*um;    # height of the WG
+Lx_Cladding       = 50*um;     # width of the cladding
+Ly_Cladding       = 2*um;      # height of the cladding
+Lx_Buried_Oxide   = 50*um;     # width of the BOX
+Ly_Buried_Oxide   = 14.5*um;   # height of the BOX
+Lx_FDE            = 10*um;
+Ly_FDE_min        = -13*um;
+Ly_FDE_max        = 5*um;
 
-Lx_Buried_Oxide = 50*um;    # width of the BOX
-Ly_Buried_Oxide = 14.5*um;  #height of the BOX
-Lz_Buried_Oxide = 50*um;    #length of the BOX
+mesh_cells_x      = 500;
+mesh_cells_y      = 900;
 
-Lx_FDE = 10*um;
-Ly_FDE_min = -13*um;
-Ly_FDE_max = 5*um;
+gap               = 5*um;
+bend_radius       = 1000*um;
 
-mesh_step = 200e-9;
-mesh_cells_x = 500;
-mesh_cells_y = 900;
+# Material
+material_core     = "Si3N4 (Silicon Nitride) - Luke";
+material_clad     = "SiO2 (Glass) - Palik";
 
-gap = 5*um;
-?"gap = "+num2str(gap /um)+" um";
+# Wavelength
+wavelength_min    = 1400*nm;
+wavelength_max    = 1700*nm;
+num_sweep_pt      = 16;
 
-bend_radius =  1000*um;
-?"bend_radius = "+num2str(bend_radius /um)+" um";
+# Modes
+Max_Mode_Idx      = 2;
 
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_clad = "SiO2 (Glass) - Palik";
+###############################################################################
+# Results file
+###############################################################################
 
-Max_Mode_Idx = 2;
+folder_name = "DoubleRingSuperModes_vertical\\";
+info_total_filename = folder_name + "Lumerical_supermodes_results.txt";
+if (fileexists(info_total_filename)) { rm(info_total_filename); }
+write(info_total_filename, "wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
-folder_name = "DoubleRingSuperModes_vertical" + "\\";
+###############################################################################
+# Add geometry and FDE solver
+###############################################################################
 
-# Define wavelength of simulation
-wavelength_min  = 1400*nm;
-wavelength_max  = 1700*nm;
-num_sweep_pt    = 16;
+# Setup the wavelength array
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-# Create folders if they do not yet exist
-#for(wavl_idx=1:num_sweep_pt){
-    #format short;
-    #wavelength = wavelength_array(wavl_idx);
-
-    #folder_path = folder_name + num2str(wavelength /nm);
-    #?"mkdir "+folder_path;
-    #system("mkdir "+folder_path);
-#}
+# Lower Ring
+addrect;
+set("name","Lower Ring");
+set("x",0);
+set("x span",Lx_WG1);
+set("y min",0);
+set("y max",Ly_WG);
+set("override mesh order from material database",true);
+set("mesh order",2);
+set("material",material_core);
 
 # Upper Ring
 addrect;
 set("name","Upper Ring");
 set("x",0);
-set("x span",Lx_WG);
-set("y min",0);
-set("y max",Ly_WG);
-#set("z",0);
-#set("z span",Lz_WG1);
+set("x span",Lx_WG2);
+set("y min",gap);
+set("y max",gap+Ly_WG);
 set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
-
-# Lower Ring
-copy(0,-(gap+Ly_WG),0);
 
 # BOX
 addrect;
@@ -86,8 +92,6 @@ set("x",0);
 set("x span",Lx_Buried_Oxide);
 set("y max",0);
 set("y min",-Ly_Buried_Oxide);
-#set("z",0);
-#set("z span",Lz_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_clad);
@@ -99,8 +103,6 @@ set("x",0);
 set("x span",Lx_Cladding);
 set("y min",0);
 set("y max",Ly_Cladding);
-#set("z",0);
-#set("z span",Lz_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
 set("material",material_clad);
@@ -113,10 +115,6 @@ set("y",0);
 set("x span",Lx_FDE);
 set("y min",Ly_FDE_min);
 set("y max",Ly_FDE_max);
-#set("x min bc","Metal");
-#set("x max bc","Metal");
-#set("y min bc","Metal");
-#set("y max bc","Metal");
 set("x min bc","PML");
 set("x max bc","PML");
 set("y min bc","PML");
@@ -126,18 +124,20 @@ set("define y mesh by","number of mesh cells");
 set("mesh cells x",mesh_cells_x);
 set("mesh cells y",mesh_cells_y);
 
+bend_radius  =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
 set("bent waveguide", 1);
 set("bend location x", 0);
 set("bend location y", 0);
 set("bend location z", 0);
 set("bend radius",bend_radius);
 
+# Override the mesh near the upper WG
 addmesh;
 set("name","mesh_waveguide");
-set("x min", - Lx_WG1 -1*um);
-set("x max", + Lx_WG2 +1*um );
-set("y min", -gap-0.3*um);
-set("y max", Ly_WG1+0.3*um);
+set("x min", -Lx_WG -1*um);
+set("x max", Lx_WG + 1*um );
+set("y min", gap   - 1*um);
+set("y max", gap   + 1*um);
 set("override x mesh",1);
 set("override y mesh",1);
 set("override z mesh",0);
@@ -145,15 +145,44 @@ set("set maximum mesh step",1);
 set("dx",10*nm);
 set("dy",10*nm);
 
-Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+# Override the mesh near the lower WG
+addmesh;
+set("name","mesh_waveguide");
+set("x min", -Lx_WG - 1*um);
+set("x max", Lx_WG  + 1*um );
+set("y min", Ly_WG  - 1*um);
+set("y max", Ly_WG  + 1*um);
+set("override x mesh",1);
+set("override y mesh",1);
+set("override z mesh",0);
+set("set maximum mesh step",1);
+set("dx",10*nm);
+set("dy",10*nm);
 
-# Results combined in one file
-info_total_filename  = folder_name + "Lumerical_supermodes_results.txt";
+# Create the folder
+foldername = 'Find_modes_of_vertically_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap/nm)+'nm_LowerRingWidth_'+num2str(Lx_WG1/nm)+'nm_UpperRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+
+# Create folders for each wavl
+for(wavelength = wavelength_array){
+    format short;
+    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
+    system("mkdir "+foldername_wavl);
+}
+
+# Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes into one result file
+info_total_filename  = foldername  + '\\' + "Vertically_coupled_double_ring_result.txt";
 if(fileexists(info_total_filename)){rm(info_total_filename);}
-
+# Print parameters
+write(info_total_filename,"Lx_WG1 = "+num2str(Lx_WG1)+", Ly_WG1 = " + num2str(Ly_WG1));
+write(info_total_filename,"Lx_WG2 = "+num2str(Lx_WG2)+", Ly_WG2 = " + num2str(Ly_WG2));
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap))+\
+", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y);
 # Print header
-write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+ ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+
+Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
 for(wavl_idx=1:num_sweep_pt){
 
@@ -162,9 +191,10 @@ for(wavl_idx=1:num_sweep_pt){
     wavelength = wavelength_array(wavl_idx);
     setnamed("FDE","wavelength",wavelength);
 
+    # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
     format short;
-    folder_path = folder_name + num2str(wavelength /nm);
-    info_filename = folder_path+ "\Mode_info.txt";          # result for one wavl within folder for each wavelength
+    foldername_wavl = foldername + num2str(wavelength /nm);
+    info_filename = foldername_wavl + '\\' +  "Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
     # Print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
@@ -195,7 +225,7 @@ for(wavl_idx=1:num_sweep_pt){
         write(info_filename,info);
         write(info_total_filename,info);
 
-        # First and Second mode
+        # Print the attributes of the first two modes
         if(mode_idx < 3){
             ?"Wavelength: " + num2str(wavelength /um) + " um";
             ?"ModeIdx: " + num2str(mode_idx);
@@ -204,17 +234,16 @@ for(wavl_idx=1:num_sweep_pt){
             ?"\n";
         }
 
-        # Write mode profile matrix
+        # Write mode profile matrix into txt files
         for (j=1:6){
             format short;
-            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            filename = foldername_wavl+'\\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
             if(fileexists(filename)){
                 rm(filename);
             }
             format long; # set num2str() to return 16 digits of precision
             write(filename,num2str(Comp_list{j}));
         }
-
     }
 }
 

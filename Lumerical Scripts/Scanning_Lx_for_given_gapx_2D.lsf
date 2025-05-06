@@ -1,59 +1,77 @@
+###############################################################################
+# This script scans the width of the outer ring (Lx) for a given gapx to find the effective index (neff).
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
+# Housekeeping
 switchtolayout;
 deleteall;
 
+# Define units
 um = 1e-6;
 nm = 1e-9;
 
-Ly_WG = 0.1*um; # height of the WG
-Lz_WG = 50*um; # length of the WG
+###############################################################################
+# Parameters
+###############################################################################
 
-Lx_Cladding = 50*um; # length of the WG
-Ly_Cladding = 2*um; # width of the WG
-Lz_Cladding = 50*um; # height of the WG
+# Geometry
+Ly_WG             = 0.1*um;    # height of the WG
+Lx_Cladding       = 50*um;     # width of the cladding
+Ly_Cladding       = 2*um;      # height of the cladding
+Lx_Buried_Oxide   = 50*um;     # width of the BOX
+Ly_Buried_Oxide   = 8*um;      # height of the BOX
+Lx_FDE            = 30*um;
+Ly_FDE            = 10*um;
 
-Lx_Buried_Oxide = 50*um;
-Ly_Buried_Oxide = 8*um;
-Lz_Buried_Oxide = 50*um;
+mesh_cells_x      = 600;
+mesh_cells_y      = 200;
 
-Lx_FDE = 30*um;
-Ly_FDE = 10*um;
+# Material
+material_core     = "Si3N4 (Silicon Nitride) - Luke";
+material_clad     = "SiO2 (Glass) - Palik";
 
-mesh_cells_x = 600;
-mesh_cells_y = 200;
+# Wavelength
+wavelength        = 1550*nm;
 
-wavelength  = 1550*nm;
-
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_clad = "SiO2 (Glass) - Palik";
-
-
-Lx_start    = 2*um;
-Lx_end      = 3*um;
-num_of_pts_Lx  = 11;
-Lx_arr      = linspace(Lx_start,Lx_end,num_of_pts_Lx);
-
+# Parameter sweep
+Lx_start          = 2*um;
+Lx_end            = 3*um;
+num_of_pts_Lx     = 11;
 
 bend_radius_start = 1004*um;
-gap = 5*um;
+gap               = 5*um;
 
+###############################################################################
+# Results file
+###############################################################################
 
-#results
-neff_array  = zeros(num_of_pts_Lx);
+filename = "Scanning_Lx_and_r.txt";
+if (fileexists(filename)) { rm(filename); }
+write(filename, "Lx,n_eff");
+
+###############################################################################
+# Simulation loop
+###############################################################################
+
+Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
+beta_ang_array  = zeros(num_of_pts_Lx);
 
 format short;
-filename = "Scanning_Lx_and_r.txt";
+filename = "Scanning_Lx_from_" + num2str(Lx_start/nm) +"nm_to_"+ num2str(Lx_end/nm) +"nm_InnerWGWidth_" + num2str(Lx_inner_ring/nm)+"nm_gap_"+num2str(gap/nm)+"nm.txt";
 if(fileexists(filename)){rm(filename);}
-write(filename,"Lx,n_eff");
+write(filename,"Lx,beta_ang");
 
 for (Lx_idx = 1:num_of_pts_Lx)
 {
-
     Lx_WG = Lx_arr(Lx_idx);
     ?"Lx_WG = " + num2str(Lx_WG /um)+" um";
 
     # Decide the bending radius based on the waveguide width, for a given gap
-    #bend_radius = Lx_WG/2 + gap + bend_radius_start;
-    bend_radius = bend_radius_start + gap/2;
+    bend_radius = Lx_WG/2 + bend_radius_inner + gap + Lx_inner_ring/2;
     ?"bend_radius = " + num2str(bend_radius /um)+" um";
 
     switchtolayout;
@@ -62,7 +80,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     #WG
     addrect;
     set("name","WG");
-    set("x",Lx_WG/2 + gap/2);
+    set("x",0);
     set("x span",Lx_WG);
     set("y min",0);
     set("y max",Ly_WG);
@@ -100,15 +118,16 @@ for (Lx_idx = 1:num_of_pts_Lx)
 
     addfde;
     set("solver type","2D Z normal");
-    set("x",0);
+    set("x",0*um);
     set("y",0);
     set("x span",Lx_FDE);
-    set("y min",-Ly_FDE/2);
-    set("y max",Ly_FDE/2);
-    set("x min bc","Metal");
-    set("x max bc","Metal");
-    set("y min bc","Metal");
-    set("y max bc","Metal");
+    set("y min",Ly_FDE_min);
+    set("y max",Ly_FDE_max);
+
+    set("x min bc","PML");
+    set("x max bc","PML");
+    set("y min bc","PML");
+    set("y max bc","PML");
     set("define x mesh by","number of mesh cells");
     set("define y mesh by","number of mesh cells");
     set("mesh cells x",mesh_cells_x);
@@ -120,17 +139,33 @@ for (Lx_idx = 1:num_of_pts_Lx)
     set("bend location z", 0);
     set("bend radius",bend_radius);
 
+    #addmesh;
+    #set("name","mesh_waveguide");
+    #set("x min",-1.2*um - 0.5*um);
+    #set("x max",1.2*um + 0.5*um );
+    #set("y min",0-0.5*um);
+    #set("y max",Ly_WG + 0.5*um);
+    #set("override x mesh",1);
+    #set("override y mesh",1);
+    #set("override z mesh",0);
+    #set("set maximum mesh step",1);
+    #set("dx",5*nm);
+    #set("dy",5*nm);
+
     findmodes;
 
     mode_idx    = 1;    #fundamental mode
     neff        = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
-    neff_array(Lx_idx) = real(neff);
-    format long;
-    ?"neff = " + num2str(real(neff));
+
+    #NOTE: Angular propagation constant is the value with physical meaning. It is important to note that this definition of neff here is dependent on the bending radius R.
+    Beta_ang    = real(2*pi/wavelength * neff * bend_radius);
+    beta_ang_array(Lx_idx) = Beta_ang;
 
     format long;
-    neff_given_Lx = num2str(Lx_WG * 1e6)+","+ num2str(real(neff));
-    write(filename,neff_given_Lx);
-    ?"\n";
+    ?"Beta_ang = " + num2str(real(Beta_ang));
+
+    Beta_ang_given_Lx = num2str(Lx_WG * 1e6)+","+ num2str(Beta_ang);
+    write(filename,Beta_ang_given_Lx);
 }
-plot(Lx_arr /um,neff_array, "Lx (um)", "Effective Index at 1550nm");
+
+plot(Lx_arr /um,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");
