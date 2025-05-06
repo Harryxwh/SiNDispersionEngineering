@@ -37,7 +37,7 @@
 # bend_radius_inner :   bending radius of the inner WG
 
 # material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
-# material_clad :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
+# material_clad     :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
 
 # Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
 
