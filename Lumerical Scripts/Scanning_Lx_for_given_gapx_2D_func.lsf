@@ -169,7 +169,6 @@ for (Lx_idx = 1:num_of_pts_Lx)
 
     Beta_ang_given_Lx = num2str(Lx_WG * 1e6)+","+ num2str(Beta_ang);
     write(filename,Beta_ang_given_Lx);
-    ?"\n";
 }
 
 plot(Lx_arr /um,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");
