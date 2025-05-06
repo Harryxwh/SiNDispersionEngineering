@@ -63,7 +63,7 @@ system('if exist '+foldername+' rmdir /s /q '+foldername);
 system('mkdir '+foldername);
 
 # Record parameters in a log file
-log_filename = foldername + '\' + 'log.txt';
+log_filename = foldername + '\\' + 'log.txt';
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius /um)+" um");
 write(log_filename,"Lx_WG = " + num2str(Lx_WG) + "Ly_WG = " + num2str(Ly_WG) + "\n");
@@ -71,7 +71,7 @@ write(log_filename,"Lx_WG = " + num2str(Lx_WG) + "Ly_WG = " + num2str(Ly_WG) + "
 # Create folders for each wavl
 for(wavelength = wavelength_array){
     format short;
-    foldername_wavl = foldername + '\' + num2str(wavelength /nm);
+    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
     system("mkdir "+foldername_wavl);
 }
 
@@ -148,8 +148,8 @@ for(wavl_idx=1:num_sweep_pt){
     findmodes;
 
     format short;
-    foldername_wavl = foldername + '\' + num2str(wavelength /nm);
-    info_filename = foldername_wavl + '\' + "Mode_info.txt";
+    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
+    info_filename = foldername_wavl + '\\' + "Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
 
     # Print header
@@ -193,7 +193,7 @@ for(wavl_idx=1:num_sweep_pt){
         # Write mode profile matrix
         for (j=1:6){
             format short;
-            filename = foldername_wavl+'\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            filename = foldername_wavl+'\\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
             if(fileexists(filename)){
                 rm(filename);
             }

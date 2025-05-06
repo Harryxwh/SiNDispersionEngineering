@@ -158,12 +158,12 @@ system('mkdir '+foldername);
 # Create folders for each wavl
 for(wavelength = wavelength_array){
     format short;
-    foldername_wavl = foldername + '\' + num2str(wavelength /nm);
+    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
     system("mkdir "+foldername_wavl);
 }
 
 # Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes into one result file
-info_total_filename  = foldername  + '\' + "Vertically_coupled_double_ring_result.txt";
+info_total_filename  = foldername  + '\\' + "Vertically_coupled_double_ring_result.txt";
 if(fileexists(info_total_filename)){rm(info_total_filename);}
 # Print parameters
 write(info_total_filename,"Lx_WG1 = "+num2str(Lx_WG1)+", Ly_WG1 = " + num2str(Ly_WG1));
@@ -185,7 +185,7 @@ for(wavl_idx=1:num_sweep_pt){
     # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
     format short;
     foldername_wavl = foldername + num2str(wavelength /nm);
-    info_filename = foldername_wavl + '\' +  "Mode_info.txt";
+    info_filename = foldername_wavl + '\\' +  "Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
     # Print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
@@ -228,7 +228,7 @@ for(wavl_idx=1:num_sweep_pt){
         # Write mode profile matrix into txt files
         for (j=1:6){
             format short;
-            filename = foldername_wavl+'\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            filename = foldername_wavl+'\\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
             if(fileexists(filename)){
                 rm(filename);
             }
