@@ -11,6 +11,9 @@
 # Email: harryxwh@gmail.com
 ###############################################################################
 
+# Housekeeping
+clear;clc;cleardcard;
+
 # Define units
 um = 1e-6;
 nm = 1e-9;
@@ -45,6 +48,7 @@ Lx_inner            = 8*um;
 bend_radius_inner   = 1000*um;
 gap                 = 5*um;
 
+bend_waveguide  =  1;
 bend_radius     =  bend_radius_inner;
 
 # Define wavelength of simulation
@@ -63,7 +67,7 @@ Max_Mode_Idx    = 1;
 ###############################################################################
 # conduct simulation
 ###############################################################################
-"Find_modes_of_single_ring_at_multi_wavls_func...";
+? "Find_modes_of_single_ring_at_multi_wavls_func...";
 # Find_modes_of_single_ring_at_multi_wavls_func;
 ? "Done\n";
 
@@ -97,6 +101,7 @@ mesh_cells_y        = 800;
 
 # Parameter of the inner ring is fixed
 Lx_inner_ring       = 8*um;
+bend_waveguide      =  1;
 bend_radius_inner   = 1000*um;
 
 # Parameter sweep of width of outer ring
@@ -128,8 +133,6 @@ material_clad       = "SiO2 (Glass) - Palik";
 # radius of inner ring: 1000 um
 # wavl_range: 1500 - 1600 nm, 11 pts
 ###############################################################################
-um = 1e-6;
-nm = 1e-9;
 
 # Geometry
 Lx_WG           = 2436*nm;  # width of the WG
@@ -145,11 +148,11 @@ Lx_FDE          = 30*um;
 Ly_FDE_min      = -8*um;
 Ly_FDE_max      = 4*um;
 
-mesh_step       = 200e-9;
 mesh_cells_x    = 2000;
 mesh_cells_y    = 800;
 
 Lx_inner            = 8*um;
+bend_waveguide      =  1;
 bend_radius_inner   = 1000*um;
 gap                 = 5*um;
 
@@ -170,7 +173,8 @@ Max_Mode_Idx    = 1;
 
 ###############################################################################
 # conduct simulation
-###############################################################################? "Find_modes_of_single_ring_at_multi_wavls_func...";
+###############################################################################
+? "Find_modes_of_single_ring_at_multi_wavls_func...";
 #Find_modes_of_single_ring_at_multi_wavls_func;
 ? "Done\n";
 
@@ -181,8 +185,6 @@ Max_Mode_Idx    = 1;
 # Mesh: 2000x800
 # wavl_range: 1500 - 1600 nm, 11 pts
 ###############################################################################
-um = 1e-6;
-nm = 1e-9;
 
 # Geometry
 Lx_WG           = 2.8*um;       # width of the WG
@@ -256,6 +258,7 @@ mesh_cells_y    = 1000;
 
 gap             = 5*um;
 
+bend_waveguide      =  1;
 bend_radius_inner   = 1000*um;
 bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
 
