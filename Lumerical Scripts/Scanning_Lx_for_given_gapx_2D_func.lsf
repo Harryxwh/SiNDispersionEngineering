@@ -64,6 +64,7 @@ deleteall;
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 beta_ang_array  = zeros(num_of_pts_Lx);
 
+format short;
 filename = "Scanning_Lx_from_" + num2str(Lx_start/nm) +"nm_to_"+ num2str(Lx_end/nm) +"nm_InnerWGWidth_" + num2str(Lx_inner_ring/nm)+"nm_gap_"+num2str(gap/nm)+"nm.txt";
 if(fileexists(filename)){rm(filename);}
 write(filename,"Lx,beta_ang");

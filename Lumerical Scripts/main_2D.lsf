@@ -62,8 +62,6 @@ material_clad   = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx    = 1;
 
-?"bend_radius   = "+num2str(bend_radius /um)+" um";
-
 ###############################################################################
 # conduct simulation
 ###############################################################################
@@ -173,8 +171,6 @@ material_clad   = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx    = 1;
 
-?"bend_radius   = "+num2str(bend_radius /um)+" um";
-
 ###############################################################################
 # conduct simulation
 ###############################################################################
@@ -281,8 +277,6 @@ Max_Mode_Idx    = 2;
 wavelength_min  = 1500*nm;
 wavelength_max  = 1600*nm;
 num_sweep_pt    = 21;
-
-?"bend_radius = "   + num2str(bend_radius /um)+" um";
 
 ###############################################################################
 # conduct simulation

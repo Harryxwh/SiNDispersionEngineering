@@ -43,9 +43,11 @@
 # Email: harryxwh@gmail.com
 ###############################################################################
 
+# Housekeeping
 switchtolayout;
 deleteall;
 
+# Define units
 um = 1e-6;
 nm = 1e-9;
 
@@ -53,6 +55,7 @@ nm = 1e-9;
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Create the folder
+format short;
 if (bend_waveguide){
     foldername = 'Find_modes_of_single_ring_at_multi_wavls_radius_'+num2str(bend_radius/um)+'um_WGwidth_'+num2str(Lx_WG/nm)+'nm_WGthickness_'+num2str(Ly_WG/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
 }
@@ -63,6 +66,7 @@ system('if exist '+foldername+' rmdir /s /q '+foldername);
 system('mkdir '+foldername);
 
 # Record parameters in a log file
+format long;
 log_filename = foldername + '\\' + 'log.txt';
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
 write(log_filename,"bend_radius = "+num2str(bend_radius /um)+" um");

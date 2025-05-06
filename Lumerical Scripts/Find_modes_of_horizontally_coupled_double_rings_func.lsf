@@ -48,11 +48,39 @@
 # Email: harryxwh@gmail.com
 ###############################################################################
 
-#Housekeeping
+# Housekeeping
 switchtolayout;
 deleteall;
 
+# Define units
+um = 1e-6;
+nm = 1e-9;
+
+# Setup the wavelength array
 wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+
+# Create the folder
+format short;
+foldername = 'Find_modes_of_horizontally_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap/nm)+'nm_InnerRingWidth_'+num2str(Lx_WG1/nm)+'nm_OuterRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+
+# Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes
+info_total_filename  = foldername +"\\"+ "horizontally_coupled_double_rings_results.txt";
+if(fileexists(info_total_filename)){rm(info_total_filename);}
+# Print parameters
+write(info_total_filename,"Lx_WG1 = "+num2str(Lx_WG1)+", Ly_WG1 = " + num2str(Ly_WG1));
+write(info_total_filename,"Lx_WG2 = "+num2str(Lx_WG2)+", Ly_WG2 = " + num2str(Ly_WG2));
+write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap)+", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+# Print header
+write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+
+# Create folders for each wavl
+for(wavelength = wavelength_array){
+    format short;
+    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
+    system("mkdir "+foldername_wavl);
+}
 
 # Inner Ring
 addrect;
@@ -136,22 +164,6 @@ set("set maximum mesh step",1);
 set("dx",10*nm);
 set("dy",10*nm);
 
-# Create the folder
-foldername = 'Find_modes_of_horizontally_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap/nm)+'nm_InnerRingWidth_'+num2str(Lx_WG1/nm)+'nm_OuterRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
-system('if exist '+foldername+' rmdir /s /q '+foldername);
-system('mkdir '+foldername);
-
-# Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes
-info_total_filename  = foldername +"\\"+ "horizontally_coupled_double_rings_results.txt";
-if(fileexists(info_total_filename)){rm(info_total_filename);}
-# Print parameters
-write(info_total_filename,"Lx_WG1 = "+num2str(Lx_WG1)+", Ly_WG1 = " + num2str(Ly_WG1));
-write(info_total_filename,"Lx_WG2 = "+num2str(Lx_WG2)+", Ly_WG2 = " + num2str(Ly_WG2));
-write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_x = " + num2str(gap))+\
-", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y);
-# Print header
-write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
-
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
 for(wavl_idx=1:num_sweep_pt){
@@ -162,9 +174,9 @@ for(wavl_idx=1:num_sweep_pt){
     setnamed("FDE","wavelength",wavelength);
 
     format short;
-    folder_path = foldername + num2str(wavelength /nm);
+    foldername_wavl = foldername + num2str(wavelength /nm);
     # Result for one wavl within folder for each wavelength
-    info_filename = folder_path+ "\\" +"Mode_info.txt";
+    info_filename = foldername_wavl+ "\\" +"Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
     # Print header
     write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
@@ -207,7 +219,7 @@ for(wavl_idx=1:num_sweep_pt){
         # Write mode profile matrix into txt files
         for (j=1:6){
             format short;
-            filename = folder_path+ "\\" +"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            filename = foldername_wavl+ "\\" +"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
             if(fileexists(filename)){
                 rm(filename);
             }
