@@ -25,14 +25,13 @@
 # mesh_cells_x      :   num of mesh cells in x direction
 # mesh_cells_y      :   num of mesh cells in y direction
 
-# bend_radius_inner :   bending radius of the inner WG
+# bend_waveguide    :   1 = Yes, 0 = No
+# bend_radius       :   bending radius of the inner WG
 
 # material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
-# material_cladding :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
+# material_clad :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
 
 # Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
-
-# folder_name       :   name of the folder to store the data. e.g. "data//"
 
 # Define wavelength of simulation
 # wavelength_min    :   starting wavelength
@@ -53,10 +52,28 @@ nm = 1e-9;
 # Setup the wavelength array
 wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
-# Record parameters in log file
+# Create the folder
+if (bend_waveguide){
+    foldername = 'Find_modes_of_single_ring_at_multi_wavls_radius_'+num2str(bend_radius/um)+'um_WGwidth_'+num2str(Lx_WG/nm)+'nm_WGthickness_'+num2str(Ly_WG/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+}
+else{
+    foldername = 'Find_modes_of_single_ring_at_multi_wavls_straight_WGwidth_'+num2str(Lx_WG/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+}
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+
+# Record parameters in a log file
+log_filename = foldername + '\' + 'log.txt';
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
+write(log_filename,"bend_radius = "+num2str(bend_radius /um)+" um");
 write(log_filename,"Lx_WG = " + num2str(Lx_WG) + "Ly_WG = " + num2str(Ly_WG) + "\n");
+
+# Create folders for each wavl
+for(wavelength = wavelength_array){
+    format short;
+    foldername_wavl = foldername + '\' + num2str(wavelength /nm);
+    system("mkdir "+foldername_wavl);
+}
 
 # WG
 addrect;
@@ -80,7 +97,7 @@ set("y max",0);
 set("y min",-Ly_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 # Cladding
 addrect;
@@ -91,7 +108,7 @@ set("y min",0);
 set("y max",Ly_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 # FDE solver region
 addfde;
@@ -119,7 +136,6 @@ if (bend_waveguide == 1){
     set("bend radius",bend_radius);
 }
 
-# Create arrays to store results
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
 for(wavl_idx=1:num_sweep_pt){
@@ -132,8 +148,8 @@ for(wavl_idx=1:num_sweep_pt){
     findmodes;
 
     format short;
-    folder_path = folder_name + num2str(wavelength*1e9);
-    info_filename = folder_path+ "\Mode_info.txt";
+    foldername_wavl = foldername + '\' + num2str(wavelength /nm);
+    info_filename = foldername_wavl + '\' + "Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
 
     # Print header
@@ -165,7 +181,7 @@ for(wavl_idx=1:num_sweep_pt){
 
         # Fundamental mode
         if(mode_idx == 1){
-            wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
+            wave_log = "Wavelength: " + num2str(wavelength /um) + " um";
             neff_log = "Effective index: " + num2str(real(neff));
             beta_log = "beta_ang: " + num2str(beta_ang);
             ?wave_log;
@@ -177,12 +193,12 @@ for(wavl_idx=1:num_sweep_pt){
         # Write mode profile matrix
         for (j=1:6){
             format short;
-            filename = folder_path+"\Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+            filename = foldername_wavl+'\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
             if(fileexists(filename)){
                 rm(filename);
             }
-        format long; # set num2str() to return 16 digits of precision
-        write(filename,num2str(Comp_list{j}));
+            format long; # set num2str() to return 16 digits of precision
+            write(filename,num2str(Comp_list{j}));
         }
 
     }

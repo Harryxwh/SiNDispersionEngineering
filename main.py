@@ -47,7 +47,7 @@ if __name__ == '__main__':
     #                             name1=foldername1,
     #                             name2=foldername2,
     #                             ModeIdx1=1, ModeIdx2=1,
-    #                             param_file_name="./Param_straight_2_8.csv",
+    #                             param_file_name="./config/Param_straight_2_8.csv",
     #                             Plot_field=True,
     #                             Plot_index=True)
     '''
@@ -132,28 +132,23 @@ if __name__ == '__main__':
     ############## Concentric double rings L_inner 8um ###########
     foldername1 = "../data/Mode Profiles/"+\
                     "InnerRing_L_inner_8um_1535_1565_31wavls"
-    foldername1 = "../data/Mode Profiles/"+\
-                    "InnerRing_L_inner_8um_1400_1700_31wavls"
-    foldername1 = "../data/Mode Profiles/"+\
-                    "InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
     foldername2 = "../data/Mode Profiles/"+\
                     "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
+
+    # foldername1 = "../data/Mode Profiles/"+\
+    #                 "InnerRing_L_inner_8um_1400_1700_31wavls"
+
+    # foldername1 = "../data/Mode Profiles/"+\
+    #                 "InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
 
     # foldername1 = "../data/Mode Profiles/"+\
     #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "OuterRingDesigned_20x10um_800x400cells_21_wavls"
-    ##############################################################
-
-    ############# Concentric double rings L_inner 2.8um ###########
-    # foldername1 = "../data/Mode Profiles/"+\
-    #               "InnerRing_L_inner_2_8um_1540_1560_11wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #               "OuterRingDesigned_L_inner_2_8um_gap_8um_1540_1560_21wavls"
     ##############################################################
 
     ############# Parallel double rings L 2.8um ##################
@@ -164,10 +159,10 @@ if __name__ == '__main__':
     ##############################################################
 
     ################## Vertical double rings #####################
-    foldername1 = "../data/Mode Profiles/"+\
-                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    # foldername1 = "../data/Mode Profiles/"+\
+    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    # foldername2 = "../data/Mode Profiles/"+\
+    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
     ##############################################################
 
     ################## Horizontal double rings ###################
@@ -195,28 +190,28 @@ if __name__ == '__main__':
     ##############################################################
 
     # unit: nm
-    wavl_arr = np.linspace(1400,1700,31)
+    # wavl_arr = np.linspace(1400,1700,31)
     # wavl_arr = np.linspace(1500,1600,11)
-    # wavl_arr = np.linspace(1535,1565,31)
+    wavl_arr = np.linspace(1535,1565,31)
     # wavl_arr = np.linspace(1540,1560,21)
     # wavl_arr = np.linspace(1480,1620,15)
     # wavl_arr = np.linspace(1505,1595,19)
 
-    # param_filename = "./Param_vertical.csv"
-    param_filename = "./Param_L_inner_8.csv"
-    # param_filename = "./Param_L_inner_2_8.csv"
-    # param_filename = "./Param_800x400.csv"
-    # param_filename = "./Param_straight_2_8.csv"
+    # param_filename = "./config/Param_vertical.csv"
+    param_filename = "./config/Param_L_inner_8.csv"
+    # param_filename = "./config/Param_L_inner_2_8.csv"
+    # param_filename = "./config/Param_800x400.csv"
+    # param_filename = "./config/Param_straight_2_8.csv"
 
     ########################## Scan gap ###########################
-    start_gap_x   = 0
-    end_gap_x     = 0
+    start_gap_x   = 5
+    end_gap_x     = 5
     num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0.1
-    end_gap_y     = 0.9
-    num_of_gaps_y = 5
+    start_gap_y   = 0
+    end_gap_y     = 0
+    num_of_gaps_y = 1
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
     A,B = np.meshgrid(gap_arr_x,gap_arr_y)
@@ -231,18 +226,20 @@ if __name__ == '__main__':
     # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
 
     # sweeper.Scan_gap(calc_needed=False, foldername = "Dispersion_scan_near_3um_CMT/", num_of_wavl_pts=1000)
-    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
+    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
     ####################### Analyze Data #######################
+    wavl_arr = np.linspace(1540,1560,21)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap5um, filename_coupled_gap5um, param_filename,
     #                          save_csv=False, FDE_beta_exist=True,
-    #                          filename_FDE=filename_FDE_gap5um,num_of_pts=200)
+    #                          filename_FDE_beta=filename_FDE_gap5um,num_of_pts=200)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap4um, filename_coupled_gap4um, param_filename,
     #                          save_csv=False, FDE_beta_exist=True,
     #                          filename_FDE_beta=filename_FDE_gap4um,num_of_pts=100)
+    wavl_arr = np.linspace(1505,1595,19)
     # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
     #                          filename_uncoupled_gap3um, filename_coupled_gap3um, param_filename,
     #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
@@ -253,11 +250,11 @@ if __name__ == '__main__':
     #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
     #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_2.8um.txt",
     #                          num_of_pts=100)
-
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=True,save_mode = "AS", FDE_beta_exist=False, num_of_pts=100)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-    #                         save_csv=True,save_mode = "S", FDE_beta_exist=False, num_of_pts=100)
+    wavl_arr = np.linspace(1400,1700,31)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+                            save_csv=True,save_mode = "AS", FDE_beta_exist=False, num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
+                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
+                            save_csv=True,save_mode = "S", FDE_beta_exist=False, num_of_pts=100)
 

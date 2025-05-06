@@ -24,7 +24,7 @@ mesh_cells_y = 200;
 wavelength  = 1550*nm;
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 
 Lx_start    = 2*um;
@@ -49,12 +49,12 @@ for (Lx_idx = 1:num_of_pts_Lx)
 {
 
     Lx_WG = Lx_arr(Lx_idx);
-    ?"Lx_WG = " + num2str(Lx_WG*1e6)+" um";
+    ?"Lx_WG = " + num2str(Lx_WG /um)+" um";
 
     # Decide the bending radius based on the waveguide width, for a given gap
     #bend_radius = Lx_WG/2 + gap + bend_radius_start;
     bend_radius = bend_radius_start + gap/2;
-    ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+    ?"bend_radius = " + num2str(bend_radius /um)+" um";
 
     switchtolayout;
     deleteall;
@@ -83,7 +83,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     #set("z span",Lz_Buried_Oxide);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     # Cladding
     addrect;
@@ -96,7 +96,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     #set("z span",Lz_Cladding);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     addfde;
     set("solver type","2D Z normal");
@@ -133,4 +133,4 @@ for (Lx_idx = 1:num_of_pts_Lx)
     write(filename,neff_given_Lx);
     ?"\n";
 }
-plot(Lx_arr*1e6,neff_array, "Lx (um)", "Effective Index at 1550nm");
+plot(Lx_arr /um,neff_array, "Lx (um)", "Effective Index at 1550nm");

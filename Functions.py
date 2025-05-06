@@ -151,7 +151,7 @@ def Plot_curve(data_arr,
     for key,value in kwargs.items():
         param_dict[key] = value
 
-    savename = param_dict["foldername"]+str(param_dict["title"])+".pdf"
+    savename = param_dict["foldername"]+str(param_dict["title"])+param_dict['comment']+".pdf"
     idx = 0
     plt.figure(figsize=param_dict["figsize"])
     for data_idx in range(len(data_arr)):
@@ -247,8 +247,8 @@ def Interpol(x,y,x_intp):
 
 # Gives a better array of ticks than the defaults
 def ticks_arr(data_arr, small_ticks = False):
-    # For data>0, the largest base. E.g. if max = 7875, largest base is 1000.
     ticks_arr = np.array([0,])
+    # For data>0, the largest base. E.g. if max = 7875, largest base is 1000.
     if np.max(data_arr)>0:
         if small_ticks:
             largest_divider_max = 10**int(np.log10(np.max(data_arr))-0.5)
@@ -312,5 +312,5 @@ def Plot_im(data_arr, point_arr = [],
     plt.xlabel(param_dict["xlabel"],size = param_dict["fontsize"])
     plt.ylabel(param_dict["ylabel"],size = param_dict["fontsize"])
     plt.title(param_dict["title"],size = param_dict["fontsize"]*1.5)
-    plt.savefig(param_dict["foldername"]+param_dict["title"]+".jpg")
+    plt.savefig(param_dict["foldername"]+param_dict["title"]+".pdf")
     plt.show()

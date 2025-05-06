@@ -1,6 +1,6 @@
 # Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 ################################################
 # setting up parameters for Eigenmode calc
@@ -34,7 +34,7 @@ mesh_cells_y    = 1000;
 
 bend_waveguide  = 1;
 bend_radius     = 1000*um;
-?"bend_radius   = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius   = "+num2str(bend_radius /um)+" um";
 
 # Define wavelength of simulation
 wavelength_min      = 1550*nm;
@@ -88,7 +88,7 @@ Lx_upper            = 2.8*um;
 bend_radius_upper   = 1000*um;
 
 bend_radius =  bend_radius_upper - (Lx_upper-Lx_WG)/2;
-?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "+num2str(bend_radius /um)+" um";
 
 # Define wavelength of simulation
 wavelength_min = 1500*nm;
@@ -223,11 +223,11 @@ mesh_cells_x = 500;
 mesh_cells_y = 300;
 
 gap = 0.2*um;
-?"gap = "+num2str(gap*1e6)+" um";
+?"gap = "+num2str(gap /um)+" um";
 
 bend_waveguide = 0;     # staight wavguides
 bend_radius =  1000*um;
-?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "+num2str(bend_radius /um)+" um";
 
 Max_Mode_Idx = 2;
 
@@ -241,4 +241,4 @@ num_sweep_pt    = 16;
 ################################################
 # conduct simulation
 ################################################
-#Find_Modes_of_Double_Rings_Vertical_func;
+#Find_modes_of_vertically_coupled_double_rings_func;

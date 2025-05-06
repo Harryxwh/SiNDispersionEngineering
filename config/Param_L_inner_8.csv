@@ -11,7 +11,7 @@ WG1_y,0.05,np.float64,unit:um
 WG1_height,0.1,np.float64,unit:um
 bend_radius_inner,1000,np.float64,unit:um
 WG2_x,0,np.float64,unit:um
-WG2_width,2.762,np.float64,unit:um
+WG2_width,2.436,np.float64,unit:um
 WG2_y,0.05,np.float64,unit:um
 WG2_height,0.1,np.float64,unit:um
 Ly_cladding,2,np.float64,unit:um

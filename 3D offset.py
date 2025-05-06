@@ -306,7 +306,7 @@ def Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D
             "xticks"        : xticks,
             "yticks"        : yticks,
             "xtickslabel"   : ["{:.0f}".format(gL/Lco) for gL in gL_arr[xticks]],
-            "ytickslabel"   : ["{:.2f}".format(dLs*1e6) for dLs in deltaLs_arr[yticks]],
+            "ytickslabel"   : ["{:.2f}".format(dLs /um) for dLs in deltaLs_arr[yticks]],
             "fontsize"      : 6,
             "foldername"    : "../data/3D offset/"
     }
@@ -391,7 +391,7 @@ if __name__ == '__main__':
                 "M = "+"{:.1f} ".format(M)+"\n"\
                 "3D offset structure:\n"+ \
                 r"$g_{co}$"+"= {:.2f} ".format(best_gL_3D/Lco)+r"$m^{-1}$" +"\n" +\
-                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D*1e6)+r" $\mu m$"+"\n"\
+                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D /um)+r" $\mu m$"+"\n"\
                 "2D parallel structure:\n"+ \
                 r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_2D)
 
@@ -424,7 +424,7 @@ if __name__ == '__main__':
 
         text  = "3D offset structure:\n"+ \
                 r"$g_{co}$"+"= {:.2f} ".format(best_gL_3D/Lco)+r"$m^{-1}$" +"\n" +\
-                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D*1e6)+r" $\mu m$"+"\n"\
+                r"$\delta L_s$"+ " = {:.4f}".format(best_deltaLs_3D /um)+r" $\mu m$"+"\n"\
                 "Optimal AD range: {:.2f} nm".format(best_AD_range_3D)+"\n"+\
                 "2D parallel structure:\n"+ \
                 r"$g_{co}L_{co}$"+"= {:.2f}".format(best_gL_2D) +"\n" +\

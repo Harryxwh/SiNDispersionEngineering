@@ -57,7 +57,7 @@ EME_z_max       = 20      *um;
 #radius_Lower    =   4 *um;    #radius of the lower ring
 #bend_radius_inner = 1000*um;
 #bend_radius  =  bend_radius_inner;
-#?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+#?"bend_radius = "+num2str(bend_radius /um)+" um";
 
 Num_of_trial_modes = 25;
 
@@ -69,7 +69,7 @@ Num_of_trial_modes = 25;
 wavelength          = 1550*nm;
 
 # Material
-material_cladding   = "SiO2 (Glass) - Palik";
+material_clad   = "SiO2 (Glass) - Palik";
 material_core       = "Si3N4 (Silicon Nitride) - Luke";  # Waveguide material
 alpha               = 0.3;
 
@@ -81,7 +81,7 @@ for (i = 1: num_of_pts_len_taper)
 {
     len_taper_RDL   = len_taper_RDL_arr(i);     # length of the taper
     format short;
-    filename        = "len_taper_RDL-"+num2str(len_taper_RDL*1e6)+".txt";
+    filename        = "len_taper_RDL-"+num2str(len_taper_RDL /um)+".txt";
     data_filename   = foldername + filename;
     if(fileexists(data_filename)){rm(data_filename);}
 
@@ -90,8 +90,8 @@ for (i = 1: num_of_pts_len_taper)
     group_span3     = len_taper_RDL + x_taper_offset;
 
     format short;
-    write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL*1e6)+"um");
-    write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL*1e6)+"um");
+    write(log_filename,"len_taper_RDL="+num2str(len_taper_RDL /um)+"um");
+    write(log_filename,"len_prop_RDL="+num2str(len_prop_RDL /um)+"um");
     write(log_filename,"\n");
 
     switchtolayout;
@@ -102,7 +102,7 @@ for (i = 1: num_of_pts_len_taper)
         #format short;
         #wavelength = wavelength_array(wavl_idx);
 
-        #folder_path = folder_name + num2str(wavelength*1e9);
+        #folder_path = folder_name + num2str(wavelength /nm);
         #?"mkdir "+folder_path;
         #system("mkdir "+folder_path);
     #}
@@ -165,7 +165,7 @@ for (i = 1: num_of_pts_len_taper)
     set("z min",-Lz_Buried_Oxide);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
     set("alpha",alpha);
 
     # Cladding
@@ -179,7 +179,7 @@ for (i = 1: num_of_pts_len_taper)
     set("z max",Lz_Cladding);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
     set("alpha",alpha);
 
     # Set EME simulation

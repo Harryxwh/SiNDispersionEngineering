@@ -6,7 +6,7 @@ deleteall;
     #format short;
     #wavelength = wavelength_array(wavl_idx);
 
-    #folder_path = folder_name + num2str(wavelength*1e9);
+    #folder_path = folder_name + num2str(wavelength /nm);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
@@ -69,7 +69,7 @@ set("z max",0);
 set("z min",-Lz_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 set("alpha",alpha);
 
 # Cladding
@@ -83,7 +83,7 @@ set("z min",0);
 set("z max",Lz_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 set("alpha",alpha);
 
 # Set EME simulation

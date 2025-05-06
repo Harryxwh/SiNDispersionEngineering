@@ -14,7 +14,7 @@
     "xticks"            : [],
     "xtickslabel"       : [],
     "yticks"            : [],
-    "autoset_yticks"   : 1,
+    "autoset_yticks"    : 1,
     "xlim"              : [],
     "ylim"              : [],
     "fonttype"          : "Helvetica",
@@ -25,5 +25,6 @@
     "linespacing"       : 1.2,
     "loc_text"          : [0,5,0.01],
     "foldername"        : "./results/",
+    "comment"           : "",
     "plot_show"         : false
 }

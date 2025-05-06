@@ -218,7 +218,7 @@ class Coupled_Waveguides():
                 int(WG2_x + WG2_width/2)] = self.n_core
 
     def Plot_index_profile(self,label='N',
-                           save_name='./results/index_profile.jpg',dpi=300):
+                           save_name='./results/index_profile.pdf',dpi=300):
 
         colormap = "YlOrRd"
         WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding  = self.Structure_coordinates
@@ -358,7 +358,7 @@ class Coupled_Waveguides():
                 ax[plot_idx,idx].tick_params(axis='both',labelsize=fontsize)
 
         plt.title(title)
-        plt.savefig(save_name+title+".jpg",dpi=dpi)
+        plt.savefig(save_name+title+".pdf",dpi=dpi)
         plt.close()
         # plt.show()
         return

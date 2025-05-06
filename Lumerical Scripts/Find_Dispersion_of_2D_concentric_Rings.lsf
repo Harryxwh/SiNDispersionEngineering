@@ -19,7 +19,7 @@ mesh_cells_x = 3000;
 mesh_cells_y = 1000;
 
 material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 # name of the folder to store data
 folder_name = "Dispersion_2D_concentric_rings" + "\\";
@@ -32,17 +32,16 @@ gap_array       = linspace(gap_min,gap_max,num_sweep_pt);
 
 wavelength      = 1550*nm;
 
-for(gap_idx=1:num_sweep_pt){
+for(gap = gap_array){
 
     switchtolayout;
     deleteall;
 
     format short;
-    gap = gap_array(gap_idx);
-    ?"gap = " + num2str(gap*1e6) +"um";
+    ?"gap = " + num2str(gap /um) +"um";
 
     # File to store the dispersion curve at given gap
-    D_filename  = folder_name+ "gapx_"+num2str(gap*1e6)+"um.txt";
+    D_filename  = folder_name+ "gapx_"+num2str(gap /um)+"um.txt";
     if(fileexists(D_filename)){rm(D_filename);}
     write(D_filename,"Wavelength (microns), Dispersion (us/nm/km)");
 
@@ -55,7 +54,7 @@ for(gap_idx=1:num_sweep_pt){
     # Outer Ring
     # Calculate the width of the outer ring satisfying the phase matching condition
     # The formula comes from a polynomial fit of simulation data
-    Lx_WG2 = (9.92857*(gap*1e6)^2 - 242.2928*(gap*1e6) + 3399.5714) * nm;
+    Lx_WG2 = (9.92857*(gap /um)^2 - 242.2928*(gap /um) + 3399.5714) * nm;
     Ly_WG2 = 0.1*um; # height of the WG
 
     Lx_Cladding = 50*um;            # width of the cladding layer
@@ -70,7 +69,7 @@ for(gap_idx=1:num_sweep_pt){
 
     bend_radius_inner   =  1000*um;
     bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-    ?"bend_radius = "   + num2str(bend_radius*1e6)+" um";
+    ?"bend_radius = "   + num2str(bend_radius /um)+" um";
 
     # Inner Ring
     addrect;
@@ -105,7 +104,7 @@ for(gap_idx=1:num_sweep_pt){
     #set("z span",Lz_Buried_Oxide);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     # Cladding
     addrect;
@@ -118,7 +117,7 @@ for(gap_idx=1:num_sweep_pt){
     #set("z span",Lz_Cladding);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     # FDE solver region
     addfde;

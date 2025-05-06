@@ -30,7 +30,7 @@ mesh_cells_y    = 200;
 
 bend_waveguide  = 0;
 bend_radius     = 1000*um;
-?"bend_radius   = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius   = "+num2str(bend_radius /um)+" um";
 
 # Define wavelength of simulation
 #wavelength_min      = 1480*nm;
@@ -43,7 +43,7 @@ wavelength_array    = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 1;
 
@@ -62,7 +62,7 @@ um = 1e-6;
 nm = 1e-9;
 
 #write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-#write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
+#write(log_filename,"bend_radius = "+num2str(bend_radius /um)+" um");
 #write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 # Create folders if they do not yet exist
@@ -70,7 +70,7 @@ nm = 1e-9;
     #format short;
     #wavelength = wavelength_array(wavl_idx);
 
-    #folder_path = folder_name + num2str(wavelength*1e9);
+    #folder_path = folder_name + num2str(wavelength /nm);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
@@ -117,7 +117,7 @@ set("y min",-Ly_Buried_Oxide);
 #set("z span",Lz_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 # Cladding
 addrect;
@@ -130,7 +130,7 @@ set("y max",Ly_Cladding);
 #set("z span",Lz_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 
 addfde;
@@ -194,7 +194,7 @@ setnamed("FDE","wavelength",1550*nm);
 
     #format short;
 
-    #folder_path = folder_name + num2str(wavelength*1e9);
+    #folder_path = folder_name + num2str(wavelength /nm);
     #info_filename = folder_path+ "\Mode_info.txt";
     #if(fileexists(info_filename)){rm(info_filename);}
 
@@ -227,7 +227,7 @@ setnamed("FDE","wavelength",1550*nm);
 
         ## Fundamental mode
         #if(mode_idx == 1){
-            #wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
+            #wave_log = "Wavelength: " + num2str(wavelength /um) + " um";
             #neff_log = "Effective index: " + num2str(real(neff));
             #beta_log = "beta_ang: " + num2str(beta_ang);
             #?wave_log;

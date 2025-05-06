@@ -347,10 +347,10 @@ class Data_analyzer(Coupled_Waveguides):
         D_supermode_2_intp, Beta_1_supermode_2_intp = self.Calculate_dispersion_D(beta_CMT_supermode2_intp,self.wavl_arr_intp)
 
         # Adding the isolated dispersion
-        # D_supermode_1_intp = 2*D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
-        # D_supermode_2_intp = 2*D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
-        D_supermode_1_intp = D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
-        D_supermode_2_intp = D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
+        # D_supermode_1_intp = D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
+        # D_supermode_2_intp = D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
+        D_supermode_1_intp = 2*D_supermode_1_intp.reshape(-1,1) + D_WG1_intp.reshape(-1,1)
+        D_supermode_2_intp = 2*D_supermode_2_intp.reshape(-1,1) + D_WG2_intp.reshape(-1,1)
 
         Y_data = (np.c_[self.wavl_arr,
                         self.beta_uncoupled_arr[:,1:3],
@@ -383,13 +383,15 @@ class Data_analyzer(Coupled_Waveguides):
                 "X_label"   : r'wavelength($\mu m)$',
                 "Y_label"   : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
                 "title"     : r"Propagation constant of coupled modes of 2D concentric rings",
-                #  "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
+                "autoset_yticks"    : 1,
                 "marker_list"   :["","",".",".","","","o","o"],
                 "linestyle_list":["dashed","dashdot","","","-","-","",""],
                 "colors_list"   :['mediumturquoise','skyblue',
                                   'LightPink','crimson',
                                   'LightPink','crimson',
-                                  'lightskyblue','dodgerblue']*2
+                                  'lightskyblue','dodgerblue']*2,
+                # "comment"       : gap_info
+                #  "title"     : r"Propagation constant of coupled 3D stacked concentric rings",
                 # "marker_list"   :["",".",".","","","o","o"],
                 # "linestyle_list":["--","","","-","-","",""],
                 # "colors_list"   :['dodgerblue','crimson','LightPink','crimson','LightPink']*5
@@ -423,20 +425,17 @@ class Data_analyzer(Coupled_Waveguides):
 
         # Plot dispersion curve
         if self.plot_curve:
-            xticks       = [self.wavl_arr_intp[i] for i in np.arange(0,len(self.wavl_arr_intp),10) ]
+            xticks       = [self.wavl_arr_intp[i] for i in np.arange(0,len(self.wavl_arr_intp),15) ]
             xtickslabels = np.array(["{:.3f}".format(xtick) for xtick in xticks])
             param_dict = {
                 "Y_legends"         : [
                                     'Inner Ring','Outer Ring',
-                                    # 'Uncoupled Ring',
-                                    # 'Supermode 1','Supermode 2',
                                     'Supermode 1 (CMT)','Supermode 2 (CMT)',
                                     # 'Supermode 1 (FDE)',
                                     'Supermode 2 (FDE)']*5,
                 "X_label"           : r'wavelength($\mu m$)',
                 "Y_label"           : r'$D(ps/nm/km)$',
                 "title"             : r"Dispersion of coupled modes of 2D concentric rings",
-                # "title"             : "Dispersion of 3D vertical stacked rings when gap="+ r"$2\mu m$",
                 "xticks"            : xticks,
                 "xtickslabel"       : xtickslabels,
                 "marker_list"       : ["","","","","",""]*5,
@@ -444,14 +443,19 @@ class Data_analyzer(Coupled_Waveguides):
                 "colors_list"       : ['mediumturquoise','skyblue','LightPink','crimson',
                                         # 'lightskyblue',
                                         'dodgerblue']*2,
+
+                "AD_region_color"   : True,
+                "autoset_yticks"    : 0,
+                # "Y_legends"         : ['Uncoupled Ring','Supermode 1','Supermode 2']*5,
+                # "comment"           : gap_info
+                # "title"             : "Dispersion of 3D vertical stacked rings when gap="+ r"$2\mu m$",
                 # "linestyle_list"    : ["--","-","-","-","-","-","-"]*5,
                 # "colors_list"       : ['lightcoral','orange','dodgerblue','blue']*5,
-                "ylim"              : (-2000,1000),
-                "AD_region_color"   : True
+                # "ylim"              : (-2000,1000),
             }
             Plot_curve(Y_data,**param_dict)
 
-        gap_label = self.save_mode+"({:.2f}".format(self.gap_arr[0])+\
+        gap_label = self.save_mode+"( double {:.2f}".format(self.gap_arr[0])+\
                     ","+"{:.2f})".format(self.gap_arr[1])
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
         if self.save_csv:

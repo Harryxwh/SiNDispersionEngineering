@@ -24,7 +24,7 @@ mesh_cells_y = 250;
 wavelength  = 1550*nm;
 
 material_core = "Si3N4 (Silicon Nitride) - Phillip";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx = 3;
 
@@ -58,7 +58,7 @@ for (r_idx = 1:num_of_pts_r)
     neff_array  = zeros(num_of_pts_Lx);
     bend_radius = bend_radius_start + gap + r_arr(r_idx);
     bend_arr(r_idx) = bend_radius;
-    ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+    ?"bend_radius = " + num2str(bend_radius /um)+" um";
 
     for(Lx_idx=1:num_of_pts_Lx){
 
@@ -67,7 +67,7 @@ for (r_idx = 1:num_of_pts_r)
 
         #Lx_WG = Lx_arr(Lx_idx);
         Lx_WG = 2*(bend_radius-bend_radius_start-gap);
-        ?"Lx_WG = " + num2str(Lx_WG*1e6)+" um";
+        ?"Lx_WG = " + num2str(Lx_WG /um)+" um";
 
         #WG
         addrect;
@@ -93,7 +93,7 @@ for (r_idx = 1:num_of_pts_r)
         #set("z span",Lz_Buried_Oxide);
         set("override mesh order from material database",true);
         set("mesh order",3);
-        set("material",material_cladding);
+        set("material",material_clad);
 
         # Cladding
         addrect;
@@ -106,7 +106,7 @@ for (r_idx = 1:num_of_pts_r)
         #set("z span",Lz_Cladding);
         set("override mesh order from material database",true);
         set("mesh order",3);
-        set("material",material_cladding);
+        set("material",material_clad);
 
         addfde;
         set("solver type","2D Z normal");
@@ -154,7 +154,7 @@ for (r_idx = 1:num_of_pts_r)
     result_arr(r_idx) = neff_array(1);
     ?"\n";
 }
-plot(bend_arr*1e6,result_arr, "R (um)", "Effective Index at 1550nm");
+plot(bend_arr /um,result_arr, "R (um)", "Effective Index at 1550nm");
 
 
 
@@ -162,7 +162,7 @@ plot(bend_arr*1e6,result_arr, "R (um)", "Effective Index at 1550nm");
 #{
     #neff_array  = zeros(num_of_pts_Lx);
     #bend_radius = bend_radius_start + r_arr(r_idx)*um;
-    #?"bend_radius = " + num2str(bend_radius*1e6);
+    #?"bend_radius = " + num2str(bend_radius /um);
     #for(Lx_idx=1:num_of_pts_Lx){
         #switchtolayout;
         #deleteall;

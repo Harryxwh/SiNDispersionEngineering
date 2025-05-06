@@ -4,7 +4,7 @@ if(fileexists(filename)){rm(filename);}
 header = "gap/L_lower";
 for (Lx_idx = 1:num_of_pts_Lx){
     Lx_lower = Lx_arr(Lx_idx);
-    header = header + "," + num2str(Lx_lower*1e6);
+    header = header + "," + num2str(Lx_lower /um);
 }
 write(filename,header);
 
@@ -13,17 +13,17 @@ deleteall;
 
 for (gapx_idx = 1:num_of_pts_gapx){
     gapx = gapx_arr(gapx_idx);
-    ?"gap_x = " + num2str(gapx*1e6) + " um";
+    ?"gap_x = " + num2str(gapx /um) + " um";
     format short;
-    Beta_ang_info     = num2str(gapx*1e6)+",";
+    Beta_ang_info     = num2str(gapx /um)+",";
     for (Lx_idx = 1:num_of_pts_Lx)
     {
         Lx_lower = Lx_arr(Lx_idx);
-        ?"Lx_lower = " + num2str(Lx_lower*1e6)+" um";
+        ?"Lx_lower = " + num2str(Lx_lower /um)+" um";
 
         # Calc the bending radius based on the waveguide width of lower ring
         bend_radius = bend_radius_upper - gapx;
-        ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+        ?"bend_radius = " + num2str(bend_radius /um)+" um";
 
         switchtolayout;
         deleteall;
@@ -52,7 +52,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         #set("z span",Lz_Buried_Oxide);
         set("override mesh order from material database",true);
         set("mesh order",3);
-        set("material",material_cladding);
+        set("material",material_clad);
 
         # Cladding
         addrect;
@@ -65,7 +65,7 @@ for (gapx_idx = 1:num_of_pts_gapx){
         #set("z span",Lz_Cladding);
         set("override mesh order from material database",true);
         set("mesh order",3);
-        set("material",material_cladding);
+        set("material",material_clad);
 
         addfde;
         set("solver type","2D Z normal");

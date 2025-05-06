@@ -37,7 +37,7 @@ gap = 3*um;
 
 bend_radius =  bend_radius_inner + Lx_inner*0.5 + gap + Lx_WG*0.5 ;
 #bend_radius =  bend_radius_inner;
-?"bend_radius = "+num2str(bend_radius*1e6)+" um";
+?"bend_radius = "+num2str(bend_radius /um)+" um";
 
 Max_Mode_Idx = 1;
 
@@ -49,14 +49,14 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
 
 # Material
 material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_cladding = "SiO2 (Glass) - Palik";
+material_clad = "SiO2 (Glass) - Palik";
 
 folder_name = "OuterRingDesigned_L_inner_8um_gap_3um_2762nm_1500_1600_21wavls" + "\\";
 log_filename = folder_name + "Find_Modes_single_Ring_multi_wavl_XYZ_log.txt";
 if(fileexists(log_filename)){rm(log_filename);}
 
 write(log_filename,"mesh = "+num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
-write(log_filename,"bend_radius = "+num2str(bend_radius*1e6)+" um");
+write(log_filename,"bend_radius = "+num2str(bend_radius /um)+" um");
 write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
 
 # Create folders if they do not yet exist
@@ -64,7 +64,7 @@ write(log_filename,"Lx_WG = "+num2str(Lx_WG)+"\n");
     #format short;
     #wavelength = wavelength_array(wavl_idx);
 
-    #folder_path = folder_name + num2str(wavelength*1e9);
+    #folder_path = folder_name + num2str(wavelength /nm);
     #?"mkdir "+folder_path;
     #system("mkdir "+folder_path);
 #}
@@ -80,7 +80,6 @@ set("override mesh order from material database",true);
 set("mesh order",2);
 set("material",material_core);
 
-
 # BOX
 addrect;
 set("name","BOX");
@@ -90,7 +89,7 @@ set("y max",0);
 set("y min",-Ly_Buried_Oxide);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 # Cladding
 addrect;
@@ -101,7 +100,7 @@ set("y min",0);
 set("y max",Ly_Cladding);
 set("override mesh order from material database",true);
 set("mesh order",3);
-set("material",material_cladding);
+set("material",material_clad);
 
 # FDE solver region
 addfde;
@@ -139,7 +138,7 @@ for(wavl_idx=1:num_sweep_pt){
 
     format short;
 
-    folder_path = folder_name + num2str(wavelength*1e9);
+    folder_path = folder_name + num2str(wavelength /nm);
     info_filename = folder_path+ "\Mode_info.txt";
     if(fileexists(info_filename)){rm(info_filename);}
 
@@ -172,7 +171,7 @@ for(wavl_idx=1:num_sweep_pt){
 
         # Fundamental mode
         if(mode_idx == 1){
-            wave_log = "Wavelength: " + num2str(wavelength*1e6) + " um";
+            wave_log = "Wavelength: " + num2str(wavelength /um) + " um";
             neff_log = "Effective index: " + num2str(real(neff));
             beta_log = "beta_ang: " + num2str(beta_ang);
             ?wave_log;

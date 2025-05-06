@@ -1,5 +1,5 @@
 ###############################################################################
-# This script is a function used to find the propagation constant of the outer ring when the gap between the two rings is changed at a given wavelength
+# This script is a function used to find the propagation constant of the outer ring at a fixed wavelength when the gap between the two rings is swept
 # Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
 
 # Parameters:
@@ -37,7 +37,7 @@
 # bend_radius_inner :   bending radius of the inner WG
 
 # material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
-# material_cladding :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
+# material_clad :   material of the WG cladding, e.g. "SiO2 (Glass) - Palik";
 
 # Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
 
@@ -59,23 +59,23 @@
 ###############################################################################
 
 switchtolayout;
-switchtolayout;
 deleteall;
 
 Lx_arr          = linspace(Lx_start,Lx_end,num_of_pts_Lx);
 beta_ang_array  = zeros(num_of_pts_Lx);
 
+filename = "Scanning_Lx_from_" + num2str(Lx_start/nm) +"nm_to_"+ num2str(Lx_end/nm) +"nm_InnerWGWidth_" + num2str(Lx_inner_ring/nm)+"nm_gap_"+num2str(gap/nm)+"nm.txt"
 if(fileexists(filename)){rm(filename);}
 write(filename,"Lx,beta_ang");
 
 for (Lx_idx = 1:num_of_pts_Lx)
 {
     Lx_WG = Lx_arr(Lx_idx);
-    ?"Lx_WG = " + num2str(Lx_WG*1e6)+" um";
+    ?"Lx_WG = " + num2str(Lx_WG /um)+" um";
 
     # Decide the bending radius based on the waveguide width, for a given gap
     bend_radius = Lx_WG/2 + bend_radius_inner + gap + Lx_inner_ring/2;
-    ?"bend_radius = " + num2str(bend_radius*1e6)+" um";
+    ?"bend_radius = " + num2str(bend_radius /um)+" um";
 
     switchtolayout;
     deleteall;
@@ -104,7 +104,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     #set("z span",Lz_Buried_Oxide);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     # Cladding
     addrect;
@@ -117,7 +117,7 @@ for (Lx_idx = 1:num_of_pts_Lx)
     #set("z span",Lz_Cladding);
     set("override mesh order from material database",true);
     set("mesh order",3);
-    set("material",material_cladding);
+    set("material",material_clad);
 
     addfde;
     set("solver type","2D Z normal");
@@ -172,4 +172,4 @@ for (Lx_idx = 1:num_of_pts_Lx)
     ?"\n";
 }
 
-plot(Lx_arr*1e6,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");
+plot(Lx_arr /um,beta_ang_array, "Lx (um)", "Angular propagation constant at 1550nm (rad/rad)");
