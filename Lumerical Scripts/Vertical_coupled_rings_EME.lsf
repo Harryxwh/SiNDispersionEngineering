@@ -1,0 +1,286 @@
+###############################################################################
+# This is the main program used to analyze the vertical coupled rings using EME
+
+# Parameters that can be swept:
+# 1. length of the taper region
+# 2. length of the coupling region
+
+# Author: Weihao Xu
+# Date: May. 5th, 2025
+# Email: harryxwh@gmail.com
+###############################################################################
+
+# Housekeeping
+clear;clc;cleardcard;
+
+# Define units
+um = 1e-6;
+nm = 1e-9;
+
+###############################################################################
+Parameters
+###############################################################################
+# sweep the length of the taper region
+len_taper_RDL_start     =   200 *um;
+len_taper_RDL_end       =   200 *um;
+num_of_pts_len_taper    =   1;
+len_taper_RDL_arr       =   linspace(len_taper_RDL_start,len_taper_RDL_end,num_of_pts_len_taper);
+
+# sweep the length of the coupling region
+num_of_pts_sweep_prop   = 991;
+EME_prop_start          = 100*um;
+EME_prop_stop           = 10000*um;
+
+num_of_cells_taper      = 10;   # number of cells in the taper region
+num_of_cells_prop       = 1;    # number of cells in the coupling region. (only 1 since the width does not change)
+
+mesh_step           = 50*nm;
+
+# Geometry
+width_in_RDL        = 0.8*um;    # width of the input side of the taper
+width_prop_RDL      = 2.8*um;    # width of the output side of the taper
+len_prop_RDL        = 400*um;    # length of the straight propagation region
+Lz_RDL              = 0.1*um;    # thickness of the WG
+z_RDL               = 4.3*um;    # z of the WG
+x_taper_offset      = 1*um;
+
+# Upper and Lower WG
+Ly_upper            = 2.8*um;    # width of the upper WG
+Lz_upper            = 0.1*um;    # thickness of the upper WG
+z_upper             = z_RDL*2;
+
+Ly_lower            = 2.8*um;    # width of the lower WG
+Lz_lower            = 0.1*um;    # thickness of the lower WG
+z_lower             = 0*um;
+
+Lx_exten            = 4*um;      # extension length of WGs in x direction
+Lx_offset           = 1*um;      # offset of WGs in x direction
+
+# Cladding
+Lx_Cladding         = 2000*um;   # length of the Cladding
+Ly_Cladding         = 50*um;     # width of the Cladding
+Lz_Cladding         = 20*um;     # thickness of the Cladding
+
+# BOX
+Lx_Buried_Oxide     = 2000*um;   # length of the BOX
+Ly_Buried_Oxide     = 50*um;     # width of the BOX
+Lz_Buried_Oxide     = 15*um;     # thickness of the BOX
+
+# EME settings
+EME_x_min           = -900*um;
+EME_y_min           = -10*um;
+EME_y_max           = 10*um;
+EME_z_min           = -10*um;
+EME_z_max           = 20*um;
+
+# Taper and propagation sweep
+len_taper_RDL_start = 200*um;
+len_taper_RDL_end   = 200*um;
+num_of_pts_len_taper= 1;
+len_taper_RDL_arr   = linspace(len_taper_RDL_start, len_taper_RDL_end, num_of_pts_len_taper);
+
+num_of_cells_taper  = 10;
+num_of_cells_prop   = 1;
+
+num_of_pts_sweep_prop = 991;
+EME_prop_start      = 100*um;
+EME_prop_stop       = 10000*um;
+
+mesh_step           = 50*nm;
+
+# Material
+material_core       = "Si3N4 (Silicon Nitride) - Luke";
+material_clad       = "SiO2 (Glass) - Palik";
+alpha               = 0.3;
+
+# Wavelength
+wavelength          = 1550*nm;
+
+# EME solver settings
+Num_of_trial_modes  = 25;
+
+###############################################################################
+# Simulation loop
+###############################################################################
+
+# Create the folder
+format short;
+foldername = 'EME_simulation_of_vertically_coupled_straight_WGs_UpperWidth_'+num2str(Ly_upper/nm)+'nm_LowerWidth_'+num2str(Ly_lower/nm)+'nm_zRDL_'+num2str(z_RDL/um)+'um_meshstep_'+num2str(mesh_step);
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+
+log_filename    = foldername + "log.txt";
+
+for (i = 1: num_of_pts_len_taper)
+{
+    len_taper_RDL   = len_taper_RDL_arr(i);     # length of the taper
+    format short;
+    filename        = "len_taper_RDL-" + num2str(len_taper_RDL /um) + ".txt";
+    data_filename   = foldername + filename;
+    if(fileexists(data_filename)){rm(data_filename);}
+
+    group_span1     = len_taper_RDL + x_taper_offset;
+    group_span2     = len_prop_RDL;
+    group_span3     = len_taper_RDL + x_taper_offset;
+
+    write(log_filename, "len_taper_RDL=" + num2str(len_taper_RDL /um) + "um");
+    write(log_filename, "len_prop_RDL=" + num2str(len_prop_RDL /um) + "um");
+    write(log_filename, "\n");
+
+    switchtolayout;
+    deleteall;
+
+    EME_x_max = EME_x_min + group_span1 + group_span2 + group_span3;
+
+    # Upper racetrack Straight part
+    addrect;
+    set("name","Upper racetrack Straight part");
+    set("x min", EME_x_min - Lx_exten/2 - Lx_offset);
+    set("x max", EME_x_max + Lx_exten/2);
+    set("y", 0);
+    set("y span", Ly_upper);
+    set("z", z_upper);
+    set("z span", Lz_upper);
+    set("override mesh order from material database", true);
+    set("mesh order", 2);
+    set("material", material_core);
+    set("alpha", alpha);
+
+    # Lower racetrack Straight part
+    addrect;
+    set("name","Lower racetrack Straight part");
+    set("x min", EME_x_min - Lx_exten/2);
+    set("x max", EME_x_max + Lx_exten/2 + Lx_offset);
+    set("y",0);
+    set("y span",Ly_lower);
+    set("z",z_lower);
+    set("z span",Lz_lower);
+    set("override mesh order from material database",true);
+    set("mesh order",2);
+    set("material",material_core);
+    set("enabled",rect_enabled);
+
+    # RDL WG
+    structure_group_name = "RDL WG";
+    x_min           = EME_x_min;
+    len_taper       = len_taper_RDL;
+    len_prop        = len_prop_RDL;
+    width_prop      = width_prop_RDL;
+    width_in        = width_in_RDL;
+    Lz              = Lz_RDL;
+    z               = z_RDL;
+    res             = 10000; #resolution of polygon
+    material        = material_core;
+    setup_RDL;
+
+    # BOX
+    addrect;
+    set("name", "BOX");
+    set("x", 0);
+    set("x span", Lx_Buried_Oxide);
+    set("y", 0);
+    set("y span", Ly_Buried_Oxide);
+    set("z max", 0);
+    set("z min", -Lz_Buried_Oxide);
+    set("override mesh order from material database", true);
+    set("mesh order", 3);
+    set("material", material_clad);
+    set("alpha", alpha);
+
+    # Cladding
+    addrect;
+    set("name", "Cladding");
+    set("x", 0);
+    set("x span", Lx_Cladding);
+    set("y", 0);
+    set("y span", Ly_Cladding);
+    set("z min", 0);
+    set("z max", Lz_Cladding);
+    set("override mesh order from material database", true);
+    set("mesh order", 3);
+    set("material", material_clad);
+    set("alpha", alpha);
+
+    # EME solver
+    addeme;
+    set("wavelength", wavelength);
+    set("x min", EME_x_min);
+    set("y min", EME_y_min);
+    set("y max", EME_y_max);
+    set("z min", EME_z_min);
+    set("z max", EME_z_max);
+    set("energy conservation", "make passive");
+    set("use relative coordinates",0);
+    set("display cells", 1);
+    # set cell properties
+    set("number of cell groups",3);
+    set("group spans",[group_span1; group_span2; group_span3]);
+    set("cells",[num_of_cells_taper; num_of_cells_prop; num_of_cells_taper]);
+    set("subcell method",[1; 0; 1]);   # 0 = none,  1 = CVCS
+    # mesh settings
+    set("define y mesh by", "maximum mesh step");
+    set("define z mesh by", "maximum mesh step");
+    set("dy", mesh_step);
+    set("dz", mesh_step);
+
+    # Eigensolver settings
+    set("allow custom eigensolver settings", 1);
+    select("EME::Cells::cell_1");
+    seteigensolver("number of trial modes", Num_of_trial_modes);
+    seteigensolver("use max index", 1);
+
+    # Ports
+    select("EME::Ports::port_1");
+    set("port location", "left");
+    set("use full simulation span", 1);
+    set("offset", -Lx_offset/2 - Lx_exten/2);
+
+    select("EME::Ports::port_2");
+    set("port location", "right");
+    set("use full simulation span", 1);
+    set("offset", Lx_offset/2 + Lx_exten/2);
+
+    # Monitors
+    addemeindex;
+    set("name", "EMEindex");
+    set("monitor type", "2D Y-normal");
+    set("x min", EME_x_min - Lx_exten);
+    set("x max", EME_x_max + Lx_exten);
+    set("y", 0);
+    set("z max", EME_z_max);
+    set("z min", EME_z_min);
+
+    addemeprofile;
+    set("name", "EMEprofile");
+    set("monitor type", "2D Y-normal");
+    set("x min", EME_x_min - Lx_exten);
+    set("x max", EME_x_max + Lx_exten);
+    set("y", 0);
+    set("z max", EME_z_max);
+    set("z min", EME_z_min);
+
+    # Run simulation
+    run;
+    emepropagate;
+
+    # Propagation sweep
+    setemeanalysis("propagation sweep", 1);
+    setemeanalysis("parameter", "group span 2");
+    setemeanalysis("start", EME_prop_start);
+    setemeanalysis("stop", EME_prop_stop);
+    setemeanalysis("number of points",num_of_pts_sweep_prop);
+
+    ## run propagation sweep tool
+    #emesweep;
+
+    ## get propagation sweep result
+    #S = getemesweep('S');
+
+    ## plot S21 vs group span
+    #s21_abs_sq = abs(S.s21)^2;
+    #format long;
+    #for(i =1:num_of_pts_sweep_prop){
+        #write(data_filename,num2str(s21_abs_sq(i)));
+    #}
+
+}

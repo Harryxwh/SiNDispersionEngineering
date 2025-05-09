@@ -125,32 +125,6 @@ if __name__ == '__main__':
     #                              title=r"Electric field profile when wavl = 1560 nm",
     #                              Plot_log=False)
 
-    ########################################
-    # Scan the gap between waveguides
-    ########################################
-
-    ############## Concentric double rings L_inner 8um ###########
-    foldername1 = "../data/Mode Profiles/"+\
-                    "InnerRing_L_inner_8um_1535_1565_31wavls"
-    foldername2 = "../data/Mode Profiles/"+\
-                    "OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
-
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "InnerRing_L_inner_8um_1400_1700_31wavls"
-
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
-
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "OuterRingDesigned_20x10um_800x400cells_21_wavls"
-    ##############################################################
-
     ############# Parallel double rings L 2.8um ##################
     # foldername1 = "../data/Mode Profiles/"+\
     #               "Straight_WG_width_2_8um_1480_1620_15wavls"
@@ -165,28 +139,11 @@ if __name__ == '__main__':
     #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
     ##############################################################
 
-    ################## Horizontal double rings ###################
-    filename_uncoupled_gap3um = "../data/Dispersion_scan_near_3um_CMT/beta_uncoupled_gap_3_000_0_000.txt"
-    filename_coupled_gap3um = "../data/Dispersion_scan_near_3um_CMT/beta_coupled_gap_3_000_0_000.txt"
-
-    filename_uncoupled_gap2_8um = "../data/Dispersion_scan_near_3um_CMT/beta_uncoupled_gap_2_800_0_000.txt"
-    filename_coupled_gap2_8um = "../data/Dispersion_scan_near_3um_CMT/beta_coupled_gap_2_800_0_000.txt"
-
-    filename_uncoupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_uncoupled_L_inner_8um_gap_4um.txt"
-    filename_coupled_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/beta_coupled_L_inner_8um_gap_4um.txt"
-
-    filename_uncoupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_uncoupled_L_inner_8um_gap_5um.txt"
-    filename_coupled_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/beta_coupled_L_inner_8um_gap_5um.txt"
-
-    filename_FDE_gap4um = "results/L_inner_8um_gapx_5&4um/gapx_4um/Lumerical_supermodes_results_gapx_4um.txt"
-    filename_FDE_gap5um = "results/L_inner_8um_gapx_5&4um/gapx_5um/Lumerical_supermodes_results_gapx_5um.txt"
-    ##############################################################
-
     ################## Vertical double rings #####################
-    filename_uncoupled_gapy_2um = "../data/beta_uncoupled_gap_0_000_2_000.txt"
-    filename_coupled_gapy_2um   = "../data/beta_coupled_gap_0_000_2_000.txt"
-    filename_uncoupled_gapy_0_2um = "../data/beta_uncoupled_gap_0_000_0_200.txt"
-    filename_coupled_gapy_0_2um   = "../data/beta_coupled_gap_0_000_0_200.txt"
+    filename_uncoupled_gapy_2um     = "../data/beta_uncoupled_gap_0_000_2_000.txt"
+    filename_coupled_gapy_2um       = "../data/beta_coupled_gap_0_000_2_000.txt"
+    filename_uncoupled_gapy_0_2um   = "../data/beta_uncoupled_gap_0_000_0_200.txt"
+    filename_coupled_gapy_0_2um     = "../data/beta_coupled_gap_0_000_0_200.txt"
     ##############################################################
 
     # unit: nm
@@ -199,14 +156,28 @@ if __name__ == '__main__':
 
     # param_filename = "./config/Param_vertical.csv"
     param_filename = "./config/Param_L_inner_8.csv"
-    # param_filename = "./config/Param_L_inner_2_8.csv"
-    # param_filename = "./config/Param_800x400.csv"
     # param_filename = "./config/Param_straight_2_8.csv"
+    # param_filename = "./config/Param_800x400.csv"
 
-    ########################## Scan gap ###########################
-    start_gap_x   = 5
-    end_gap_x     = 5
-    num_of_gaps_x = 1
+    ############################################################################################
+    # The folders containing the mode profiles
+    foldername1 = "../data/Mode Profiles/"+"InnerRing_L_inner_8um_1535_1565_31wavls"
+    foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
+    # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
+
+    # foldername1 = "../data/Mode Profiles/"+"InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
+    # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
+
+    # foldername1 = "../data/Mode Profiles/"+"InnerRing_Lx_8um_bendr_1000um_20x10um_800x400cells_beta_ang_21_wavls"
+    # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_20x10um_800x400cells_21_wavls"
+    ############################################################################################
+
+    ############################################################################################
+    # Sweep gap between 2D concentric rings around a certian value, so the mode profiles can be seen as the same
+    # if num_of_gaps is 1, the gap is fixed
+    start_gap_x   = 2.5
+    end_gap_x     = 3.5
+    num_of_gaps_x = 11
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -223,38 +194,65 @@ if __name__ == '__main__':
                                 foldername1 = foldername1,
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
-    # beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = sweeper.Scan_wavl(gap_idx=0)
-
     # sweeper.Scan_gap(calc_needed=False, foldername = "Dispersion_scan_near_3um_CMT/", num_of_wavl_pts=1000)
     # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     ############################################################
 
-    ####################### Analyze Data #######################
+    ############################################################################################
+    # Analyze Dispersion of 2D concentric rings
+    # Calculate Dispersion using propagation constants calculated by CMT and FDE
+    param_filename = "./config/Param_L_inner_8.csv"
     wavl_arr = np.linspace(1540,1560,21)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap5um, filename_coupled_gap5um, param_filename,
-    #                          save_csv=False, FDE_beta_exist=True,
-    #                          filename_FDE_beta=filename_FDE_gap5um,num_of_pts=200)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap4um, filename_coupled_gap4um, param_filename,
-    #                          save_csv=False, FDE_beta_exist=True,
-    #                          filename_FDE_beta=filename_FDE_gap4um,num_of_pts=100)
+
+    filename_uncoupled_gap5um = "./results/2D concentric rings/Propagation Constants using CMT/beta_uncoupled_gap_5_000_0_000.txt"
+    filename_coupled_gap5um = "./results/2D concentric rings/Propagation Constants using CMT/beta_coupled_gap_5_000_0_000.txt"
+    filename_coeffi_gap5um = "./results/2D concentric rings/Supermode Coefficients using CMT/gapx_5um_coeffi.txt"
+    filename_FDE_beta_gap5um = "./results/2D concentric rings/Propagation Constant using FDE/Lumerical_supermodes_results_gapx_5um.txt"
+    gap_arr = np.array([[5,0]])
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                             filename_uncoupled_gap5um, filename_coupled_gap5um, num_of_pts=200,
+                             filename_FDE_beta=filename_FDE_beta_gap5um,
+                             save_D_in_csv=False, filename_coeffi=filename_coeffi_gap5um)
+
+    filename_uncoupled_gap4um = "./results/2D concentric rings/Propagation Constants using CMT/beta_uncoupled_gap_4_000_0_000.txt"
+    filename_coupled_gap4um = "./results/2D concentric rings/Propagation Constants using CMT/beta_coupled_gap_4_000_0_000.txt"
+    filename_coeffi_gap4um = "./results/2D concentric rings/Supermode Coefficients using CMT/gapx_4um_coeffi.txt"
+    filename_FDE_beta_gap4um = "./results/2D concentric rings/Propagation Constant using FDE/Lumerical_supermodes_results_gapx_4um.txt"
+    gap_arr = np.array([[4,0]])
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                             filename_uncoupled_gap4um, filename_coupled_gap4um, num_of_pts=100,
+                             filename_FDE_beta=filename_FDE_beta_gap4um,
+                             save_D_in_csv=False, filename_coeffi=filename_coeffi_gap4um)
+
+    # Compare with Dispersion calculated using FDE
     wavl_arr = np.linspace(1505,1595,19)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap3um, filename_coupled_gap3um, param_filename,
-    #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
-    #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_3um.txt",
-    #                          num_of_pts=150)
-    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-    #                          filename_uncoupled_gap2_8um, filename_coupled_gap2_8um, param_filename,
-    #                          save_csv=False, FDE_beta_exist=False, FDE_D_exist=True,
-    #                          filename_FDE_D="../data/Dispersion_2D_concentric_rings_FDE/gapx_2.8um.txt",
-    #                          num_of_pts=100)
+
+    filename_uncoupled_gap3um = "./results/2D concentric rings/Propagation Constants using CMT/beta_uncoupled_gap_3_000_0_000.txt"
+    filename_coupled_gap3um = "./results/2D concentric rings/Propagation Constants using CMT/beta_coupled_gap_3_000_0_000.txt"
+    filename_coeffi_gap3um = "./results/2D concentric rings/Supermode Coefficients using CMT/gapx_3um_coeffi.txt"
+    filename_FDE_D_gap3um = "./results/2D concentric rings/Dispersion using FDE/gapx_3um.txt"
+    gap_arr = np.array([[3,0]])
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                             filename_uncoupled_gap3um, filename_coupled_gap3um, num_of_pts=150,
+                             filename_FDE_D=filename_FDE_D_gap3um,
+                             save_D_in_csv=False, filename_coeffi=filename_coeffi_gap3um)
+
+    filename_uncoupled_gap2_8um = "./results/2D concentric rings/Propagation Constants using CMT/beta_uncoupled_gap_2_800_0_000.txt"
+    filename_coupled_gap2_8um = "./results/2D concentric rings/Propagation Constants using CMT/beta_coupled_gap_2_800_0_000.txt"
+    filename_coeffi_gap2_8um = "./results/2D concentric rings/Supermode Coefficients using CMT/gapx_2.8um_coeffi.txt"
+    filename_FDE_D_gap2_8um = "./results/2D concentric rings/Dispersion using FDE/gapx_2.8um.txt"
+    gap_arr = np.array([[2.8,0]])
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                             filename_uncoupled_gap2_8um, filename_coupled_gap2_8um, num_of_pts=100,
+                             filename_FDE_D=filename_FDE_D_gap2_8um,
+                             save_D_in_csv=False, filename_coeffi=filename_coeffi_gap2_8um)
+    ############################################################################################
+
     wavl_arr = np.linspace(1400,1700,31)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-                            save_csv=True,save_mode = "AS", FDE_beta_exist=False, num_of_pts=100)
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:],
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, param_filename,
-                            save_csv=True,save_mode = "S", FDE_beta_exist=False, num_of_pts=100)
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, num_of_pts=100,
+                            save_D_in_csv=True, save_mode = "AS")
+    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um, num_of_pts=100,
+                            save_D_in_csv=True, save_mode = "S")
 

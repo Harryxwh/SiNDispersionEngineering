@@ -1,9 +1,13 @@
 ###############################################################################
-# This is the main program used to analyze the vertical coupled rings using EME
+# This script analyzes the vertical coupled racetrack resonators with a redistribution layer (RDL) using EME
 
 # Parameters that can be swept:
 # 1. length of the taper region
 # 2. length of the coupling region
+# (3. whether there exists a RDL layer)
+
+# Results stored:
+# |S_21|^2, which stands for the power transmitted from the upper racetrack to the lower.
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
@@ -18,7 +22,7 @@ um = 1e-6;
 nm = 1e-9;
 
 ###############################################################################
-Parameters
+# Parameters
 ###############################################################################
 # sweep the length of the taper region
 len_taper_RDL_start     =   200 *um;
@@ -33,8 +37,6 @@ EME_prop_stop           = 10000*um;
 
 num_of_cells_taper      = 10;   # number of cells in the taper region
 num_of_cells_prop       = 1;    # number of cells in the coupling region. (only 1 since the width does not change)
-
-mesh_step           = 50*nm;
 
 # Geometry
 width_in_RDL        = 0.8*um;    # width of the input side of the taper
@@ -73,12 +75,6 @@ EME_y_max           = 10*um;
 EME_z_min           = -10*um;
 EME_z_max           = 20*um;
 
-# Taper and propagation sweep
-len_taper_RDL_start = 200*um;
-len_taper_RDL_end   = 200*um;
-num_of_pts_len_taper= 1;
-len_taper_RDL_arr   = linspace(len_taper_RDL_start, len_taper_RDL_end, num_of_pts_len_taper);
-
 num_of_cells_taper  = 10;
 num_of_cells_prop   = 1;
 
@@ -103,7 +99,7 @@ Num_of_trial_modes  = 25;
 # Simulation loop
 ###############################################################################
 
-# Create the folder
+# Create the folder to store results
 format short;
 foldername = 'EME_simulation_of_vertically_coupled_straight_WGs_UpperWidth_'+num2str(Ly_upper/nm)+'nm_LowerWidth_'+num2str(Ly_lower/nm)+'nm_zRDL_'+num2str(z_RDL/um)+'um_meshstep_'+num2str(mesh_step);
 system('if exist '+foldername+' rmdir /s /q '+foldername);
@@ -158,9 +154,10 @@ for (i = 1: num_of_pts_len_taper)
     set("override mesh order from material database",true);
     set("mesh order",2);
     set("material",material_core);
-    set("enabled",rect_enabled);
 
+    ###############################################################################
     # RDL WG
+    # (This section can be disabled if interlayer transmission without a RDL layer is needed for comparison)
     structure_group_name = "RDL WG";
     x_min           = EME_x_min;
     len_taper       = len_taper_RDL;
@@ -172,6 +169,7 @@ for (i = 1: num_of_pts_len_taper)
     res             = 10000; #resolution of polygon
     material        = material_core;
     setup_RDL;
+    ###############################################################################
 
     # BOX
     addrect;
@@ -270,17 +268,17 @@ for (i = 1: num_of_pts_len_taper)
     setemeanalysis("stop", EME_prop_stop);
     setemeanalysis("number of points",num_of_pts_sweep_prop);
 
-    ## run propagation sweep tool
-    #emesweep;
+    # Run propagation sweep tool
+    emesweep;
 
-    ## get propagation sweep result
-    #S = getemesweep('S');
+    # Gett propagation sweep result
+    S = getemesweep('S');
 
-    ## plot S21 vs group span
-    #s21_abs_sq = abs(S.s21)^2;
-    #format long;
-    #for(i =1:num_of_pts_sweep_prop){
-        #write(data_filename,num2str(s21_abs_sq(i)));
-    #}
+    # Plot S21 vs group span
+    s21_abs_sq = abs(S.s21)^2;
+    format long;
+    for(i =1:num_of_pts_sweep_prop){
+        write(data_filename,num2str(s21_abs_sq(i)));
+    }
 
 }
