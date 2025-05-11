@@ -11,18 +11,22 @@
 switchtolayout;
 deleteall;
 
-um = 1e-6;
-nm = 1e-9;
+um              = 1e-6;
+nm              = 1e-9;
 
 # Mesh settings
-mesh_cells_x = 3000;
-mesh_cells_y = 1000;
+mesh_cells_x    = 3000;
+mesh_cells_y    = 1000;
 
-material_core = "Si3N4 (Silicon Nitride) - Luke";
-material_clad = "SiO2 (Glass) - Palik";
+material_core   = "Si3N4 (Silicon Nitride) - Luke";
+material_clad   = "SiO2 (Glass) - Palik";
 
-# name of the folder to store data
-folder_name = "Dispersion_2D_concentric_rings" + "\\";
+# Create the folder to store data
+format short;
+foldername = 'Find_Dispersion_of_2D_concentric_Rings'+num2str(/um)+'um_gap_'+num2str(gap/nm)+'um_to_'+num2str(gap_max/um)+'nm_OuterRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+folder_name     = "Dispersion_2D_concentric_rings" + "\\";
 
 # Scanning the gap between the sidewalls of the two WGs
 gap_min         = 2.6   *um;

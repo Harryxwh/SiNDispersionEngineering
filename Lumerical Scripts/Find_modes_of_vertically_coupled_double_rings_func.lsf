@@ -1,5 +1,5 @@
 ###############################################################################
-# This script is a function used to find the eigenmodes of two vertically coupled rings.
+# This script is a function used to find the eigenmodes of two vertically coupled rings when the vertical gap is given.
 # Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
 
 # Parameters:
@@ -29,8 +29,6 @@
 # mesh_cells_x      :   num of mesh cells in x direction
 # mesh_cells_y      :   num of mesh cells in y direction
 
-# gap               :   gap between the horizontal surfaces of the two WGs
-
 # bend_radius_inner :   bending radius of the inner WG
 
 # material_core     :   material of the WG core, e.g. "Si3N4 (Silicon Nitride) - Luke";
@@ -38,21 +36,26 @@
 
 # Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
 
+# gap               :   gap between the horizontal surfaces of the two WGs
+
 # Define wavelength of simulation
 # wavelength_min    :   starting wavelength
 # wavelength_max    :   stoping wavelength
-# num_sweep_pt      :   num pf wavelength points to calculate
+# num_sweep_pt_wavl :   num of wavelength points to calculate
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
 # Email: harryxwh@gmail.com
 ###############################################################################
 
+
 switchtolayout;
 deleteall;
 
 # Setup the wavelength array
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt_wavl);
+
+
 
 # Lower Ring
 addrect;
@@ -175,7 +178,7 @@ write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang
 
 Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
 
-for(wavl_idx=1:num_sweep_pt){
+for(wavl_idx=1:num_sweep_pt_wavl){
 
     switchtolayout;
 
