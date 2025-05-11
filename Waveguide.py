@@ -157,7 +157,7 @@ class Waveguide():
         if plot ==True:
             component_list = list(self.Field_dict.values())
             self.Plot_all_field_profile(component_list,(self.FDE_width*0.8,self.FDE_height*0.8),
-                                        save_name='./Mode number conserved coupling/results/'+foldername[22:27]+'_all_field_profile.jpg')
+                                        save_name='./results/'+foldername[22:27]+'_all_field_profile.jpg')
         return
 
     '''
@@ -171,9 +171,9 @@ class Waveguide():
     dpi               : Resolution of the plot
     '''
     def Plot_all_field_profile(self,component_list, plot_field_size ,plot_log = False,
-                               save_name='./Mode number conserved coupling/results/all_field_profile.jpg',dpi=300):
+                               save_name='./results/all_field_profile.jpg',dpi=300):
         #Plot parameters
-        # save_name='./Mode number conserved coupling/results/All_field_profile_'+self.name+'.jpg'
+        # save_name='./results/All_field_profile_'+self.name+'.jpg'
         font = {'family': 'serif',
                 'serif' : 'Helvetica',
                 'weight': 'normal',

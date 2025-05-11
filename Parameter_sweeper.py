@@ -110,7 +110,7 @@ class Parameter_sweeper():
     # calc_needed       : must be True for initial run, can be set to False if beta files already exist.
     # foldername        : foldername to store the beta files.
     # num_of_wavl_pts   : number of wavelength points to calculate dispersion curve
-    def Scan_gap(self, calc_needed = True, foldername="./Mode number conserved coupling/results/", num_of_wavl_pts = 100):
+    def Scan_gap(self, calc_needed = True, foldername="./results/", num_of_wavl_pts = 100):
         for gap_idx in range(len(self.gap_arr)):
             gap_x, gap_y = self.gap_arr[gap_idx]
 

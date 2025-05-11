@@ -29,7 +29,7 @@ if __name__ == '__main__':
     wavl_arr = np.linspace(1505,1595,19)        # for gap = 3um
     #  wavl_arr = np.linspace(1535,1565,31)       # for gap = 4um or 5um
 
-    working_dir = "./Mode number conserved coupling/results/2D concentric rings/"
+    working_dir = "./results/2D concentric rings/"
     ############################################################################################
 
     ############################################################################################

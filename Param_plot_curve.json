@@ -24,7 +24,7 @@
     "text"              : "",
     "linespacing"       : 1.2,
     "loc_text"          : [0,5,0.01],
-    "foldername"        : "./Mode number conserved coupling/results/",
+    "foldername"        : "./results/",
     "comment"           : "",
     "plot_show"         : false
 }
