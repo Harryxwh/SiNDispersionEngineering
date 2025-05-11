@@ -429,8 +429,7 @@ class Data_analyzer():
             Plot_curve(Y_data,**param_dict)
 
         Y_data = (np.c_[self.wavl_arr_intp[2:-2],
-                        D_WG1_intp,
-                        D_WG2_intp,
+                        D_WG1_intp,D_WG2_intp,
                         D_supermode_1_intp, D_supermode_2_intp],)
         Y_legends = ['Inner Ring','Outer Ring','Supermode 1 (CMT)','Supermode 2 (CMT)']
         colors_list =  ['mediumturquoise','skyblue','LightPink','crimson']
@@ -456,6 +455,7 @@ class Data_analyzer():
             D_FDE_arr_intp  = Interpolation(wavl_arr_FDE_D,self.D_coupled_FDE_arr[:,1],wavl_arr_FDE_D_intp)
             Y_data_add = np.c_[wavl_arr_FDE_D_intp,D_FDE_arr_intp]
             Y_data = Y_data + (Y_data_add,)
+            # if the symmetric supermode is not calculated, only plot the second supermode
             if np.shape(Y_data_add)[1] == 3:
                 Y_legends = Y_legends + ['Supermode 1 (FDE)','Supermode 2 (FDE)']+['']*5
                 colors_list = colors_list + ['lightskyblue','dodgerblue']+['black']*5

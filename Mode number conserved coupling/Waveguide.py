@@ -1,5 +1,6 @@
 '''
-class Waveguide: Represent a single waveguide.
+class Waveguide:
+Load the eigenmode profile of a single waveguide, and make preliminary operations including zero_padding, normalization, and plotting.
 
 Parameters:
 width               : width of the waveguide. (unit:um)
@@ -9,13 +10,13 @@ FDE_x               : geometry of the FDE region. format:(x_min,x_max), unit: um
 FDE_y               : geometry of the FDE region. format:(y_min,y_max), unit: um
 PML_len             : Width of the boundary PML layer (unit: num of data points)
 Num_of_cells        : num of data points in the FDE region. format:(Num_of_cells_x,Num_of_cells_y)
-name                : foldername of the mode profile
+foldername          : foldername of the mode profile
 ModeIdx             : Eigen mode index
 FDE_shape_padded    : Shape of the field matrix afer zero padding (unit: um)
 Plot                : True or False. Whether to plot all the mode profiles.
 
-Methods:
-
+Author: Weihao Xu
+Date: May. 11th, 2025
 '''
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,8 +29,6 @@ class Waveguide():
     # Struct for mode info
     Mode = namedtuple('Mode', ['modeidx','neff','ng', 'loss', 'polarization','beta_ang'])
 
-    #width:  num of data points for |x|<a
-    #height: num of data points for |y|<b
     def __init__(self, width, height, bendradius,           # geometry of the WG
                  FDE_x, FDE_y, PML_len, Num_of_cells,       # geometry of the FDE region
                  foldername, ModeIdx, FDE_shape_padded,     # parameters of the mode profile
@@ -63,16 +62,10 @@ class Waveguide():
             Field_shape_padded=Field_shape_padded,plot= Plot,PML_len=self.PML_len)
         # print("shape of loaded field matrix:",self.Field_shape)
 
-    '''
-    Note: All field profile matrixes use the first index for Y, the second index for X
-    E.g. Ex[100:][:] select the upper part of Ex, Ey[:][:-100] select the left part of Ey
-    '''
+    # Load the mode info of the waveguide
     def Load_modes_info(self,foldername):
         info_file_name = foldername + "/Mode_info.txt"
         Modes_info = []
-        # dtype = [('modeidx', 'i2'), ('neff', str),
-        #          ('ng', str), ('loss', 'f8'), ('polarization','f8')]
-        # data_read = np.loadtxt(info_file_name, delimiter=',', dtype=dtype,skiprows=1)
         with open(info_file_name,'r') as f:
             data_read = f.readlines()
             for line in data_read[1:]:
@@ -86,6 +79,9 @@ class Waveguide():
                 Modes_info.append(mode)
         return Modes_info
 
+    # Load the field profile of a single component, i.e. Ex, Ey, Ez, Hx, Hy, Hz
+    # Note: All field profile matrixes use the first index for Y, the second index for X
+    # E.g. Ex[100:][:] select the upper part of Ex, Ey[:][:-100] select the left part of Ey
     def Load_field_profile(self,foldername,ModeIdx,component,
                            Field_shape_padded,PML_len = 23):
         filename = './' + foldername + '/Mode' + str(ModeIdx) + '_' + component + '.txt'
@@ -142,6 +138,7 @@ class Waveguide():
                      idx_x_start:idx_x_end] = Field
         return Field_padded
 
+    # Load all the field profiles of the waveguide
     def Load_all_field_profile(self,foldername,ModeIdx,
                                Field_shape_padded,plot=True,PML_len = 23):
 
@@ -163,8 +160,16 @@ class Waveguide():
                                         save_name='./results/'+foldername[22:27]+'_all_field_profile.jpg')
         return
 
-    # plot_Log        : Whether to plot Log(E)
-    # plot_field_size : Size of the region to be plotted (unit: um)
+    '''
+    Plot all the field profiles
+
+    Parameters:
+    component_list    : List of the field components to be plotted
+    plot_field_size   : Size of the region to be plotted (unit: um)
+    plot_log          : Whether to plot Log(E), default: False
+    save_name         : Save name of the plot
+    dpi               : Resolution of the plot
+    '''
     def Plot_all_field_profile(self,component_list, plot_field_size ,plot_log = False,
                                save_name='./results/all_field_profile.jpg',dpi=300):
         #Plot parameters
@@ -238,12 +243,14 @@ class Waveguide():
         xticks      = np.round(xticks, 2)
         return xticks,yticks
 
+    # Convert between um and num of cells
     def Convert_to_num_of_cells(self,len_in_um,axis):
         if axis=='x':
             return int(len_in_um * self.Num_of_cells_x / self.FDE_width)
         else:
             return int(len_in_um * self.Num_of_cells_y / self.FDE_height)
 
+    # Convert between num of cells and um
     def Convert_to_um(self,num_cells,axis):
         if axis=='x':
             return self.FDE_width * num_cells / self.Num_of_cells_x

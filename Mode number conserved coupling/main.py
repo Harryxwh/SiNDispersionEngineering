@@ -1,7 +1,9 @@
 '''
 Main program for the simulation of two coupled microrings or bent waveguides
-Author : Weihao Xu
-Some comments
+
+Author: Weihao Xu
+Date: May. 11th, 2025
+
 '''
 import numpy as np
 from Coupled_Waveguides import Coupled_Waveguides

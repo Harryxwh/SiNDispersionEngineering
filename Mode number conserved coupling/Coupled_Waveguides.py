@@ -1,8 +1,8 @@
 '''
-class Coupled_Waveguides: Represent two coupled waveguides.
+class Coupled_Waveguides:
+Calculate the coupling coefficient of two coupled waveguides based on the eigenmodes of each individual waveguide.
 
 Parameters:
-
 wavelength      : wavelength in vacuum of light     (unit: um)
 gap_x           : gap between to waveguides in x direction      (unit: um)
 gap_y           : gap between to waveguides in y direction      (unit: um)

@@ -7,7 +7,7 @@ class Waveguide()
 Parameters:
 
 wavelengths             : format: [wavl1,wavl2,...]
-gap                     : format: [[gap_x1,gap_y1],[gap_x2,gap_y2],...]
+gap_arr                 : format: [[gap_x1,gap_y1],[gap_x2,gap_y2],...]
 foldername1             : foldername of mode profile data of WG1
 foldername2             : foldername of mode profile data of WG2
 param_filename          : filename of parameters
