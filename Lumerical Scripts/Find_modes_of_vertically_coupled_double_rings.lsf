@@ -47,14 +47,6 @@ num_sweep_pt      = 16;
 # Modes
 Max_Mode_Idx      = 2;
 
-###############################################################################
-# Results file
-###############################################################################
-
-folder_name = "DoubleRingSuperModes_vertical\\";
-info_total_filename = folder_name + "Lumerical_supermodes_results.txt";
-if (fileexists(info_total_filename)) { rm(info_total_filename); }
-write(info_total_filename, "wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
 ###############################################################################
 # Add geometry and FDE solver
