@@ -18,6 +18,9 @@ um          = 1e-6
 nm          = 1e-9
 mu0         = 4 * np.pi * 1e-7
 epsilon0    = 8.854187817e-12
+n_air       =   1
+component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
+
 
 # Convert a string to a complex number
 # e.g. str2complex("1+2i") = 1 + 2j
@@ -97,6 +100,16 @@ def First_derivative_central_diff(y,x):
     # 计算导数
     derivative = dy_central / dx_central
     return derivative
+
+
+def Load_material_index(wavl_um):
+    n_Si3N4 = (1+3.0249/(1-(0.1353406/wavl_um)**2)+
+                40314/(1-(1239.842/wavl_um)**2))**.5
+    n_SiO2  = (1+0.6961663/(1-(0.0684043/wavl_um)**2)+
+                0.4079426/(1-(0.1162414/wavl_um)**2)+
+                0.8974794/(1-(9.896161/wavl_um)**2))**.5
+    return n_Si3N4, n_SiO2
+
 
 
 '''

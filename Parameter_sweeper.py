@@ -1,14 +1,13 @@
 import numpy as np
 from Coupled_Waveguides import *
 from Data_analyzer import *
+from Functions import *
 '''
 class Waveguide()
 Parameters:
 
 wavelengths             : format: [wavl1,wavl2,...]
 gap                     : format: [[gap_x1,gap_y1],[gap_x2,gap_y2],...]
-index_file1             : filename of refractive index of core material (SiN)
-index_file2             : filename of refractive index of cladding material (SiO2)
 foldername1             : foldername of mode profile data of WG1
 foldername2             : foldername of mode profile data of WG2
 param_filename          : filename of parameters
@@ -18,67 +17,22 @@ Methods:
 '''
 # sweepable parameters include: wavelength, gap
 class Parameter_sweeper():
-    def __init__(self,wavelengths,gap,
-                 index_file1, index_file2,
+    def __init__(self,wavelengths,gap_arr,
                  foldername1,foldername2,
-                 param_filename="./Param.csv",
-                 filename_result="./results/AD_range_res.txt"):
-        #The material dispersion of waveguide and cladding
-        index_file1 = index_file1
-        index_file2 = index_file2
-        self.n1_dict, self.n0_dict = self.Load_index_data(index_file1,index_file2)
+                 param_filename="./Param.csv"):
 
         self.wavl_arr = wavelengths     # Wavelength in Vacuum (unit:um)
-        self.gap = gap                  # gap = [gap_x,gap_y] shape=(2,x) (unit:um)
+        self.gap_arr = gap_arr                  # gap = [gap_x,gap_y] shape=(2,x) (unit:um)
         self.foldername_1 = foldername1
         self.foldername_2 = foldername2
         self.param_filename = param_filename
-        self.filename_result = filename_result
         self.beta_array = np.array([[],[]])
 
-    def Load_index_data(self,filename_n1,filename_n0):
-        n1_dict = {}
-        n0_dict = {}
-        wavl_nm = np.linspace(1000,2000,1001).astype(int)
-        wavl_um = wavl_nm / 1000
-        n_Si3N4 = (1+3.0249/(1-(0.1353406/wavl_um)**2)+
-                  40314/(1-(1239.842/wavl_um)**2))**.5
-        n_SiO2  = (1+0.6961663/(1-(0.0684043/wavl_um)**2)+
-                   0.4079426/(1-(0.1162414/wavl_um)**2)+
-                   0.8974794/(1-(9.896161/wavl_um)**2))**.5
-        n1_dict = dict(zip(wavl_nm,n_Si3N4))
-        n0_dict = dict(zip(wavl_nm,n_SiO2))
-        return n1_dict, n0_dict
-
-    def Create_instance(self,wavl_idx,gap_idx,param_filename,
-                        Plot_field = False,Plot_index = False):
-        assert wavl_idx < len(self.wavl_arr)
-        assert gap_idx < len(self.gap)
-        wavl = self.wavl_arr[wavl_idx]
-        assert wavl in self.n0_dict
-        assert wavl in self.n1_dict
-        n0 = self.n0_dict[wavl]
-        n1 = self.n1_dict[wavl]
-        gap_x, gap_y = self.gap[gap_idx]
-        path_1 = self.foldername_1 +'/'+ "{:.0f}".format(wavl)
-        path_2 = self.foldername_2 +'/'+ "{:.0f}".format(wavl)
-        print("#################")
-        print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um")
-        print("#################\n")
-        Coupled_WG = Coupled_Waveguides(n1, n0, gap_x = gap_x, gap_y = gap_y,
-                                        wavelength = wavl,
-                                        name1 = path_1,
-                                        name2 = path_2,
-                                        ModeIdx1 = 1, ModeIdx2 = 1,
-                                        param_file_name=param_filename,
-                                        Plot_field=Plot_field, Plot_index=Plot_index)
-        return Coupled_WG
-
-
-    def Scan_wavl(self, gap_idx,
+    # Sweep wavlength whne the gap between two WGs is fixed
+    def Scan_wavl(self, gap,
                   filename_uncoupled = "../data/beta_uncoupled.txt",
-                  filename_coupled   = "../data/beta_coupled.txt",
-                  plot = False):
+                  filename_coupled   = "../data/beta_coupled.txt"):
+                #   plot_field_profile = False, plot_log = False):
 
         beta_uncoupled_arr     = [] # beta of eigenmodes of two separate WGs
         beta_ave_uncoupled_arr = [] # beta_ave of eigenmodes of two separate WGs
@@ -92,11 +46,22 @@ class Parameter_sweeper():
             f.write("wavelength,beta_1_coupled,beta_2_coupled,coeff_supermode_1,coeff_supermode_2\n")
 
         for idx in range(len(self.wavl_arr)):
-            wavl_in_um = self.wavl_arr[idx] / 1000
-            Coupled_WG = self.Create_instance(wavl_idx=idx, gap_idx=gap_idx,
-                                              param_filename=self.param_filename,
-                                              Plot_field= True if idx==0 else False,
-                                              Plot_index= True if idx==0 else False)
+            wavl_in_nm = self.wavl_arr[idx]
+            wavl_in_um = wavl_in_nm / 1000
+            gap_x, gap_y = gap
+            path_1 = self.foldername_1 +'/'+ "{:.0f}".format(wavl_in_nm)
+            path_2 = self.foldername_2 +'/'+ "{:.0f}".format(wavl_in_nm)
+            print("####################")
+            print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um")
+            print("####################\n")
+            Coupled_WG = Coupled_Waveguides(wavelength = wavl_in_um,
+                                            gap_x = gap_x, gap_y = gap_y,
+                                            name1 = path_1,name2 = path_2,
+                                            ModeIdx1 = 1, ModeIdx2 = 1,
+                                            param_file_name=self.param_filename,
+                                            Plot_field= True if idx==0 else False,
+                                            Plot_index= True if idx==0 else False)
+
             #shape:(1,2)
             beta_uncoupled = np.array([[Coupled_WG.beta_ang_1,
                                         Coupled_WG.beta_ang_2]]) - Coupled_WG.beta_ave
@@ -118,6 +83,10 @@ class Parameter_sweeper():
                                                 np.array([Coupled_WG.beta_ave]),axis=0)
                 beta_coupled_arr = np.append(beta_coupled_arr,
                                              beta_coupled ,axis=0)
+            # Plot field profile of supermodes
+            # if plot_field_profile:
+            #     CoupledWG.Plot_field_profile(coeff_of_supermodes,field_name = 'Ex',
+            #                         title=r"Electric field profile when wavl = "+"{:.0f}".format(wavl_in_nm)+" nm", Plot_log=plot_log)
             with open(filename_uncoupled,'a') as f:
                 beta_str =  str(wavl_in_um) + "," + \
                             str(np.real(beta_uncoupled[0,0])) + "," + \
@@ -136,25 +105,31 @@ class Parameter_sweeper():
 
         return beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr
 
-    # calc_needed: True for initial run, False if beta files already exist.
-    def Scan_gap(self,calc_needed = True, foldername="", num_of_wavl_pts = 100):
-        for gap_idx in range(len(self.gap)):
-            gap_x, gap_y = self.gap[gap_idx]
+    # Sweep gap betwen two WGs
+    # Parameters:
+    # calc_needed       : must be True for initial run, can be set to False if beta files already exist.
+    # foldername        : foldername to store the beta files.
+    # num_of_wavl_pts   : number of wavelength points to calculate dispersion curve
+    def Scan_gap(self, calc_needed = True, foldername="./results/", num_of_wavl_pts = 100):
+        for gap_idx in range(len(self.gap_arr)):
+            gap_x, gap_y = self.gap_arr[gap_idx]
 
             filename_uncoupled = "beta_uncoupled_gap_"\
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
+            filename_uncoupled  = foldername + filename_uncoupled.replace(".","_") + ".txt"
             filename_coupled   = "beta_coupled_gap_" \
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
-            filename_coupled = "../data/" +foldername + filename_coupled.replace(".","_")+ ".txt"
-            filename_uncoupled = "../data/" +foldername +filename_uncoupled.replace(".","_") + ".txt"
+            filename_coupled    = foldername + filename_coupled.replace(".","_")+ ".txt"
+
             if calc_needed:
-                beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap_idx=gap_idx,
+                beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap = (gap_x, gap_y),
                             filename_uncoupled=filename_uncoupled,
                             filename_coupled=filename_coupled,
                             plot = False)
             # Calc dispersion curve
-            Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y),
+            Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y), self.param_filename,
                                      filename_uncoupled, filename_coupled,
-                                     self.param_filename,self.filename_result,
-                                     num_of_pts = num_of_wavl_pts)
+                                     self.foldername_1, self.foldername_2,
+                                     num_of_pts = num_of_wavl_pts,
+                                     plot_profile = True, plot_log_scale = False)
 

@@ -17,20 +17,13 @@ Plot                : True or False. Whether to plot all the mode profiles.
 Methods:
 
 '''
-
 import numpy as np
 import matplotlib.pyplot as plt
+from Functions import *
 from collections import namedtuple
 MIN_VALUE = np.complex128(1e-20,0)      # value used as zero when padding the field profile
 
-
 class Waveguide():
-
-    #constants
-    c       =   299792458
-    u0      =   4 * np.pi * 1e-7
-    component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
-    PML_len = 23        # num of points for the PML layer
 
     # Struct for mode info
     Mode = namedtuple('Mode', ['modeidx','neff','ng', 'loss', 'polarization','beta_ang'])
@@ -70,10 +63,6 @@ class Waveguide():
             Field_shape_padded=Field_shape_padded,plot= Plot,PML_len=self.PML_len)
         # print("shape of loaded field matrix:",self.Field_shape)
 
-    def str2complex(self,s):
-        str = s.replace(" ","").replace("i","j")
-        return complex(str)
-
     '''
     Note: All field profile matrixes use the first index for Y, the second index for X
     E.g. Ex[100:][:] select the upper part of Ex, Ey[:][:-100] select the left part of Ey
@@ -88,8 +77,8 @@ class Waveguide():
             data_read = f.readlines()
             for line in data_read[1:]:
                 modeidx = int(line.split(',')[0])
-                neff = self.str2complex(line.split(',')[1])
-                ng = self.str2complex(line.split(',')[2])
+                neff = str2complex(line.split(',')[1])
+                ng = str2complex(line.split(',')[2])
                 loss = float(line.split(',')[3])
                 polarization = float(line.split(',')[4])
                 beta_ang = float(line.split(',')[5])
@@ -103,10 +92,10 @@ class Waveguide():
         Field = np.array([[]])
         with open(filename) as f:
             lines = f.readlines()
-            Field = np.array([self.str2complex(s) for s in lines[0].split('\t')])
+            Field = np.array([str2complex(s) for s in lines[0].split('\t')])
             for line in lines[1:]:
                 line_arr = line.split('\t')
-                Field = np.c_[Field,np.array([self.str2complex(s) for s in line_arr])]
+                Field = np.c_[Field,np.array([str2complex(s) for s in line_arr])]
 
         Field = Field[int((PML_len)/2):np.shape(Field)[0]-int((PML_len)/2),
                       int((PML_len)/2):np.shape(Field)[1]-int((PML_len)/2)]
@@ -216,10 +205,10 @@ class Waveguide():
 
                 if i%2 == 0:
                     im = ax[i*3+j].imshow(np.real(field),cmap=colormap)
-                    ax[i*3+j].set_title('Re('+self.component_name_list[j if i<2 else j+3]+')')
+                    ax[i*3+j].set_title('Re('+component_name_list[j if i<2 else j+3]+')')
                 else:
                     im = ax[i*3+j].imshow(np.imag(field),cmap=colormap)
-                    ax[i*3+j].set_title('Im('+self.component_name_list[j if i<2 else j+3]+')')
+                    ax[i*3+j].set_title('Im('+component_name_list[j if i<2 else j+3]+')')
                 cbar = fig.colorbar(im, ax=ax[i*3+j], orientation='vertical',
                             label='', shrink=0.6, pad=0.02)
 
@@ -276,6 +265,6 @@ class Waveguide():
         component_list_normalized = np.copy(component_list)
         for idx in range(np.shape(component_list)[0]):
             component_list_normalized[idx] = component_list[idx] / np.sqrt(P_total)
-        self.Field_dict = dict(zip(self.component_name_list,component_list_normalized))
+        self.Field_dict = dict(zip(component_name_list,component_list_normalized))
         return
 

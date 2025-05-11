@@ -2,11 +2,10 @@
 class Coupled_Waveguides: Represent two coupled waveguides.
 
 Parameters:
-n_core              : refractive index of the waveguide core
-n_cladding              : refractive index of the waveguide cladding
-gap_x           : gap between to waveguides in x direction
-gap_y           : gap between to waveguides in y direction
-wavelength      : wavelength in vacuum of light
+
+wavelength      : wavelength in vacuum of light     (unit: um)
+gap_x           : gap between to waveguides in x direction      (unit: um)
+gap_y           : gap between to waveguides in y direction      (unit: um)
 name1           : foldername of data of the first WG
 name2           : foldername of data of the second WG
 ModeIdx1        : eigenmode index of the first WG
@@ -17,30 +16,25 @@ Plot_index      : True or False. Whether to plot all the index profiles.
 '''
 import numpy as np
 from Waveguide import *
+from Functions import *
 class Coupled_Waveguides():
 
-    c           =   299792458
-    u0          =   4 * np.pi * 1e-7
-    n_air       =   1
-    # n_si        =   3.48
-    component_name_list = ['Ex','Ey','Ez','Hx','Hy','Hz']
-
-    def __init__(self, n_core, n_cladding,
-                 gap_x, gap_y, wavelength,
+    def __init__(self, wavelength, gap_x, gap_y,
                  name1,name2, ModeIdx1, ModeIdx2,
-                 param_file_name,Plot_field,Plot_index):
-        self.load_param(param_file_name)
+                 param_file_name, Plot_field=False, Plot_index=False):
 
-        self.n_core = n_core
-        self.n_cladding = n_cladding
+        self.wavelength = wavelength        # unit :um
         self.gap_x = gap_x                  # unit :um
         self.gap_y = gap_y                  # unit :um
+        self.Load_param(param_file_name)
+        self.n_core,self.n_cladding = Load_material_index(wavelength)
+
         if gap_x > 0:
             self.bend_radius_outer = self.bend_radius_inner +\
                 self.gap_x + (self.WG1_width + self.WG2_width)/2       # unit :um
         else:
             self.bend_radius_outer = self.bend_radius_inner
-        self.wavelength = wavelength        # unit :nm
+
         self.FDE_width = self.FDE_x_max - self.FDE_x_min
         self.FDE_height = self.FDE_y_max - self.FDE_y_min
 
@@ -73,14 +67,11 @@ class Coupled_Waveguides():
         self.Field_dict_uncoupled = self.Shifted_field()
 
     # Load the class variables from Param.csv
-    def load_param(self,param_file_name):
+    def Load_param(self, param_file_name):
         dtype = [('key', str), ('value', str),('dtype', str), ('comments', str)]
         data = np.loadtxt(param_file_name, delimiter=',', dtype=str,skiprows=1)
         for param in data:
             exec("self."+param[0]+" = "+param[2]+"("+param[1]+")")
-            # print("self."+param[0]+" = "+str(eval("self."+param[0])))
-            # print(param[3])
-            # print("---------------------------")
 
     # Convert the unit from "um" to "num of cells"
     def Convert_to_num_of_cells(self,len_in_um,axis):
@@ -115,7 +106,7 @@ class Coupled_Waveguides():
     # Wavenumber in vacuum. (unit: rad/m)
     @property
     def k0(self):
-        return 2*np.pi / self.wavelength  * 1e9
+        return 2*np.pi / self.wavelength  / um
 
     #shift_x: (unit: # of data points) Distance between the centers of two waveguides in x axis
     #shift_y: (unit: # of data points) Distance between the centers of two waveguides in y axis
@@ -190,7 +181,7 @@ class Coupled_Waveguides():
 
         # N(x,y):The overall index matrix
         self.N = np.ones(self.Compressed_shape) * self.n_cladding
-        self.N[Ly_cladding:,:] = self.n_air
+        self.N[Ly_cladding:,:] = n_air
         # self.N[:Ly_BOX,:] = self.n_si
         self.N[ int(WG1_y - WG1_height/2 -shift_y) :
                 int(WG1_y + WG1_height/2 -shift_y),
@@ -203,7 +194,7 @@ class Coupled_Waveguides():
 
         # N1(x,y):The index matrix of WG1 in the absence of WG2
         self.N1 = np.ones(self.Compressed_shape) * self.n_cladding
-        self.N1[Ly_cladding:,:] = self.n_air
+        self.N1[Ly_cladding:,:] = n_air
         self.N1[int(WG1_y - WG1_height/2 -shift_y) :
                 int(WG1_y + WG1_height/2 -shift_y),
                 int(WG1_x - WG1_width/2  -shift_x) :
@@ -211,7 +202,7 @@ class Coupled_Waveguides():
 
         # N2(x,y):The index matrix of WG2 in the absence of WG1
         self.N2 = np.ones(self.Compressed_shape) * self.n_cladding
-        self.N2[Ly_cladding:,:] = self.n_air
+        self.N2[Ly_cladding:,:] = n_air
         self.N2[int(WG2_y - WG2_height/2):
                 int(WG2_y + WG2_height/2),
                 int(WG2_x - WG2_width/2) :
@@ -284,8 +275,8 @@ class Coupled_Waveguides():
 
         for plot_idx in range(num_of_plots):
             coeffis =   field_coefficients[plot_idx]
-            field   =   coeffis[0]*self.Field_dict_uncoupled[field_name][0] +\
-                        coeffis[1]*self.Field_dict_uncoupled[field_name][1]
+            field   =   coeffis[0] * self.Field_dict_uncoupled[field_name][0] +\
+                        coeffis[1] * self.Field_dict_uncoupled[field_name][1]
             if np.real(coeffis[0]) * np.real(coeffis[1]) < 0:
                 mode_name = "Asymmetric Mode "
             else:
@@ -294,7 +285,6 @@ class Coupled_Waveguides():
             # field_list = [np.real(field)]
             if Plot_log:
                 # Only calculate log for nonzero terms
-
                 field_abs = field_list[0]
                 non_zero_mask = field_abs != 0
                 log_arr = np.full_like(field_abs,
@@ -365,11 +355,11 @@ class Coupled_Waveguides():
 
     # Calculate the shifted fields; Return Field_dict_uncoupled
     def Shifted_field(self):
-        Field_dict_uncoupled = dict.fromkeys(self.component_name_list)
+        Field_dict_uncoupled = dict.fromkeys(component_name_list)
         shift_x,shift_y = self.Calculate_shift
         shift_y = int(shift_y + (1-self.Shrink_ratio) * (self.Compressed_shape[0]/2))
         shift_x = int(shift_x + (1-self.Shrink_ratio) * (self.Compressed_shape[1]/2))
-        for component in self.component_name_list:
+        for component in component_name_list:
             if shift_y == 0:
                 Field_profile_1 = self.WG1.Field_dict[component][:,shift_x:]   #Left part of E_1y
                 Field_profile_2 = self.WG2.Field_dict[component][:,:-shift_x]  #Right part of E_2y
@@ -397,7 +387,7 @@ class Coupled_Waveguides():
                                             np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
                                                     self.Field_dict_uncoupled['Ez'][q] ))
 
-        K  = K * self.k0 / (self.c * self.u0)
+        K  = K * self.k0 / (c * self.u0)
 
         return K
 
@@ -423,7 +413,7 @@ class Coupled_Waveguides():
                             self.Field_dict_uncoupled['Ey'][p] + \
                     np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
                             self.Field_dict_uncoupled['Ez'][p] ))
-        Chi  = Chi * self.k0 / (self.c * self.u0)
+        Chi  = Chi * self.k0 / (c * self.u0)
         return Chi
 
     def P_factor(self,p_, q_):
@@ -478,7 +468,7 @@ class Coupled_Waveguides():
         Eigenvalues = np.array(np.linalg.eig(F_antisym)[0]).reshape((1,2))
         Eigenvectors = np.array(np.linalg.eig(F_antisym)[1])
 
-        print("wavelength = {:.1f} nm".format(self.wavelength))
+        print("wavelength = {:.3f} um".format(self.wavelength))
         print("F = ",F)
         print("F_sym = ",F_sym)
         print("F_antisym = ",F_antisym)
