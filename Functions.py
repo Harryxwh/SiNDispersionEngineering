@@ -361,7 +361,7 @@ They can be changed using a dictionary loaded as **kwargs when necessary:
 "cbar_orientation"  : orientation of the color bar. 'vertical' or 'horizontal'.
 "shrink"            : shrink in size of the color bar. value between 0 and 1. default: 0.8.
 "pad"               : distance between the color bar and the figure. value between 0 and 1. default: 0.2.
-"foldername"        : folder where the figure is saved. "./results/" by default.
+"foldername"        : folder where the figure is saved. "./Mode number conserved coupling/results/" by default.
 '''
 def Plot_field_profile(field,field_name,
                     default_param_filename = "Param_plot_field_profile.json",

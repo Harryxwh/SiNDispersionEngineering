@@ -423,7 +423,7 @@ class Data_analyzer():
                                   'LightPink','crimson',
                                   'lightskyblue','dodgerblue']*2,
                 "autoset_yticks": 0,
-                "foldername"    : "./results/2D concentric rings/",
+                "foldername"    : "./Mode number conserved coupling/results/2D concentric rings/",
                 "comment"       : gap_info
             }
             Plot_curve(Y_data,**param_dict)
@@ -480,7 +480,7 @@ class Data_analyzer():
                 "colors_list"       : colors_list,
                 "AD_region_color"   : True,
                 "autoset_yticks"    : 0,
-                "foldername"        : "./results/2D concentric rings/",
+                "foldername"        : "./Mode number conserved coupling/results/2D concentric rings/",
                 "comment"           : gap_info
                 # "Y_legends"         : ['Uncoupled Ring','Supermode 1','Supermode 2']*5,
                 # "comment"           : gap_info
@@ -501,8 +501,8 @@ class Data_analyzer():
                 D_supermode = D_supermode_1_intp
             self.Write_D_in_csv(gap = gap_label, wavl_arr = self.wavl_arr_intp[2:-2],
                         D_WG=D_WG_ave, D_supermode=D_supermode,
-                        filename_D_iso="./results/Dispersion_isolated_WG.csv",
-                        filename_D_supermode="./results/Dispersion_coupled_WG.csv")
+                        filename_D_iso="./Mode number conserved coupling/results/Dispersion_isolated_WG.csv",
+                        filename_D_supermode="./Mode number conserved coupling/results/Dispersion_coupled_WG.csv")
 
     # Plot field profile of supermodes
     def Plot_supermodes_profiles(self, wavl_arr_in_nm, plot_log = False):

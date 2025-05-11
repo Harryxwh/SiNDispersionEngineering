@@ -28,6 +28,8 @@ if __name__ == '__main__':
     # Wavlength range for the simulation
     wavl_arr = np.linspace(1505,1595,19)        # for gap = 3um
     #  wavl_arr = np.linspace(1535,1565,31)       # for gap = 4um or 5um
+
+    working_dir = "./Mode number conserved coupling/results/2D concentric rings/"
     ############################################################################################
 
     ############################################################################################
@@ -80,7 +82,7 @@ if __name__ == '__main__':
                                 param_filename = param_filename)
     # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
     # sweeper.Scan_gap(calc_needed= False,
-    #                  foldername = "./results/2D concentric rings/Supermodes attributes using CMT/",
+    #                  foldername = working_dir + "Supermodes attributes using CMT/",
     #                  num_of_wavl_pts=1000)
     ############################################################################################
 
@@ -94,9 +96,9 @@ if __name__ == '__main__':
 
     # gap = 5um
     gap_arr = np.array([[5,0]])
-    filename_uncoupled_gap5um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_uncoupled_gap_5_000_0_000.txt"
-    filename_coupled_gap5um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_coupled_gap_5_000_0_000.txt"
-    filename_FDE_beta_gap5um = "./results/2D concentric rings/Supermodes attributes using FDE/Lumerical_supermodes_results_gapx_5um.txt"
+    filename_uncoupled_gap5um = working_dir + "Supermodes attributes using CMT/beta_uncoupled_gap_5_000_0_000.txt"
+    filename_coupled_gap5um = working_dir + "Supermodes attributes using CMT/beta_coupled_gap_5_000_0_000.txt"
+    filename_FDE_beta_gap5um = working_dir + "Supermodes attributes using FDE/Lumerical_supermodes_results_gapx_5um.txt"
 
     Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
                              filename_uncoupled_gap5um, filename_coupled_gap5um,
@@ -106,9 +108,9 @@ if __name__ == '__main__':
 
     # gap = 4um
     gap_arr = np.array([[4,0]])
-    filename_uncoupled_gap4um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_uncoupled_gap_4_000_0_000.txt"
-    filename_coupled_gap4um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_coupled_gap_4_000_0_000.txt"
-    filename_FDE_beta_gap4um = "./results/2D concentric rings/Supermodes attributes using FDE/Lumerical_supermodes_results_gapx_4um.txt"
+    filename_uncoupled_gap4um = working_dir + "Supermodes attributes using CMT/beta_uncoupled_gap_4_000_0_000.txt"
+    filename_coupled_gap4um = working_dir + "Supermodes attributes using CMT/beta_coupled_gap_4_000_0_000.txt"
+    filename_FDE_beta_gap4um = working_dir + "Supermodes attributes using FDE/Lumerical_supermodes_results_gapx_4um.txt"
     Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
                              filename_uncoupled_gap4um, filename_coupled_gap4um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
@@ -123,9 +125,9 @@ if __name__ == '__main__':
 
     # gap = 3um
     gap_arr = np.array([[3,0]])
-    filename_uncoupled_gap3um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_uncoupled_gap_3_000_0_000.txt"
-    filename_coupled_gap3um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_coupled_gap_3_000_0_000.txt"
-    filename_FDE_D_gap3um = "./results/2D concentric rings/Dispersion using FDE/gapx_3um.txt"
+    filename_uncoupled_gap3um = working_dir + "Supermodes attributes using CMT/beta_uncoupled_gap_3_000_0_000.txt"
+    filename_coupled_gap3um = working_dir + "Supermodes attributes using CMT/beta_coupled_gap_3_000_0_000.txt"
+    filename_FDE_D_gap3um = working_dir + "Dispersion using FDE/gapx_3um.txt"
     Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
                              filename_uncoupled_gap3um, filename_coupled_gap3um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
@@ -134,9 +136,9 @@ if __name__ == '__main__':
 
     # gap = 2.8um
     gap_arr = np.array([[2.8,0]])
-    filename_uncoupled_gap2_8um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_uncoupled_gap_2_800_0_000.txt"
-    filename_coupled_gap2_8um = "./results/2D concentric rings/Supermodes attributes using CMT/beta_coupled_gap_2_800_0_000.txt"
-    filename_FDE_D_gap2_8um = "./results/2D concentric rings/Dispersion using FDE/gapx_2.8um.txt"
+    filename_uncoupled_gap2_8um = working_dir + "Supermodes attributes using CMT/beta_uncoupled_gap_2_800_0_000.txt"
+    filename_coupled_gap2_8um = working_dir + "Supermodes attributes using CMT/beta_coupled_gap_2_800_0_000.txt"
+    filename_FDE_D_gap2_8um = working_dir + "Dispersion using FDE/gapx_2.8um.txt"
     Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
                              filename_uncoupled_gap2_8um, filename_coupled_gap2_8um,
                              foldername_1 = foldername1, foldername_2 = foldername2,

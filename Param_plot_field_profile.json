@@ -20,5 +20,5 @@
     "cbar_orientation"  : "horizontal",
     "shrink"            : 0.8,
     "pad"               : 0.2,
-    "foldername"        : "./results/"
+    "foldername"        : "./Mode number conserved coupling/results/"
 }

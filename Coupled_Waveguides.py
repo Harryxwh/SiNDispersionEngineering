@@ -209,7 +209,7 @@ class Coupled_Waveguides():
                 int(WG2_x + WG2_width/2)] = self.n_core
 
     def Plot_index_profile(self,label='N',
-                           save_name='./results/index_profile.pdf',dpi=300):
+                           save_name='./Mode number conserved coupling/results/index_profile.pdf',dpi=300):
 
         colormap = "YlOrRd"
         WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding  = self.Structure_coordinates
@@ -255,7 +255,7 @@ class Coupled_Waveguides():
     def Plot_field_profile(self,field_coefficients,
                            field_name, title,
                            Plot_log = False,
-                           save_name='./results/field_profile_',
+                           save_name='./Mode number conserved coupling/results/field_profile_',
                            dpi=400):
         fonttype = "Helvetica"
         fontsize = 18
@@ -479,7 +479,7 @@ class Coupled_Waveguides():
         print("\n")
         return Eigenvalues, Eigenvectors
 
-    def Export_kappa(self,filename_kappa="./results/straight_WG_Kappa.txt"):
+    def Export_kappa(self,filename_kappa="./Mode number conserved coupling/results/straight_WG_Kappa.txt"):
         K_12 = self.Kappa(1,2,self.N2)
         K_21 = self.Kappa(2,1,self.N1)
         print("K_12 = {:.6f}".format(K_12))
