@@ -30,6 +30,7 @@ filename_FDE_beta   : filename of FDE calculated Dispersion data. if "", not loa
 
 -------------------------------------------------------------------------------------
 Plot and save options:
+title               : title of the plot
 plot_curve          : whether to plot the dispersion curve, default: True
 save_D_in_csv       : whether to save the calculated dispersion curve as a csv, default: True
 save_mode           : to save the dispersion of which supermode, "AS" (anti-symmetric) or "S" (symmetric). "AS" by default
@@ -45,11 +46,11 @@ class Data_analyzer():
 
     def __init__(self, wavl_arr, gap, param_filename,
                  filename_uncoupled, filename_coupled,
-                 foldername_1, foldername_2,
-                 num_of_pts = 100,
+                 foldername_1, foldername_2, num_of_pts = 100,
                  filename_FDE_beta = "", filename_FDE_D = "",
-                 plot_curve = True, save_D_in_csv = True, save_mode = "AS",
-                 plot_profile = False, plot_log_scale = False):
+                 name_structure = "2D concentric rings",
+                 plot_curve = True, save_D_in_csv = True,
+                 save_mode = "AS", plot_profile = False, plot_log_scale = False):
 
         self.wavl_arr = wavl_arr/1000                       #unit: um
         self.gap = gap
@@ -61,6 +62,8 @@ class Data_analyzer():
 
         self.filename_FDE_beta = filename_FDE_beta
         self.filename_FDE_D = filename_FDE_D
+
+        self.name_structure = name_structure
         self.plot_curve = plot_curve
         self.save_D_in_csv = save_D_in_csv
         self.save_mode = save_mode                          #save anti-sym or sym supermode
@@ -88,7 +91,7 @@ class Data_analyzer():
 
         self.Calc_Dispersion_curve(num_of_pts = self.num_of_pts)
         if plot_profile:
-            self.Plot_supermodes_profiles(wavl_arr, plot_log = plot_log_scale)                   # wavl_arr is in nm
+            self.Plot_supermodes_profiles(wavl_arr, plot_log = plot_log_scale)   # wavl_arr is in nm
 
     # Load the class variables from Param.csv
     def Load_param(self, param_file_name):
@@ -325,6 +328,7 @@ class Data_analyzer():
                                     wavl_arr_FDE_intp, order=3, num_of_fit_pts=num_of_pts)
 
         beta_coupled_FDE_arr_intp  = Interpolation(wavl_arr_FDE,self.beta_coupled_FDE_arr[:,1:],wavl_arr_FDE_intp)
+
         # Adding beta_ave  # unit: 1/m
         beta_coupled_FDE_arr_intp = (beta_coupled_FDE_arr_intp + beta_ave_intp.reshape(-1,1)) /R_ave
 
@@ -341,11 +345,18 @@ class Data_analyzer():
         R_ave       = (R_WG1+R_WG2)/2
 
         # Interpolate the propagation constant data
-        self.beta_coupled_arr_intp  = Interpolation(self.wavl_arr, self.beta_coupled_arr[:,1:], self.wavl_arr_intp)
-        coeffi_array, self.beta_uncoupled_arr_intp = self.Polynomial_fit(self.wavl_arr,
-                                                        self.beta_uncoupled_arr[:,1:],
-                                                        self.wavl_arr_intp,
-                                                        3, num_of_pts)
+        try:
+            self.beta_coupled_arr_intp  = Interpolation(self.wavl_arr, self.beta_coupled_arr[:,1:], self.wavl_arr_intp)
+            coeffi_array, self.beta_uncoupled_arr_intp = self.Polynomial_fit(self.wavl_arr,
+                                                            self.beta_uncoupled_arr[:,1:],
+                                                            self.wavl_arr_intp,
+                                                            3, num_of_pts)
+        except ValueError:
+            print("------------------------------------------------")
+            print("ERROR: The length of wavl_arr doesn't match the length of beta_arr (CMT). Please check the wavlength range of the data files and set wavl_arr accordingly.")
+            print("------------------------------------------------")
+            return
+
         # Dispersion of Isolated WGs
         beta_uncoupled_WG1 = (self.beta_uncoupled_arr[:,1]+self.beta_uncoupled_arr[:,3])  / R_WG1     # unit: rad/m
         beta_uncoupled_WG2 = (self.beta_uncoupled_arr[:,2]+self.beta_uncoupled_arr[:,3])  / R_WG2     # unit: rad/m
@@ -403,7 +414,7 @@ class Data_analyzer():
                 'beta_iso_inner','beta_iso_outer'],
                 "X_label"       : r'wavelength($\mu m)$',
                 "Y_label"       : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
-                "title"         : r"Propagation constant of coupled modes of 2D concentric rings",
+                "title"         : r"Propagation constant of coupled modes of " + self.name_structure,
                 "autoset_yticks": 1,
                 "marker_list"   :["","",".",".","","","o","o"],
                 "linestyle_list":["dashed","dashdot","","","-","-","",""],
@@ -421,6 +432,8 @@ class Data_analyzer():
                         D_WG1_intp,
                         D_WG2_intp,
                         D_supermode_1_intp, D_supermode_2_intp],)
+        Y_legends = ['Inner Ring','Outer Ring','Supermode 1 (CMT)','Supermode 2 (CMT)']
+        colors_list =  ['mediumturquoise','skyblue','LightPink','crimson']
 
         # Propagation constant of coupled WGs using FDE (if exist)
         if self.filename_FDE_beta != "":
@@ -431,6 +444,8 @@ class Data_analyzer():
             D_FDE_supermode_1_intp, D_FDE_supermode_2_intp =self.Calc_Dispersion_using_data_from_FDE(wavl_arr_FDE_beta,wavl_arr_FDE_beta_intp,num_of_pts)
             Y_data = Y_data + (np.c_[wavl_arr_FDE_beta_intp[2:-2],
                       D_FDE_supermode_1_intp,D_FDE_supermode_2_intp],)
+            Y_legends = Y_legends + ['Supermode 1 (using beta from FDE)','Supermode 2 (using beta from FDE)']+['']*5
+            colors_list = colors_list + ['lightskyblue','dodgerblue']+['black']*5
 
         # Dispersion of coupled WGs using FDE (if exist)
         if self.filename_FDE_D != "":
@@ -439,29 +454,30 @@ class Data_analyzer():
                                                 np.max(wavl_arr_FDE_D),
                                                 num_of_pts)
             D_FDE_arr_intp  = Interpolation(wavl_arr_FDE_D,self.D_coupled_FDE_arr[:,1],wavl_arr_FDE_D_intp)
-            Y_data = Y_data + (np.c_[wavl_arr_FDE_D_intp,D_FDE_arr_intp],)
+            Y_data_add = np.c_[wavl_arr_FDE_D_intp,D_FDE_arr_intp]
+            Y_data = Y_data + (Y_data_add,)
+            if np.shape(Y_data_add)[1] == 3:
+                Y_legends = Y_legends + ['Supermode 1 (FDE)','Supermode 2 (FDE)']+['']*5
+                colors_list = colors_list + ['lightskyblue','dodgerblue']+['black']*5
+            else:
+                Y_legends = Y_legends + ['Supermode 2 (FDE)']+['']*5
+                colors_list = colors_list + ['dodgerblue']+['black']*5
 
         # Plot dispersion curve
         if self.plot_curve:
             xticks       = [self.wavl_arr_intp[i] for i in np.arange(0,len(self.wavl_arr_intp),100) ]
             xtickslabels = np.array(["{:.3f}".format(xtick) for xtick in xticks])
+
             param_dict = {
-                "Y_legends"         : [
-                                    'Inner Ring','Outer Ring',
-                                    'Supermode 1 (CMT)','Supermode 2 (CMT)',
-                                    # 'Supermode 1 (FDE)',
-                                    'Supermode 2 (FDE)' ]*5,
+                "Y_legends"         : Y_legends,
                 "X_label"           : r'wavelength($\mu m$)',
                 "Y_label"           : r'$D(ps/nm/km)$',
-                "title"             : r"Dispersion of coupled modes of 2D concentric rings",
+                "title"             : r"Dispersion of coupled modes of " + self.name_structure,
                 "xticks"            : xticks,
                 "xtickslabel"       : xtickslabels,
                 "marker_list"       : ["","","","","",""]*5,
                 "linestyle_list"    : ["dashed","dashdot","-","-","-","-","-","-"]*2,
-                "colors_list"       : ['mediumturquoise','skyblue','LightPink','crimson',
-                                        # 'lightskyblue',
-                                        'dodgerblue']*2,
-
+                "colors_list"       : colors_list,
                 "AD_region_color"   : True,
                 "autoset_yticks"    : 0,
                 "foldername"        : "./results/2D concentric rings/",
@@ -475,7 +491,7 @@ class Data_analyzer():
             }
             Plot_curve(Y_data,**param_dict)
 
-        gap_label = self.save_mode+"( double {:.2f}".format(self.gap[0])+\
+        gap_label = self.save_mode+"({:.2f}".format(self.gap[0])+\
                     ","+"{:.2f})".format(self.gap[1])
         D_WG_ave = (D_WG1_intp+D_WG2_intp)/2
         if self.save_D_in_csv:
