@@ -4,7 +4,7 @@
 # Functions called by this main program include:
 # 1. Find_modes_of_single_ring_at_multi_wavls_func : used to find the eigenmodes of a single bent waveguide (ring) at different wavelengths.
 # 2. Scanning_Lx_and_gapx_given_gapy_3D_func : used to find the width of the lower ring and gapx satisfying the phase matching condition when the gap is given.
-# 3. Find_modes_of_vertically_coupled_double_rings_func : used to find the eigenmodes of two vertically coupled bent waveguides (ring) at different wavelengths when the vertical gap is given.
+# 3. Find_modes_of_vertically_coupled_double_rings_func : used to find the eigenmodes of two vertically coupled bent waveguides (ring) at different wavelengths and different vertical gaps.
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
@@ -60,7 +60,7 @@ Max_Mode_Idx    = 1;
 ###############################################################################
 ? "---------------------------------------------------------------------";
 ? "Executing Find_modes_of_single_ring_at_multi_wavls_func ...";
-Find_modes_of_single_ring_at_multi_wavls_func;
+# Find_modes_of_single_ring_at_multi_wavls_func;
 ? "Done";
 ? "---------------------------------------------------------------------";
 ? "\n";
@@ -107,7 +107,7 @@ material_clad       = "SiO2 (Glass) - Palik";
 ###############################################################################
 # setting up parameters for Eigenmode calc of Vertically Coupled Double Rings
 # width of upper ring: 2.8 um
-# width of lower ring: 2.7 um
+# width of lower ring: 2.8 um
 # gap: 0.5 um - 5 um, 10 pts
 # wavl_range: 1400 - 1700 nm, 16 pts
 ###############################################################################
@@ -127,16 +127,21 @@ Lx_Buried_Oxide     = 50*um;    # width of the BOX
 Ly_Buried_Oxide     = 15*um;    # height of the BOX
 
 Lx_FDE              = 30*um;
-Ly_FDE_min          = -10*um;
-Ly_FDE_max          = 10*um;
+Ly_FDE_min          = -15*um;
+Ly_FDE_max          = 15*um;
 
 mesh_cells_x        = 500;
-mesh_cells_y        = 300;
+mesh_cells_y        = 500;
 
 # Define wavelength of simulation
-wavelength_min      = 1400*nm;
-wavelength_max      = 1700*nm;
-num_sweep_pt        = 16;
+wavelength_min      = 1500*nm;
+wavelength_max      = 1600*nm;
+num_sweep_pt_wavl   = 11;
+
+# Define the gap between the horizontal surfaces of the two WGs
+gap_min             =   0.5*um;
+gap_max             =   5*um;
+num_sweep_pt_gap    =   10;
 
 # Material
 material_core       = "Si3N4 (Silicon Nitride) - Luke";
@@ -144,23 +149,15 @@ material_clad       = "SiO2 (Glass) - Palik";
 
 Max_Mode_Idx        = 2;
 
-# Define  gap between the horizontal surfaces of the two WGs
-gap_min             =   0.5*um;
-gap_max             =   5*um;
-num_sweep_pt_gap    =   10;
-gap_array           = linspace(gap_min,gap_max,num_sweep_pt_gap);
-
 ###############################################################################
 # conduct simulation
 ###############################################################################
-for (gap = gap_array){
-    format short;
-    ? "---------------------------------------------------------------------";
-    ?"gap = "+num2str(gap / um)+" um";
-    ? "Executing Find_modes_of_vertically_coupled_double_rings_func ...";
-    # Find_modes_of_vertically_coupled_double_rings_func;
-    ? "Done";
-    ? "---------------------------------------------------------------------";
-    ? "\n";
-}
+format short;
+? "---------------------------------------------------------------------";
+? "Executing Find_modes_of_vertically_coupled_double_rings_func ...";
+Find_modes_of_vertically_coupled_double_rings_func;
+? "Done";
+? "---------------------------------------------------------------------";
+? "\n";
+
 
