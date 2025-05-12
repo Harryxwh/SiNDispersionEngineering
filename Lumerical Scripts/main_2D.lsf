@@ -242,12 +242,12 @@ Max_Mode_Idx    = 1;
 
 # Geometry
 # Inner Ring
-Lx_WG1              = 8*um;     # width of the WG
-Ly_WG1              = 0.1*um;   # thickness ofthe WG
+Lx_inner            = 8*um;     # width of the WG
+Ly_inner            = 0.1*um;   # thickness ofthe WG
 
 # Outer Ring
-Lx_WG2              = 2436*nm;  # width of the WG
-Ly_WG2              = 0.1*um;   # thickness ofthe WG
+Lx_outer            = 2436*nm;  # width of the WG
+Ly_outer            = 0.1*um;   # thickness ofthe WG
 
 Lx_Cladding         = 50*um;    # width of the WG
 Ly_Cladding         = 2*um;     # thickness ofthe WG
@@ -266,7 +266,7 @@ gap                 = 5*um;
 
 bend_waveguide      =  1;
 bend_radius_inner   = 1000*um;
-bend_radius         =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
+bend_radius         =  bend_radius_inner + Lx_inner*0.5 + gap*0.5;
 
 material_core       = "Si3N4 (Silicon Nitride) - Luke";
 material_clad       = "SiO2 (Glass) - Palik";
