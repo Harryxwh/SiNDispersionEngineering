@@ -29,10 +29,10 @@ nm = 1e-9;
 
 # Geometry
 Lx_WG           = 2.8*um;     # width of the WG
-Ly_WG           = 0.1*um;     # height of the WG
+Ly_WG           = 0.1*um;     # thickness ofthe WG
 
 Lx_Cladding     = 50*um; # width of the WG
-Ly_Cladding     = 2*um; # height of the WG
+Ly_Cladding     = 2*um; # thickness ofthe WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 14.5*um;
@@ -84,7 +84,7 @@ Max_Mode_Idx    = 1;
 wavelength          = 1550*nm;
 
 # Geometry
-Ly_WG               = 0.1*um; # height of the WG
+Ly_WG               = 0.1*um; # thickness ofthe WG
 
 Lx_Cladding         = 50*um; # length of the WG
 Ly_Cladding         = 2*um; # width of the WG
@@ -138,13 +138,13 @@ material_clad       = "SiO2 (Glass) - Palik";
 
 # Geometry
 Lx_WG           = 2436*nm;  # width of the WG
-Ly_WG           = 0.1*um;   # height of the WG
+Ly_WG           = 0.1*um;   # thickness ofthe WG
 
 Lx_Cladding     = 50*um;    # width of the Cladding
-Ly_Cladding     = 2*um;     # height of the Cladding
+Ly_Cladding     = 2*um;     # thickness ofthe Cladding
 
 Lx_Buried_Oxide = 50*um;    # width of the BOX
-Ly_Buried_Oxide = 14.5*um;  # height of the BOX
+Ly_Buried_Oxide = 14.5*um;  # thickness ofthe BOX
 
 Lx_FDE          = 30*um;
 Ly_FDE_min      = -8*um;
@@ -191,13 +191,13 @@ Max_Mode_Idx    = 1;
 
 # Geometry
 Lx_WG           = 2.8*um;       # width of the WG
-Ly_WG           = 0.1*um;       # height of the WG
+Ly_WG           = 0.1*um;       # thickness ofthe WG
 
 Lx_Cladding     = 50*um;        # width of the Cladding
-Ly_Cladding     = 2*um;         # height of the Cladding
+Ly_Cladding     = 2*um;         # thickness ofthe Cladding
 
 Lx_Buried_Oxide = 50*um;        # width of the BOX
-Ly_Buried_Oxide = 14.5*um;      # height of the BOX
+Ly_Buried_Oxide = 14.5*um;      # thickness ofthe BOX
 
 # FDE solver region
 Lx_FDE          = 30*um;
@@ -243,14 +243,14 @@ Max_Mode_Idx    = 1;
 # Geometry
 # Inner Ring
 Lx_WG1              = 8*um;     # width of the WG
-Ly_WG1              = 0.1*um;   # height of the WG
+Ly_WG1              = 0.1*um;   # thickness ofthe WG
 
 # Outer Ring
 Lx_WG2              = 2436*nm;  # width of the WG
-Ly_WG2              = 0.1*um;   # height of the WG
+Ly_WG2              = 0.1*um;   # thickness ofthe WG
 
 Lx_Cladding         = 50*um;    # width of the WG
-Ly_Cladding         = 2*um;     # height of the WG
+Ly_Cladding         = 2*um;     # thickness ofthe WG
 
 Lx_Buried_Oxide     = 50*um;
 Ly_Buried_Oxide     = 14.5*um;
@@ -287,13 +287,11 @@ gap_array           =   linspace(gap_min,gap_max,num_sweep_pt_gap);
 ###############################################################################
 # conduct simulation
 ###############################################################################
-
-    format short;
-    ? "---------------------------------------------------------------------";
-    ?"gap = "+num2str(gap / um)+" um";
-    ? "Executing Find_modes_of_horizontally_coupled_double_rings_func ...";
-    # Find_modes_of_horizontally_coupled_double_rings_func;
-    ? "Done";
-    ? "---------------------------------------------------------------------";
-    ? "\n";
-}
+format short;
+? "---------------------------------------------------------------------";
+?"gap = "+num2str(gap / um)+" um";
+? "Executing Find_modes_of_horizontally_coupled_double_rings_func ...";
+# Find_modes_of_horizontally_coupled_double_rings_func;
+? "Done";
+? "---------------------------------------------------------------------";
+? "\n";

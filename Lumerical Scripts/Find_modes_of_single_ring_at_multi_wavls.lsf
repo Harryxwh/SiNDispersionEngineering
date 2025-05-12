@@ -19,11 +19,11 @@ nm = 1e-9;
 # Parameters
 ###############################################################################
 
-Lx_WG = 8*um; # height of the WG
-Ly_WG = 0.1*um; # height of the WG
+Lx_WG = 8*um; # thickness ofthe WG
+Ly_WG = 0.1*um; # thickness ofthe WG
 
 Lx_Cladding = 50*um; # width of the WG
-Ly_Cladding = 2*um; # height of the WG
+Ly_Cladding = 2*um; # thickness ofthe WG
 
 Lx_Buried_Oxide = 50*um;
 Ly_Buried_Oxide = 15*um;

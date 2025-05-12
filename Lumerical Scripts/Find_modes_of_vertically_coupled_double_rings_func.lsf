@@ -5,20 +5,20 @@
 # Parameters:
 
 # Lower Ring
-# Lx_upper            :   width of the WG1 (Lower ring)
-# Ly_WG1            :   height of the WG1 (Lower ring)
+# Lx_upper          :   width of the WG of Upper ring
+# Ly_upper          :   thickness of the WG2 of Upper ring
 
 # Upper Ring
-# Lx_lower            :   width of the WG2 (Upper ring)
-# Ly_WG2            :   height of the WG2 (Upper ring)
+# Lx_lower          :   width of the WG of Lower ring
+# Ly_lower          :   thickness of the WG of Lower ring
 
 # Cladding layer
 # Lx_Cladding       :   width of the claddin layer
-# Ly_Cladding       :   height of the cladding layer
+# Ly_Cladding       :   thickness of the cladding layer
 
 # Box layer
 # Lx_Buried_Oxide   :   width of the BOX layer
-# Ly_Buried_Oxide   :   height of the BOX layer
+# Ly_Buried_Oxide   :   thickness of the BOX layer
 
 # FDE region
 # Lx_FDE            :   width of the FDE solver region
@@ -36,12 +36,15 @@
 
 # Max_Mode_Idx      :   num of eigenmodes to save into txt files. e.g. 2
 
-# gap               :   gap between the horizontal surfaces of the two WGs
-
 # Define wavelength of simulation
 # wavelength_min    :   starting wavelength
 # wavelength_max    :   stoping wavelength
 # num_sweep_pt_wavl :   num of wavelength points to calculate
+
+# Define gap between the horizontal surfaces of the two WGs
+# gap_min           :   starting gap
+# gap_max           :   stoping gap
+# num_sweep_pt_gap  :   num of gap points to calculate
 
 # Author: Weihao Xu
 # Date: May. 5th, 2025
@@ -63,7 +66,6 @@ system('if exist '+foldername_overall+' rmdir /s /q '+foldername_overall);
 system('mkdir '+foldername_overall);
 system('cd '+foldername_overall);
 
-
 for (gap = gap_array)
 {
     ?"gap = "+num2str(gap / um)+" um";
@@ -84,10 +86,9 @@ for (gap = gap_array)
     info_total_filename  = foldername_gap  + '\\' + "Vertically_coupled_double_ring_result.txt";
     if(fileexists(info_total_filename)){rm(info_total_filename);}
     # Print parameters
-    write(info_total_filename,"Lx_upper = "+num2str(Lx_upper)+", Ly_WG1 = " + num2str(Ly_WG1));
-    write(info_total_filename,"Lx_lower = "+num2str(Lx_lower)+", Ly_WG2 = " + num2str(Ly_WG2));
-    write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap))+\
-    ", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y);
+    write(info_total_filename,"Lx_upper = "+num2str(Lx_upper)+", Ly_upper = " + num2str(Ly_upper));
+    write(info_total_filename,"Lx_lower = "+num2str(Lx_lower)+", Ly_lower = " + num2str(Ly_lower));
+    write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap)+", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
     # Print header
     write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
@@ -112,9 +113,9 @@ for (gap = gap_array)
         addrect;
         set("name","Lower Ring");
         set("x",0);
-        set("x span",Lx_upper);
+        set("x span",Lx_lower);
         set("y min",0);
-        set("y max",Ly_WG);
+        set("y max",Ly_lower);
         set("override mesh order from material database",true);
         set("mesh order",2);
         set("material",material_core);
@@ -123,9 +124,9 @@ for (gap = gap_array)
         addrect;
         set("name","Upper Ring");
         set("x",0);
-        set("x span",Lx_lower);
+        set("x span",Lx_upper);
         set("y min",gap);
-        set("y max",gap+Ly_WG);
+        set("y max",gap+Ly_upper);
         set("override mesh order from material database",true);
         set("mesh order",2);
         set("material",material_core);
@@ -176,13 +177,15 @@ for (gap = gap_array)
         set("bend location z", 0);
         set("bend radius",bend_radius);
 
-        # Override the mesh near the upper WG
+        Lx_ave =  (Lx_lower + Lx_upper)/2;
+
+        # Override the mesh near the lower WG
         addmesh;
         set("name","mesh_waveguide");
-        set("x min", -Lx_WG -1*um);
-        set("x max", Lx_WG + 1*um );
-        set("y min", gap   - 1*um);
-        set("y max", gap   + 1*um);
+        set("x min", -Lx_ave - 1*um);
+        set("x max", Lx_ave + 1*um);
+        set("y min", 0 - 1*um);
+        set("y max", Ly_lower + 1*um);
         set("override x mesh",1);
         set("override y mesh",1);
         set("override z mesh",0);
@@ -190,13 +193,13 @@ for (gap = gap_array)
         set("dx",10*nm);
         set("dy",10*nm);
 
-        # Override the mesh near the lower WG
+        # Override the mesh near the upper WG
         addmesh;
         set("name","mesh_waveguide");
-        set("x min", -Lx_WG - 1*um);
-        set("x max", Lx_WG  + 1*um );
-        set("y min", Ly_WG  - 1*um);
-        set("y max", Ly_WG  + 1*um);
+        set("x min", -Lx_ave -1*um);
+        set("x max", Lx_ave + 1*um);
+        set("y min", gap - 1*um);
+        set("y max", gap + Ly_upper + 1*um);
         set("override x mesh",1);
         set("override y mesh",1);
         set("override z mesh",0);

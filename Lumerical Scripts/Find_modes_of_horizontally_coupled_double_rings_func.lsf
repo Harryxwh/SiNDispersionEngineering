@@ -6,19 +6,19 @@
 
 # Inner Ring
 # Lx_WG1            :   width of the WG1 (Inner ring)
-# Ly_WG1            :   height of the WG1 (Inner ring)
+# Ly_WG1            :   thickness ofthe WG1 (Inner ring)
 
 # Outer Ring
 # Lx_WG2            :   width of the WG2 (Outer ring)
-# Ly_WG2            :   height of the WG2 (Outer ring)
+# Ly_WG2            :   thickness ofthe WG2 (Outer ring)
 
 # Cladding layer
 # Lx_Cladding       :   width of the claddin layer
-# Ly_Cladding       :   height of the cladding layer
+# Ly_Cladding       :   thickness ofthe cladding layer
 
 # Box layer
 # Lx_Buried_Oxide   :   width of the BOX layer
-# Ly_Buried_Oxide   :   height of the BOX layer
+# Ly_Buried_Oxide   :   thickness ofthe BOX layer
 
 # FDE region
 # Lx_FDE            :   width of the FDE solver region

@@ -28,14 +28,14 @@ nm = 1e-9;
 
 # Geometry
 Lx_WG           = 2.8*um;     # width of the WG
-Ly_WG           = 0.1*um;     # height of the WG
+Ly_WG           = 0.1*um;     # thickness ofthe WG
 bend_radius     = 1000*um;
 
 Lx_Cladding     = 50*um;      # width of the Cladding
-Ly_Cladding     = 20*um;      # height of the Cladding
+Ly_Cladding     = 20*um;      # thickness ofthe Cladding
 
 Lx_Buried_Oxide = 50*um;      # width of the BOX
-Ly_Buried_Oxide = 15*um;      # height of the BOX
+Ly_Buried_Oxide = 15*um;      # thickness ofthe BOX
 
 Lx_FDE          = 30*um;
 Ly_FDE_min      = -10*um;
@@ -116,15 +116,17 @@ material_clad       = "SiO2 (Glass) - Palik";
 Lx_upper            = 2.8*um;
 Lx_lower            = 2.8*um;
 
+Ly_upper            = 0.2*um;
+Ly_lower            = 0.1*um;
 
 bend_radius_upper   = 1000*um;
 bend_radius         = bend_radius_upper - (Lx_upper - Lx_lower) / 2;
 
 Lx_Cladding         = 50*um;    # width of the Cladding
-Ly_Cladding         = 20*um;    # height of the Cladding
+Ly_Cladding         = 20*um;    # thickness ofthe Cladding
 
 Lx_Buried_Oxide     = 50*um;    # width of the BOX
-Ly_Buried_Oxide     = 15*um;    # height of the BOX
+Ly_Buried_Oxide     = 15*um;    # thickness ofthe BOX
 
 Lx_FDE              = 30*um;
 Ly_FDE_min          = -15*um;

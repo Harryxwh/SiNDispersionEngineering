@@ -20,11 +20,11 @@ nm = 1e-9;
 
 # Geometry
 Lx_WG             = 2.8*um;    # width of the WG
-Ly_WG             = 0.1*um;    # height of the WG
+Ly_WG             = 0.1*um;    # thickness ofthe WG
 Lx_Cladding       = 50*um;     # width of the cladding
-Ly_Cladding       = 2*um;      # height of the cladding
+Ly_Cladding       = 2*um;      # thickness ofthe cladding
 Lx_Buried_Oxide   = 50*um;     # width of the BOX
-Ly_Buried_Oxide   = 14.5*um;   # height of the BOX
+Ly_Buried_Oxide   = 14.5*um;   # thickness ofthe BOX
 Lx_FDE            = 10*um;
 Ly_FDE_min        = -13*um;
 Ly_FDE_max        = 5*um;

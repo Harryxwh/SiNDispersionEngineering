@@ -5,19 +5,19 @@
 # Parameters:
 
 # Outer ring
-# Ly_WG             :   height of the WG1
+# Ly_WG             :   thickness ofthe WG1
 
 # Upper Ring
 # Lx_WG2            :   width of the WG2
-# Ly_WG2            :   height of the WG2
+# Ly_WG2            :   thickness ofthe WG2
 
 # Cladding layer
 # Lx_Cladding       :   width of the claddin layer
-# Ly_Cladding       :   height of the cladding layer
+# Ly_Cladding       :   thickness ofthe cladding layer
 
 # Box layer
 # Lx_Buried_Oxide   :   width of the BOX layer
-# Ly_Buried_Oxide   :   height of the BOX layer
+# Ly_Buried_Oxide   :   thickness ofthe BOX layer
 
 # Geometry of the inner ring is fixed
 # Lx_inner_ring     :   width of the inner ring

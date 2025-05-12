@@ -5,15 +5,15 @@
 # Parameters:
 
 # WG
-# Ly_lower          :   height of the WG
+# Ly_lower          :   thickness ofthe WG
 
 # Cladding layer
 # Lx_Cladding       :   width of the cladding layer
-# Ly_Cladding       :   height of the cladding layer
+# Ly_Cladding       :   thickness ofthe cladding layer
 
 # Box layer
 # Lx_Buried_Oxide   :   width of the BOX layer
-# Ly_Buried_Oxide   :   height of the BOX layer
+# Ly_Buried_Oxide   :   thickness ofthe BOX layer
 
 # FDE region
 # Lx_FDE            :   width of the FDE solver region
