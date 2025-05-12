@@ -119,9 +119,6 @@ Lx_lower            = 2.8*um;
 Ly_upper            = 0.2*um;
 Ly_lower            = 0.1*um;
 
-bend_radius_upper   = 1000*um;
-bend_radius         = bend_radius_upper - (Lx_upper - Lx_lower) / 2;
-
 Lx_Cladding         = 50*um;    # width of the Cladding
 Ly_Cladding         = 20*um;    # thickness ofthe Cladding
 
@@ -134,6 +131,8 @@ Ly_FDE_max          = 15*um;
 
 mesh_cells_x        = 500;
 mesh_cells_y        = 500;
+
+bend_radius         = 1000*um;
 
 # Define wavelength of simulation
 wavelength_min      = 1500*nm;

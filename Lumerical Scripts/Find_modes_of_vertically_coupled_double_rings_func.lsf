@@ -99,11 +99,10 @@ for (gap = gap_array)
         switchtolayout;
 
         wavelength = wavelength_array(wavl_idx);
-        setnamed("FDE","wavelength",wavelength);
 
         # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
         format short;
-        foldername_wavl = foldername_gap + num2str(wavelength /nm);
+        foldername_wavl = foldername_gap + '\\' + num2str(wavelength /nm);
         info_filename = foldername_wavl + '\\' +  "Mode_info.txt";
         if(fileexists(info_filename)){rm(info_filename);}
         # Print header
@@ -170,12 +169,13 @@ for (gap = gap_array)
         set("mesh cells x",mesh_cells_x);
         set("mesh cells y",mesh_cells_y);
 
-        bend_radius  =  bend_radius_inner + Lx_upper*0.5 + gap*0.5;
         set("bent waveguide", 1);
         set("bend location x", 0);
         set("bend location y", 0);
         set("bend location z", 0);
         set("bend radius",bend_radius);
+
+        set("wavelength",wavelength);
 
         Lx_ave =  (Lx_lower + Lx_upper)/2;
 
