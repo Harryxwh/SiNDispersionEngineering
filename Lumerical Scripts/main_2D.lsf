@@ -278,7 +278,7 @@ wavelength_min      = 1500*nm;
 wavelength_max      = 1600*nm;
 num_sweep_pt_wavl   = 21;
 
-# Define  gap between the horizontal surfaces of the two WGs
+# Define gap between the horizontal surfaces of the two WGs
 gap_min             =   3*um;
 gap_max             =   5*um;
 num_sweep_pt_gap    =   5;
