@@ -43,6 +43,8 @@ if __name__ == '__main__':
     #               "Straight_WG_width_2_8um_1480_1620_15wavls"
     # foldername2 = "../data/Mode Profiles/"+\
     #               "Straight_WG_width_2_8um_1480_1620_15wavls"
+
+    # working_dir = "./results/2D parallel rings/"
     ############################################################################################
 
     ############################################################################################
@@ -56,6 +58,8 @@ if __name__ == '__main__':
     #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
     # foldername2 = "../data/Mode Profiles/"+\
     #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+
+    # working_dir = "./results/3D concentric rings/"
     ############################################################################################
 
 
@@ -63,9 +67,9 @@ if __name__ == '__main__':
     # Sweep gap between 2D concentric rings around a certian value, so the mode profiles can be seen as the same
     # if num_of_gaps is 1, the gap is fixed
 
-    start_gap_x   = 3
-    end_gap_x     = 3
-    num_of_gaps_x = 1
+    start_gap_x   = 2.5
+    end_gap_x     = 3.5
+    num_of_gaps_x = 11
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
     start_gap_y   = 0
@@ -80,10 +84,12 @@ if __name__ == '__main__':
                                 foldername1 = foldername1,
                                 foldername2 = foldername2,
                                 param_filename = param_filename)
-    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=1000)
-    # sweeper.Scan_gap(calc_needed= False,
+    # sweeper.Scan_gap(calc_needed=True,
     #                  foldername = working_dir + "Supermodes attributes using CMT/",
     #                  num_of_wavl_pts=1000)
+    sweeper.Scan_gap(calc_needed= False,
+                     foldername = working_dir + "Supermodes attributes using CMT/",
+                     num_of_wavl_pts=200)
     ############################################################################################
 
     ############################################################################################
@@ -104,7 +110,7 @@ if __name__ == '__main__':
                              filename_uncoupled_gap5um, filename_coupled_gap5um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
                              filename_FDE_beta=filename_FDE_beta_gap5um,
-                             save_D_in_csv=True)
+                             save_D_in_csv=False, save_foldername = working_dir)
 
     # gap = 4um
     gap_arr = np.array([[4,0]])
@@ -115,7 +121,7 @@ if __name__ == '__main__':
                              filename_uncoupled_gap4um, filename_coupled_gap4um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
                              filename_FDE_beta=filename_FDE_beta_gap4um,
-                             save_D_in_csv=True)
+                             save_D_in_csv=False, save_foldername = working_dir)
     ############################################################################################
 
     ############################################################################################
@@ -132,7 +138,7 @@ if __name__ == '__main__':
                              filename_uncoupled_gap3um, filename_coupled_gap3um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
                              filename_FDE_D=filename_FDE_D_gap3um,
-                             save_D_in_csv=False)
+                             save_D_in_csv=False, save_foldername = working_dir)
 
     # gap = 2.8um
     gap_arr = np.array([[2.8,0]])
@@ -143,7 +149,7 @@ if __name__ == '__main__':
                              filename_uncoupled_gap2_8um, filename_coupled_gap2_8um,
                              foldername_1 = foldername1, foldername_2 = foldername2,
                              filename_FDE_D=filename_FDE_D_gap2_8um,
-                             save_D_in_csv=False)
+                             save_D_in_csv=False, save_foldername = working_dir)
     ############################################################################################
 
     ############################################################################################
@@ -160,14 +166,14 @@ if __name__ == '__main__':
     filename_uncoupled_gapy_0_2um   = "../data/beta_uncoupled_gap_0_000_0_200.txt"
     filename_coupled_gapy_0_2um     = "../data/beta_coupled_gap_0_000_0_200.txt"
 
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
-                            foldername_1 = foldername1, foldername_2 = foldername2,
-                            name_structure = "3D concentric rings",
-                            num_of_pts=100, save_D_in_csv=True, save_mode = "AS")
-    Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
-                            filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
-                            foldername_1 = foldername1, foldername_2 = foldername2,
-                            name_structure = "3D concentric rings",
-                            num_of_pts=100, save_D_in_csv=True, save_mode = "S")
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
+    #                         foldername_1 = foldername1, foldername_2 = foldername2,
+    #                         name_structure = "3D concentric rings",
+    #                         num_of_pts=100, save_D_in_csv=True, save_mode = "AS")
+    # Analyzer = Data_analyzer(wavl_arr, gap_arr[0,:], param_filename,
+    #                         filename_uncoupled_gapy_2um, filename_coupled_gapy_2um,
+    #                         foldername_1 = foldername1, foldername_2 = foldername2,
+    #                         name_structure = "3D concentric rings",
+    #                         num_of_pts=100, save_D_in_csv=True, save_mode = "S")
     ############################################################################################

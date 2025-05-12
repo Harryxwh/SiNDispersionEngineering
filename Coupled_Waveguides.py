@@ -11,6 +11,7 @@ name2           : foldername of data of the second WG
 ModeIdx1        : eigenmode index of the first WG
 ModeIdx2        : eigenmode index of the second WG
 param_file_name : file name of the parameters
+save_foldername : folder name to save the results
 Plot_field      : True or False. whether to plot all the mode profiles.
 Plot_index      : True or False. Whether to plot all the index profiles.
 '''
@@ -21,12 +22,14 @@ class Coupled_Waveguides():
 
     def __init__(self, wavelength, gap_x, gap_y,
                  name1,name2, ModeIdx1, ModeIdx2,
-                 param_file_name, Plot_field=False, Plot_index=False):
+                 param_file_name, save_foldername ='./results/',
+                 Plot_field=False, Plot_index=False):
 
         self.wavelength = wavelength        # unit :um
         self.gap_x = gap_x                  # unit :um
         self.gap_y = gap_y                  # unit :um
         self.Load_param(param_file_name)
+        self.save_foldername = save_foldername
         self.n_core,self.n_cladding = Load_material_index(wavelength)
 
         if gap_x > 0:
@@ -209,7 +212,7 @@ class Coupled_Waveguides():
                 int(WG2_x + WG2_width/2)] = self.n_core
 
     def Plot_index_profile(self,label='N',
-                           save_name='./results/index_profile.pdf',dpi=300):
+                           save_name='index_profile.pdf',dpi=300):
 
         colormap = "YlOrRd"
         WG1_x,WG1_y,WG2_x,WG2_y,Ly_cladding  = self.Structure_coordinates
@@ -246,7 +249,7 @@ class Coupled_Waveguides():
         # cbar.set_label('Refrative Index', fontsize=10)
         cbar.set_ticks(np.linspace(np.min(image),np.max(image),5))  # 自定义刻度
         cbar.ax.tick_params(labelsize=10)  # 设置刻度字体大小
-        plt.savefig(save_name,dpi=dpi)
+        plt.savefig(self.save_foldername + save_name,dpi=dpi)
         plt.close()
         # plt.show()
 
@@ -255,7 +258,7 @@ class Coupled_Waveguides():
     def Plot_field_profile(self,field_coefficients,
                            field_name, title,
                            Plot_log = False,
-                           save_name='./results/field_profile_',
+                           save_name='field_profile_',
                            dpi=400):
         fonttype = "Helvetica"
         fontsize = 18
@@ -348,7 +351,7 @@ class Coupled_Waveguides():
                 ax[plot_idx,idx].tick_params(axis='both',labelsize=fontsize)
 
         plt.title(title)
-        plt.savefig(save_name+title+".pdf",dpi=dpi)
+        plt.savefig(self.save_foldername + save_name + title + ".pdf",dpi=dpi)
         plt.close()
         # plt.show()
         return
@@ -479,10 +482,10 @@ class Coupled_Waveguides():
         print("\n")
         return Eigenvalues, Eigenvectors
 
-    def Export_kappa(self,filename_kappa="./results/straight_WG_Kappa.txt"):
+    def Export_kappa(self,filename_kappa="straight_WG_Kappa.txt"):
         K_12 = self.Kappa(1,2,self.N2)
         K_21 = self.Kappa(2,1,self.N1)
         print("K_12 = {:.6f}".format(K_12))
         print("K_21 = {:.6f}".format(K_21))
-        with open(filename_kappa,"a") as f:
+        with open(self.save_foldername + filename_kappa,"a") as f:
             f.write("{:.1f}".format(self.wavelength) + ",{:.6f}".format(K_12) + ",{:.6f}\n".format(K_21))

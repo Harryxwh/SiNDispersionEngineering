@@ -61,16 +61,18 @@ wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt_wavl);
 gap_array        = linspace(gap_min,gap_max,num_sweep_pt_gap);
 
 # Create the overall folder
+format short;
 foldername_overall = 'Find_modes_of_vertically_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap_min/nm)+'nm_to_'+num2str(gap_max/nm)+'nm_'+num2str(num_sweep_pt_gap)+'pts_LowerRingWidth_'+num2str(Lx_upper/nm)+'nm_UpperRingWidth_'+num2str(Lx_lower/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
 system('if exist '+foldername_overall+' rmdir /s /q '+foldername_overall);
 system('mkdir '+foldername_overall);
-system('cd '+foldername_overall);
+cd(foldername_overall);
 
 for (gap = gap_array)
 {
     ?"gap = "+num2str(gap / um)+" um";
 
     # Create the folder for the current gap
+    format short;
     foldername_gap = 'gap_'+num2str(gap/nm)+'nm';
     system('if exist '+foldername_gap+' rmdir /s /q '+foldername_gap);
     system('mkdir '+foldername_gap);
@@ -86,6 +88,7 @@ for (gap = gap_array)
     info_total_filename  = foldername_gap  + '\\' + "Vertically_coupled_double_ring_result.txt";
     if(fileexists(info_total_filename)){rm(info_total_filename);}
     # Print parameters
+    format long;
     write(info_total_filename,"Lx_upper = "+num2str(Lx_upper)+", Ly_upper = " + num2str(Ly_upper));
     write(info_total_filename,"Lx_lower = "+num2str(Lx_lower)+", Ly_lower = " + num2str(Ly_lower));
     write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap)+", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
@@ -258,3 +261,4 @@ for (gap = gap_array)
 
 }
 
+cd("..");

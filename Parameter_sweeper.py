@@ -1,38 +1,40 @@
+'''
+class Parameter_sweeper
+Description:
+This class is used to sweep the parameters of the coupled waveguides.
+Parameters that can be swept include the wavelength and the gap between two WGs.
+
+Parameters:
+wavelengths             : format: [wavl1,wavl2,...]
+gap_arr                 : format: [[gap_x1,gap_y1],[gap_x2,gap_y2],...]
+foldername_WG1          : foldername of mode profile data of WG1
+foldername_WG2          : foldername of mode profile data of WG2
+save_foldername         : foldername to save the results
+param_filename          : filename of parameters
+
+Author: Weihao Xu
+Date: May. 12th, 2025
+'''
 import numpy as np
 from Coupled_Waveguides import *
 from Data_analyzer import *
 from Functions import *
-'''
-class Waveguide()
-Parameters:
 
-wavelengths             : format: [wavl1,wavl2,...]
-gap_arr                 : format: [[gap_x1,gap_y1],[gap_x2,gap_y2],...]
-foldername1             : foldername of mode profile data of WG1
-foldername2             : foldername of mode profile data of WG2
-param_filename          : filename of parameters
-
-Methods:
-
-'''
 # sweepable parameters include: wavelength, gap
 class Parameter_sweeper():
-    def __init__(self,wavelengths,gap_arr,
-                 foldername1,foldername2,
-                 param_filename="./Param.csv"):
+    def __init__(self, wavelengths, gap_arr,
+                 foldername_WG1, foldername_WG2,
+                 save_foldername, param_filename):
 
         self.wavl_arr = wavelengths     # Wavelength in Vacuum (unit:um)
         self.gap_arr = gap_arr                  # gap = [gap_x,gap_y] shape=(2,x) (unit:um)
-        self.foldername_1 = foldername1
-        self.foldername_2 = foldername2
+        self.foldername_WG1 = foldername_WG1
+        self.foldername_WG2 = foldername_WG2
+        self.save_foldername = save_foldername
         self.param_filename = param_filename
-        self.beta_array = np.array([[],[]])
 
     # Sweep wavlength whne the gap between two WGs is fixed
-    def Scan_wavl(self, gap,
-                  filename_uncoupled = "../data/beta_uncoupled.txt",
-                  filename_coupled   = "../data/beta_coupled.txt"):
-                #   plot_field_profile = False, plot_log = False):
+    def Scan_wavl(self, gap, filename_uncoupled, filename_coupled):
 
         beta_uncoupled_arr     = [] # beta of eigenmodes of two separate WGs
         beta_ave_uncoupled_arr = [] # beta_ave of eigenmodes of two separate WGs
@@ -45,15 +47,16 @@ class Parameter_sweeper():
         with open(filename_coupled,'w') as f:
             f.write("wavelength,beta_1_coupled,beta_2_coupled,coeff_supermode_1,coeff_supermode_2\n")
 
+        gap_x, gap_y = gap
+        print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um \n")
+
         for idx in range(len(self.wavl_arr)):
             wavl_in_nm = self.wavl_arr[idx]
             wavl_in_um = wavl_in_nm / 1000
-            gap_x, gap_y = gap
-            path_1 = self.foldername_1 +'/'+ "{:.0f}".format(wavl_in_nm)
-            path_2 = self.foldername_2 +'/'+ "{:.0f}".format(wavl_in_nm)
-            print("####################")
-            print("gap_x = {:.3f}".format(gap_x)+" um, gap_y = {:.3f}".format(gap_y)+" um")
-            print("####################\n")
+
+            path_1 = self.foldername_WG1 +'/'+ "{:.0f}".format(wavl_in_nm)
+            path_2 = self.foldername_WG2 +'/'+ "{:.0f}".format(wavl_in_nm)
+
             Coupled_WG = Coupled_Waveguides(wavelength = wavl_in_um,
                                             gap_x = gap_x, gap_y = gap_y,
                                             name1 = path_1,name2 = path_2,
@@ -83,10 +86,7 @@ class Parameter_sweeper():
                                                 np.array([Coupled_WG.beta_ave]),axis=0)
                 beta_coupled_arr = np.append(beta_coupled_arr,
                                              beta_coupled ,axis=0)
-            # Plot field profile of supermodes
-            # if plot_field_profile:
-            #     CoupledWG.Plot_field_profile(coeff_of_supermodes,field_name = 'Ex',
-            #                         title=r"Electric field profile when wavl = "+"{:.0f}".format(wavl_in_nm)+" nm", Plot_log=plot_log)
+
             with open(filename_uncoupled,'a') as f:
                 beta_str =  str(wavl_in_um) + "," + \
                             str(np.real(beta_uncoupled[0,0])) + "," + \
@@ -108,7 +108,7 @@ class Parameter_sweeper():
     # Sweep gap betwen two WGs
     # Parameters:
     # calc_needed       : must be True for initial run, can be set to False if beta files already exist.
-    # foldername        : foldername to store the beta files.
+    # foldername        : foldername to store the results.
     # num_of_wavl_pts   : number of wavelength points to calculate dispersion curve
     def Scan_gap(self, calc_needed = True, foldername="./results/", num_of_wavl_pts = 100):
         for gap_idx in range(len(self.gap_arr)):
@@ -129,7 +129,8 @@ class Parameter_sweeper():
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y), self.param_filename,
                                      filename_uncoupled, filename_coupled,
-                                     self.foldername_1, self.foldername_2,
-                                     num_of_pts = num_of_wavl_pts,
-                                     plot_profile = True, plot_log_scale = False)
+                                     self.foldername_WG1, self.foldername_WG2,
+                                     num_of_pts = num_of_wavl_pts, save_D_in_csv = True,
+                                     plot_profile = True, plot_log_scale = False,
+                                     save_foldername = foldername)
 

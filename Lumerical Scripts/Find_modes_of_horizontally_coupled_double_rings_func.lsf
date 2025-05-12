@@ -66,18 +66,22 @@ wavelength_array = linspace(wavelength_min, wavelength_max, num_sweep_pt_wavl);
 gap_array = linspace(gap_min, gap_max, num_sweep_pt_gap);
 
 # Create the overall folder
+format short;
 foldername_overall = 'Find_modes_of_horizontally_coupled_double_rings_radius_' + num2str(bend_radius / um) + 'um_gap_' + num2str(gap_min / nm) + 'nm_to_' + num2str(gap_max / nm) + 'nm_' + num2str(num_sweep_pt_gap) + 'pts_InnerRingWidth_' + num2str(Lx_inner / nm) + 'nm_OuterRingWidth_' + num2str(Lx_outer / nm) + 'nm_mesh_' + num2str(mesh_cells_x) + 'X' + num2str(mesh_cells_y);
 system('if exist ' + foldername_overall + ' rmdir /s /q ' + foldername_overall);
 system('mkdir ' + foldername_overall);
+cd(foldername_overall);
 
 for (gap = gap_array) {
     ?"gap = " + num2str(gap / um) + " um";
 
     # Create the folder for the current gap
+    format short;
     foldername_gap = foldername_overall + '\\'+ 'gap_' + num2str(gap / nm) + 'nm';
     system('if exist ' + foldername_gap + ' rmdir /s /q ' + foldername_gap);
     system('mkdir ' + foldername_gap);
 
+    format short;
     # Create folders for each wavelength
     for (wavelength = wavelength_array) {
         foldername_wavl = foldername_gap + '\\' + num2str(wavelength / nm);
@@ -88,6 +92,7 @@ for (gap = gap_array) {
     info_total_filename  = foldername_gap +"\\"+ "horizontally_coupled_double_rings_results.txt";
     if(fileexists(info_total_filename)){rm(info_total_filename);}
     # Print parameters
+    format short;
     write(info_total_filename, "Lx_inner = " + num2str(Lx_inner) + ", Ly_inner = " + num2str(Ly_inner));
     write(info_total_filename, "Lx_outer = " + num2str(Lx_outer) + ", Ly_outer = " + num2str(Ly_outer));
     write(info_total_filename, "Bending Radius = " + num2str(bend_radius) + ", gap_x = " + num2str(gap) + ", num of cells = " + num2str(mesh_cells_x) + "X" + num2str(mesh_cells_y));
@@ -104,6 +109,7 @@ for (gap = gap_array) {
         wavelength = wavelength_array(wavl_idx);
 
         # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
+        format short;
         foldername_wavl = foldername_gap + '\\' + num2str(wavelength / nm);
         info_filename = foldername_wavl + '\\Mode_info.txt';
         if (fileexists(info_filename)) { rm(info_filename); }

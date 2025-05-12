@@ -2,7 +2,7 @@
 # This script is used to find the eigenmodes of two vertically coupled rings.
 
 # Author: Weihao Xu
-# Date: May. 5th, 2025
+# Date: May. 12th, 2025
 # Email: harryxwh@gmail.com
 ###############################################################################
 
@@ -47,195 +47,216 @@ num_sweep_pt      = 16;
 # Modes
 Max_Mode_Idx      = 2;
 
-
 ###############################################################################
-# Add geometry and FDE solver
+# Conduct similation
 ###############################################################################
 
 # Setup the wavelength array
-wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt);
+wavelength_array = linspace(wavelength_min,wavelength_max,num_sweep_pt_wavl);
 
-# Lower Ring
-addrect;
-set("name","Lower Ring");
-set("x",0);
-set("x span",Lx_WG1);
-set("y min",0);
-set("y max",Ly_WG);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
+# Setup the gap array
+gap_array        = linspace(gap_min,gap_max,num_sweep_pt_gap);
 
-# Upper Ring
-addrect;
-set("name","Upper Ring");
-set("x",0);
-set("x span",Lx_WG2);
-set("y min",gap);
-set("y max",gap+Ly_WG);
-set("override mesh order from material database",true);
-set("mesh order",2);
-set("material",material_core);
+# Create the overall folder
+format short;
+foldername_overall = 'Find_modes_of_vertically_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap_min/nm)+'nm_to_'+num2str(gap_max/nm)+'nm_'+num2str(num_sweep_pt_gap)+'pts_LowerRingWidth_'+num2str(Lx_upper/nm)+'nm_UpperRingWidth_'+num2str(Lx_lower/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+system('if exist '+foldername_overall+' rmdir /s /q '+foldername_overall);
+system('mkdir '+foldername_overall);
+cd(foldername_overall);
 
-# BOX
-addrect;
-set("name","BOX");
-set("x",0);
-set("x span",Lx_Buried_Oxide);
-set("y max",0);
-set("y min",-Ly_Buried_Oxide);
-set("override mesh order from material database",true);
-set("mesh order",3);
-set("material",material_clad);
+for (gap = gap_array)
+{
+    ?"gap = "+num2str(gap / um)+" um";
 
-# Cladding
-addrect;
-set("name","Cladding");
-set("x",0);
-set("x span",Lx_Cladding);
-set("y min",0);
-set("y max",Ly_Cladding);
-set("override mesh order from material database",true);
-set("mesh order",3);
-set("material",material_clad);
-
-# FDE solver region
-addfde;
-set("solver type","2D Z normal");
-set("x",0*um);
-set("y",0);
-set("x span",Lx_FDE);
-set("y min",Ly_FDE_min);
-set("y max",Ly_FDE_max);
-set("x min bc","PML");
-set("x max bc","PML");
-set("y min bc","PML");
-set("y max bc","PML");
-set("define x mesh by","number of mesh cells");
-set("define y mesh by","number of mesh cells");
-set("mesh cells x",mesh_cells_x);
-set("mesh cells y",mesh_cells_y);
-
-bend_radius  =  bend_radius_inner + Lx_WG1*0.5 + gap*0.5;
-set("bent waveguide", 1);
-set("bend location x", 0);
-set("bend location y", 0);
-set("bend location z", 0);
-set("bend radius",bend_radius);
-
-# Override the mesh near the upper WG
-addmesh;
-set("name","mesh_waveguide");
-set("x min", -Lx_WG -1*um);
-set("x max", Lx_WG + 1*um );
-set("y min", gap   - 1*um);
-set("y max", gap   + 1*um);
-set("override x mesh",1);
-set("override y mesh",1);
-set("override z mesh",0);
-set("set maximum mesh step",1);
-set("dx",10*nm);
-set("dy",10*nm);
-
-# Override the mesh near the lower WG
-addmesh;
-set("name","mesh_waveguide");
-set("x min", -Lx_WG - 1*um);
-set("x max", Lx_WG  + 1*um );
-set("y min", Ly_WG  - 1*um);
-set("y max", Ly_WG  + 1*um);
-set("override x mesh",1);
-set("override y mesh",1);
-set("override z mesh",0);
-set("set maximum mesh step",1);
-set("dx",10*nm);
-set("dy",10*nm);
-
-# Create the folder
-foldername = 'Find_modes_of_vertically_coupled_double_rings_radius_'+num2str(bend_radius/um)+'um_gap_'+num2str(gap/nm)+'nm_LowerRingWidth_'+num2str(Lx_WG1/nm)+'nm_UpperRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
-system('if exist '+foldername+' rmdir /s /q '+foldername);
-system('mkdir '+foldername);
-
-# Create folders for each wavl
-for(wavelength = wavelength_array){
+    # Create the folder for the current gap
     format short;
-    foldername_wavl = foldername + '\\' + num2str(wavelength /nm);
-    system("mkdir "+foldername_wavl);
-}
+    foldername_gap = 'gap_'+num2str(gap/nm)+'nm';
+    system('if exist '+foldername_gap+' rmdir /s /q '+foldername_gap);
+    system('mkdir '+foldername_gap);
 
-# Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes into one result file
-info_total_filename  = foldername  + '\\' + "Vertically_coupled_double_ring_result.txt";
-if(fileexists(info_total_filename)){rm(info_total_filename);}
-# Print parameters
-write(info_total_filename,"Lx_WG1 = "+num2str(Lx_WG1)+", Ly_WG1 = " + num2str(Ly_WG1));
-write(info_total_filename,"Lx_WG2 = "+num2str(Lx_WG2)+", Ly_WG2 = " + num2str(Ly_WG2));
-write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap))+\
-", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y);
-# Print header
-write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
-
-Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
-
-for(wavl_idx=1:num_sweep_pt){
-
-    switchtolayout;
-
-    wavelength = wavelength_array(wavl_idx);
-    setnamed("FDE","wavelength",wavelength);
-
-    # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
-    format short;
-    foldername_wavl = foldername + num2str(wavelength /nm);
-    info_filename = foldername_wavl + '\\' +  "Mode_info.txt";
-    if(fileexists(info_filename)){rm(info_filename);}
-    # Print header
-    write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
-
-    findmodes;
-
-    for (mode_idx=1:Max_Mode_Idx){
-
-        neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
-        ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
-        loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
-        polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
-
-        beta_ang = real(2*pi/wavelength * bend_radius * neff);
-
-        Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
-        Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
-        Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
-        Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
-        Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
-        Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
-
-        Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
+    # Create folders for each wavl
+    for(wavelength = wavelength_array){
         format short;
-        info = num2str(wavelength /nm) +","+ num2str(mode_idx);
-        format long;
-        info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
-        write(info_filename,info);
-        write(info_total_filename,info);
+        foldername_wavl = foldername_gap + '\\' + num2str(wavelength /nm);
+        system("mkdir "+foldername_wavl);
+    }
 
-        # Print the attributes of the first two modes
-        if(mode_idx < 3){
-            ?"Wavelength: " + num2str(wavelength /um) + " um";
-            ?"ModeIdx: " + num2str(mode_idx);
-            ?"Effective index: " + num2str(real(neff));
-            ?"beta_ang: " + num2str(beta_ang);
-            ?"\n";
-        }
+    # Store mode attributes (neff, ng, loss, etc.) of all the eigenmodes into one result file
+    info_total_filename  = foldername_gap  + '\\' + "Vertically_coupled_double_ring_result.txt";
+    if(fileexists(info_total_filename)){rm(info_total_filename);}
+    # Print parameters
+    format long;
+    write(info_total_filename,"Lx_upper = "+num2str(Lx_upper)+", Ly_upper = " + num2str(Ly_upper));
+    write(info_total_filename,"Lx_lower = "+num2str(Lx_lower)+", Ly_lower = " + num2str(Ly_lower));
+    write(info_total_filename,"Bending Radius = "+num2str(bend_radius)+", gap_y = " + num2str(gap)+", num of cells = " + num2str(mesh_cells_x)+"X"+num2str(mesh_cells_y));
+    # Print header
+    write(info_total_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
 
-        # Write mode profile matrix into txt files
-        for (j=1:6){
+    Comp_name_list = {"Ex","Ey","Ez","Hx","Hy","Hz"};
+
+    for(wavl_idx=1:num_sweep_pt_wavl){
+
+        switchtolayout;
+        deleteall;
+
+        wavelength = wavelength_array(wavl_idx);
+
+        # Store mode attributes (neff, ng, loss, etc.) of the current wavelength
+        format short;
+        foldername_wavl = foldername_gap + '\\' + num2str(wavelength /nm);
+        info_filename = foldername_wavl + '\\' +  "Mode_info.txt";
+        if(fileexists(info_filename)){rm(info_filename);}
+        # Print header
+        write(info_filename,"wavelength,modeidx,neff,ng,loss,polarization,beta_ang");
+
+        # Lower Ring
+        addrect;
+        set("name","Lower Ring");
+        set("x",0);
+        set("x span",Lx_lower);
+        set("y min",0);
+        set("y max",Ly_lower);
+        set("override mesh order from material database",true);
+        set("mesh order",2);
+        set("material",material_core);
+
+        # Upper Ring
+        addrect;
+        set("name","Upper Ring");
+        set("x",0);
+        set("x span",Lx_upper);
+        set("y min",gap);
+        set("y max",gap+Ly_upper);
+        set("override mesh order from material database",true);
+        set("mesh order",2);
+        set("material",material_core);
+
+        # BOX
+        addrect;
+        set("name","BOX");
+        set("x",0);
+        set("x span",Lx_Buried_Oxide);
+        set("y max",0);
+        set("y min",-Ly_Buried_Oxide);
+        set("override mesh order from material database",true);
+        set("mesh order",3);
+        set("material",material_clad);
+
+        # Cladding
+        addrect;
+        set("name","Cladding");
+        set("x",0);
+        set("x span",Lx_Cladding);
+        set("y min",0);
+        set("y max",Ly_Cladding);
+        set("override mesh order from material database",true);
+        set("mesh order",3);
+        set("material",material_clad);
+
+        # FDE solver region
+        addfde;
+        set("solver type","2D Z normal");
+        set("x",0*um);
+        set("y",0);
+        set("x span",Lx_FDE);
+        set("y min",Ly_FDE_min);
+        set("y max",Ly_FDE_max);
+        set("x min bc","PML");
+        set("x max bc","PML");
+        set("y min bc","PML");
+        set("y max bc","PML");
+        set("define x mesh by","number of mesh cells");
+        set("define y mesh by","number of mesh cells");
+        set("mesh cells x",mesh_cells_x);
+        set("mesh cells y",mesh_cells_y);
+
+        set("bent waveguide", 1);
+        set("bend location x", 0);
+        set("bend location y", 0);
+        set("bend location z", 0);
+        set("bend radius",bend_radius);
+
+        set("wavelength",wavelength);
+
+        Lx_ave =  (Lx_lower + Lx_upper)/2;
+
+        # Override the mesh near the lower WG
+        addmesh;
+        set("name","mesh_waveguide");
+        set("x min", -Lx_ave - 1*um);
+        set("x max", Lx_ave + 1*um);
+        set("y min", 0 - 1*um);
+        set("y max", Ly_lower + 1*um);
+        set("override x mesh",1);
+        set("override y mesh",1);
+        set("override z mesh",0);
+        set("set maximum mesh step",1);
+        set("dx",10*nm);
+        set("dy",10*nm);
+
+        # Override the mesh near the upper WG
+        addmesh;
+        set("name","mesh_waveguide");
+        set("x min", -Lx_ave -1*um);
+        set("x max", Lx_ave + 1*um);
+        set("y min", gap - 1*um);
+        set("y max", gap + Ly_upper + 1*um);
+        set("override x mesh",1);
+        set("override y mesh",1);
+        set("override z mesh",0);
+        set("set maximum mesh step",1);
+        set("dx",10*nm);
+        set("dy",10*nm);
+
+        findmodes;
+
+        for (mode_idx=1:Max_Mode_Idx){
+
+            neff =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"neff"));
+            ng =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"ng"));
+            loss =pinch(getdata("FDE::data::mode"+num2str(mode_idx),"loss"));
+            polarization=pinch(getdata("FDE::data::mode"+num2str(mode_idx),"TE polarization fraction"));
+
+            beta_ang = real(2*pi/wavelength * bend_radius * neff);
+
+            Ex = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ex"));
+            Ey = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ey"));
+            Ez = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Ez"));
+            Hx = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hx"));
+            Hy = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hy"));
+            Hz = pinch(getdata("FDE::data::mode"+num2str(mode_idx),"Hz"));
+
+            Comp_list = {Ex,Ey,Ez,Hx,Hy,Hz};
             format short;
-            filename = foldername_wavl+'\\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
-            if(fileexists(filename)){
-                rm(filename);
+            info = num2str(wavelength /nm) +","+ num2str(mode_idx);
+            format long;
+            info = info  +","+ num2str(neff) +","+ num2str(ng) +","+ num2str(loss) +","+ num2str(polarization) +","+ num2str(beta_ang);
+            write(info_filename,info);
+            write(info_total_filename,info);
+
+            # Print the attributes of the first two modes
+            if(mode_idx < 3){
+                ?"Wavelength: " + num2str(wavelength /um) + " um";
+                ?"ModeIdx: " + num2str(mode_idx);
+                ?"Effective index: " + num2str(real(neff));
+                ?"beta_ang: " + num2str(beta_ang);
+                ?"\n";
             }
-            format long; # set num2str() to return 16 digits of precision
-            write(filename,num2str(Comp_list{j}));
+
+            # Write mode profile matrix into txt files
+            for (j=1:6){
+                format short;
+                filename = foldername_wavl+'\\'+"Mode"+num2str(mode_idx)+"_"+Comp_name_list{j}+".txt";
+                if(fileexists(filename)){
+                    rm(filename);
+                }
+                format long; # set num2str() to return 16 digits of precision
+                write(filename,num2str(Comp_list{j}));
+            }
         }
     }
+
 }
+
+cd("..");
 
