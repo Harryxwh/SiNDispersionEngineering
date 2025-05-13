@@ -21,5 +21,6 @@
     "cbar_orientation"  : "horizontal",
     "shrink"            : 0.9,
     "pad"               : 0.1,
-    "foldername"        : ""
+    "foldername"        : "",
+    "plot_show"         : false
 }

@@ -7,13 +7,13 @@ FDE_width_padded,45,np.float64,unit:um
 FDE_height_padded,15,np.float64,unit:um
 WG1_x,0,np.float64,unit:um
 WG1_width,2.8,np.float64,unit:um
-WG1_y,0,np.float64,unit:um
-WG1_height,0.1,np.float64,unit:um
+WG1_y,0.35,np.float64,unit:um
+WG1_height,0.7,np.float64,unit:um
 bend_radius_inner,-1000,np.float64,unit:um
 WG2_x,0,np.float64,unit:um
 WG2_width,2.8,np.float64,unit:um
-WG2_y,0,np.float64,unit:um
-WG2_height,0.1,np.float64,unit:um
+WG2_y,0.35,np.float64,unit:um
+WG2_height,0.7,np.float64,unit:um
 Ly_cladding,2,np.float64,unit:um
 Ly_BOX,-14.5,np.float64,unit:um
 Num_of_cells_x,2000,np.int32,num of cells in x axis

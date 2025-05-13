@@ -20,5 +20,6 @@
     "cbar_orientation"  : "horizontal",
     "shrink"            : 0.8,
     "pad"               : 0.2,
-    "foldername"        : "./results/"
+    "foldername"        : "./results/",
+    "plot_show"         : false
 }

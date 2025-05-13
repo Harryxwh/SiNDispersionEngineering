@@ -246,6 +246,7 @@ def Plot_curve(data_arr,
 
     if param_dict["plot_show"]:
         plt.show()
+    plt.close()
 
 '''
 Plot_im():  Plot the image of a 2D array
@@ -328,7 +329,9 @@ def Plot_im(data_arr, point_arr = [],
     plt.ylabel(param_dict["ylabel"],size = param_dict["fontsize"])
     plt.title(param_dict["title"],size = param_dict["fontsize"]*1.5)
     plt.savefig(param_dict["foldername"]+param_dict["title"]+".pdf")
-    plt.show()
+    if param_dict["plot_show"]:
+        plt.show()
+    plt.close()
 
 '''
 Plot_field_profile(): Plot the field profile stored in txt files
@@ -425,5 +428,6 @@ def Plot_field_profile(field,field_name,
 
     plt.savefig(param_dict["foldername"]+param_dict["title"]+".eps",
                 dpi=param_dict["dpi"])
-    plt.show()
-    return
+    if param_dict["plot_show"]:
+        plt.show()
+    plt.close()

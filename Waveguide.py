@@ -66,17 +66,21 @@ class Waveguide():
     def Load_modes_info(self,foldername):
         info_file_name = foldername + "/Mode_info.txt"
         Modes_info = []
-        with open(info_file_name,'r') as f:
-            data_read = f.readlines()
-            for line in data_read[1:]:
-                modeidx = int(line.split(',')[0])
-                neff = str2complex(line.split(',')[1])
-                ng = str2complex(line.split(',')[2])
-                loss = float(line.split(',')[3])
-                polarization = float(line.split(',')[4])
-                beta_ang = float(line.split(',')[5])
-                mode = self.Mode(modeidx, neff, ng, loss, polarization, beta_ang)
-                Modes_info.append(mode)
+        try:
+            with open(info_file_name,'r') as f:
+                data_read = f.readlines()
+                for line in data_read[1:]:
+                    modeidx = int(line.split(',')[0])
+                    neff = str2complex(line.split(',')[1])
+                    ng = str2complex(line.split(',')[2])
+                    loss = float(line.split(',')[3])
+                    polarization = float(line.split(',')[4])
+                    beta_ang = float(line.split(',')[5])
+                    mode = self.Mode(modeidx, neff, ng, loss, polarization, beta_ang)
+                    Modes_info.append(mode)
+        except FileNotFoundError:
+            print("ERROR: File "+info_file_name+" not found. Please check the filename, especially the wavelength range.")
+            return None
         return Modes_info
 
     # Load the field profile of a single component, i.e. Ex, Ey, Ez, Hx, Hy, Hz
@@ -86,17 +90,21 @@ class Waveguide():
                            Field_shape_padded,PML_len = 23):
         filename = './' + foldername + '/Mode' + str(ModeIdx) + '_' + component + '.txt'
         Field = np.array([[]])
-        with open(filename) as f:
-            lines = f.readlines()
-            Field = np.array([str2complex(s) for s in lines[0].split('\t')])
-            for line in lines[1:]:
-                line_arr = line.split('\t')
-                Field = np.c_[Field,np.array([str2complex(s) for s in line_arr])]
+        try:
+            with open(filename) as f:
+                lines = f.readlines()
+                Field = np.array([str2complex(s) for s in lines[0].split('\t')])
+                for line in lines[1:]:
+                    line_arr = line.split('\t')
+                    Field = np.c_[Field,np.array([str2complex(s) for s in line_arr])]
 
-        Field = Field[int((PML_len)/2):np.shape(Field)[0]-int((PML_len)/2),
-                      int((PML_len)/2):np.shape(Field)[1]-int((PML_len)/2)]
-        Field = self.Zero_Padding_of_Field_Profile(Field, Field_shape_padded)
-        self.Field_shape = np.shape(Field)
+            Field = Field[int((PML_len)/2):np.shape(Field)[0]-int((PML_len)/2),
+                        int((PML_len)/2):np.shape(Field)[1]-int((PML_len)/2)]
+            Field = self.Zero_Padding_of_Field_Profile(Field, Field_shape_padded)
+            self.Field_shape = np.shape(Field)
+        except FileNotFoundError:
+            print("ERROR: File "+filename+" not found. Please check the filename, especially the wavelength range.")
+            return None
         return Field
 
     # Pad zero. Lx_padded and Ly_padded in unit of num of points

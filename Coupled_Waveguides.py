@@ -390,7 +390,7 @@ class Coupled_Waveguides():
                                             np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
                                                     self.Field_dict_uncoupled['Ez'][q] ))
 
-        K  = K * self.k0 / (c * self.u0)
+        K  = K * self.k0 / (c * mu0)
 
         return K
 
@@ -416,7 +416,7 @@ class Coupled_Waveguides():
                             self.Field_dict_uncoupled['Ey'][p] + \
                     np.conj(self.Field_dict_uncoupled['Ez'][p]) * \
                             self.Field_dict_uncoupled['Ez'][p] ))
-        Chi  = Chi * self.k0 / (c * self.u0)
+        Chi  = Chi * self.k0 / (c * mu0)
         return Chi
 
     def P_factor(self,p_, q_):

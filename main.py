@@ -18,16 +18,16 @@ if __name__ == '__main__':
     # The folders containing the mode profiles
     foldername1 = "../data/Mode Profiles/"+"InnerRing_L_inner_8um_1500_1600_21wavls_2000x800"
     # foldername1 = "../data/Mode Profiles/"+"InnerRing_L_inner_8um_1535_1565_31wavls"
-    foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
+    # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_3um_L_2762nm_1500_1600_21wavls"
     # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_4um_2589nm_1535_1565_31wavls"
-    # foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
+    foldername2 = "../data/Mode Profiles/"+"OuterRingDesigned_L_inner_8um_gap_5um_L_outer_2436nm_1535_1565nm_31wavls"
 
     # Parameters of the FDE similation
     param_filename = "./config/Param_L_inner_8.csv"
 
     # Wavlength range for the simulation
-    wavl_arr = np.linspace(1505,1595,19)        # for gap = 3um
-    #  wavl_arr = np.linspace(1535,1565,31)       # for gap = 4um or 5um
+    # wavl_arr = np.linspace(1505,1595,19)        # for gap = 3um
+    wavl_arr = np.linspace(1535,1565,31)       # for gap = 4um or 5um
 
     working_dir = "./results/2D concentric rings/"
     ############################################################################################
@@ -61,37 +61,37 @@ if __name__ == '__main__':
 
     # working_dir = "./results/3D concentric rings/"
     ############################################################################################
-
-
+    param_filename = "./config/Param_thick.csv"
+    foldername1 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
+    foldername2 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
+    wavl_arr = np.linspace(1550,1550,1)
     ############################################################################################
     # Sweep gap between 2D concentric rings around a certian value, so the mode profiles can be seen as the same
     # if num_of_gaps is 1, the gap is fixed
 
-    start_gap_x   = 2.5
-    end_gap_x     = 3.5
-    num_of_gaps_x = 11
+    start_gap_x   = 0
+    end_gap_x     = 0
+    num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0
-    end_gap_y     = 0
-    num_of_gaps_y = 1
+    start_gap_y   = 0.1
+    end_gap_y     = 0.9
+    num_of_gaps_y = 5
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
     A,B = np.meshgrid(gap_arr_x,gap_arr_y)
     gap_arr = np.column_stack((A.ravel(), B.ravel()))
 
     sweeper = Parameter_sweeper(wavl_arr,gap_arr,
-                                foldername1 = foldername1,
-                                foldername2 = foldername2,
-                                param_filename = param_filename)
-    # sweeper.Scan_gap(calc_needed=True,
-    #                  foldername = working_dir + "Supermodes attributes using CMT/",
-    #                  num_of_wavl_pts=1000)
-    sweeper.Scan_gap(calc_needed= False,
-                     foldername = working_dir + "Supermodes attributes using CMT/",
-                     num_of_wavl_pts=200)
+                                foldername_WG1 = foldername1,
+                                foldername_WG2 = foldername2,
+                                save_foldername = working_dir + "Supermodes attributes using CMT/",
+                                plot_profile = True,
+                                param_filename = param_filename, save_D_in_csv = False)
+    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
+    sweeper.Scan_gap(calc_needed= False, num_of_wavl_pts=500)
     ############################################################################################
-
+'''
     ############################################################################################
     # Analyze Dispersion of 2D concentric rings
     # Calculate Dispersion using propagation constants calculated by CMT and FDE
@@ -177,3 +177,4 @@ if __name__ == '__main__':
     #                         name_structure = "3D concentric rings",
     #                         num_of_pts=100, save_D_in_csv=True, save_mode = "S")
     ############################################################################################
+'''

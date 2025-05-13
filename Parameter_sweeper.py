@@ -11,6 +11,9 @@ foldername_WG1          : foldername of mode profile data of WG1
 foldername_WG2          : foldername of mode profile data of WG2
 save_foldername         : foldername to save the results
 param_filename          : filename of parameters
+save_D_in_csv           : True if you want to save the dispersion curve in csv format. Default is False.
+plot_profile            : True if you want to plot the super modes profile. Default is False.
+plot_log_scale          : True if you want to plot the super modes profile in log scale. Default is False.
 
 Author: Weihao Xu
 Date: May. 12th, 2025
@@ -24,14 +27,19 @@ from Functions import *
 class Parameter_sweeper():
     def __init__(self, wavelengths, gap_arr,
                  foldername_WG1, foldername_WG2,
-                 save_foldername, param_filename):
+                 save_foldername, param_filename,
+                 save_D_in_csv = False,
+                 plot_profile = False, plot_log_scale = False):
 
-        self.wavl_arr = wavelengths     # Wavelength in Vacuum (unit:um)
+        self.wavl_arr = wavelengths             # Wavelength in Vacuum (unit:um)
         self.gap_arr = gap_arr                  # gap = [gap_x,gap_y] shape=(2,x) (unit:um)
         self.foldername_WG1 = foldername_WG1
         self.foldername_WG2 = foldername_WG2
         self.save_foldername = save_foldername
         self.param_filename = param_filename
+        self.save_D_in_csv = save_D_in_csv
+        self.plot_profile = plot_profile
+        self.plot_log_scale = plot_log_scale
 
     # Sweep wavlength whne the gap between two WGs is fixed
     def Scan_wavl(self, gap, filename_uncoupled, filename_coupled):
@@ -110,7 +118,8 @@ class Parameter_sweeper():
     # calc_needed       : must be True for initial run, can be set to False if beta files already exist.
     # foldername        : foldername to store the results.
     # num_of_wavl_pts   : number of wavelength points to calculate dispersion curve
-    def Scan_gap(self, calc_needed = True, foldername="./results/", num_of_wavl_pts = 100):
+    def Scan_gap(self, calc_needed = True, num_of_wavl_pts = 100):
+        foldername = self.save_foldername
         for gap_idx in range(len(self.gap_arr)):
             gap_x, gap_y = self.gap_arr[gap_idx]
 
@@ -124,13 +133,13 @@ class Parameter_sweeper():
             if calc_needed:
                 beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap = (gap_x, gap_y),
                             filename_uncoupled=filename_uncoupled,
-                            filename_coupled=filename_coupled,
-                            plot = False)
+                            filename_coupled=filename_coupled)
+
             # Calc dispersion curve
             Analyzer = Data_analyzer(self.wavl_arr, (gap_x, gap_y), self.param_filename,
                                      filename_uncoupled, filename_coupled,
                                      self.foldername_WG1, self.foldername_WG2,
-                                     num_of_pts = num_of_wavl_pts, save_D_in_csv = True,
-                                     plot_profile = True, plot_log_scale = False,
+                                     num_of_pts = num_of_wavl_pts, save_D_in_csv = self.save_D_in_csv,
+                                     plot_profile = self.plot_profile, plot_log_scale = self.plot_log_scale,
                                      save_foldername = foldername)
 

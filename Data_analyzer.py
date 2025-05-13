@@ -310,7 +310,8 @@ class Data_analyzer():
             df_coupled.to_csv(filename_D_supermode, index=False, encoding="utf-8")
         except ValueError:
             print("------------------------------------------------")
-            print("ERROR: The length of the wavlength arr in the csv file does not match with the given parameter wavl_arr. Please change num_of_pts accordingly or delete the csv file.")
+            print("ERROR: The length of the wavlength arr in the csv file does not match with the given parameter wavl_arr.")
+            print("Please change num_of_pts accordingly or delete the csv file.")
             print("------------------------------------------------")
             return
 
@@ -356,9 +357,10 @@ class Data_analyzer():
                                                             self.wavl_arr_intp,
                                                             3, num_of_pts)
         except ValueError:
-            print("------------------------------------------------")
-            print("ERROR: The length of wavl_arr doesn't match the length of beta_arr (CMT). Please check the wavlength range of the data files and set wavl_arr accordingly.")
-            print("------------------------------------------------")
+            print("----------------------------------------------------------------------")
+            print("ERROR: The length of wavl_arr doesn't match the length of beta_arr (CMT).")
+            print("Please check the wavlength range of the data files and set wavl_arr accordingly.")
+            print("----------------------------------------------------------------------")
             return
 
         # Dispersion of Isolated WGs
