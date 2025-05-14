@@ -1,5 +1,6 @@
 # Dispersion engineering of 3D integrated ultra-low-loss silicon nitride waveguides
 
+## Overview
 This repo contains codes for an undergraduate thesis project which aims at transforming the dispersion of microresonators made of 100nm-thick ultra-low-loss silicon nitride waveguides from normal to anomalous by leveraging the inter-resonator mode coupling.
 
 ------
@@ -15,7 +16,8 @@ The files and folders of this project are organized as follows.
 
 ```yaml
 SiNDispersionEngineering/
-# The following python files are used to simulate mode-conserved coupling based on Coupled Mode Theory (CMT)
+# The following python files are used to simulate mode coupling between (bent or straight) waveguides based on Coupled Mode Theory (CMT)
+# Coupling strength $\kappa$, Propagation constant $\beta$, and Dispersion $D$ can be calculated
 ├── main.py
 ├── Waveguides.py
 ├── Coupled_Waveguides.py
@@ -23,10 +25,16 @@ SiNDispersionEngineering/
 ├── Data_analyzer.py
 ├── Functions.py
 ├── Finding waveguide width satisfying the phase-match condition.ipynb
-# These json files are used to store default parameters for plotting
-├── Param_plot_curve.json
-├── Param_plot_image.json
-├── Param_plot_field_profile.json
+
+# This folder contains parameters used in FDE simulation, which are referenced in the CMT calculation
+# The data are stored in a "key, value, comment" format
+├── config
+│   ├── Param_800x400.csv
+│   ├── Param_L_inner_2_8.csv
+│   ├── Param_L_inner_8.csv
+│   ├── Param_straight_2_8.csv
+│   └── Param_vertical.csv
+
 # This folder contains Lumerical scripts used for Finite Difference Eigenmode solver (FDE) calculation
 ├── Lumerical Scripts
 │   ├── EME_simulation_of_vertical_coupled_rings.lsf
@@ -44,20 +52,20 @@ SiNDispersionEngineering/
 │   ├── Scanning_Lx_for_given_gapx_2D.lsf
 │   ├── setup_RDL.lsf
 │   └── Vertical_coupled_rings_EME.lsf
-# The following Jupyter Notebooks and python files are used to analyze the data and plot figures
+
+# The following Jupyter Notebooks and python files are used to analyze the data of different structures and plot figures
 ├── Analysis of 2D concentric.ipynb
 ├── Analysis of 2D parallel.ipynb
 ├── Analysis of 3D concentric.ipynb
 ├── Analysis of 3D RDL.ipynb
 ├── Analysis of 3D offset.py
 ├── Extract_EME_res.ipynb
-# This folder contains parameters used in FDE simulation
-├── config
-│   ├── Param_800x400.csv
-│   ├── Param_L_inner_2_8.csv
-│   ├── Param_L_inner_8.csv
-│   ├── Param_straight_2_8.csv
-│   └── Param_vertical.csv
+
+# These json files are used to store default parameters for plotting
+├── Param_plot_curve.json
+├── Param_plot_image.json
+├── Param_plot_field_profile.json
+
 # This folder is used to store results and figures
 ├── results
 │   ├── 2D concentric rings
@@ -70,7 +78,8 @@ SiNDispersionEngineering/
 │   │    ├── ...
 │   ├── 3D offset racetracks
 │   │    └── ...
-# This folder contains Jupyter Notebooks used to analyze the approximate analytical solution of bent strip waveguides
+
+# This folder contains Jupyter Notebooks used to analyze the approximate analytical solution of bent strip waveguides. (Failed attempts)
 ├── Analytical Solutions
 │   ├── Find_Mode_Single_Ring_Rect_Approx.ipynb
 │   ├── Find_Mode_Single_Ring.ipynb
