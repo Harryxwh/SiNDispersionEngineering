@@ -125,10 +125,10 @@ class Parameter_sweeper():
 
             filename_uncoupled = "beta_uncoupled_gap_"\
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
-            filename_uncoupled  = foldername + filename_uncoupled.replace(".","_") + ".txt"
+            filename_uncoupled  = foldername + "Supermodes attributes using CMT/" + filename_uncoupled.replace(".","_") + ".txt"
             filename_coupled   = "beta_coupled_gap_" \
                                 + "{:.3f}".format(gap_x) +"_" + "{:.3f}".format(gap_y)
-            filename_coupled    = foldername + filename_coupled.replace(".","_")+ ".txt"
+            filename_coupled    = foldername + "Supermodes attributes using CMT/" + filename_coupled.replace(".","_")+ ".txt"
 
             if calc_needed:
                 beta_uncoupled_arr,beta_coupled_arr,beta_ave_uncoupled_arr = self.Scan_wavl(gap = (gap_x, gap_y),

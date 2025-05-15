@@ -298,7 +298,8 @@ def Plot_im(data_arr, point_arr = [],
 
     fig, ax = plt.subplots(figsize=(param_dict["figsize"][0],param_dict["figsize"][1]),
                            dpi = param_dict["dpi"])
-    norm = "linear"
+    # norm = "linear"
+    norm = None
     if param_dict["norm"] == "zero_in_center":
         norm = TwoSlopeNorm(vmin=np.min(data_arr), vcenter=0, vmax=np.max(data_arr))
     im  = ax.imshow(data_arr,cmap = param_dict["colormap"],
@@ -310,7 +311,8 @@ def Plot_im(data_arr, point_arr = [],
     # shrink: 缩放比例，pad: 间距
     cbar = fig.colorbar(im, ax=ax, orientation=param_dict["cbar_orientation"],
                         shrink=param_dict["shrink"], pad=param_dict["pad"])
-    cbar.set_ticks(Auto_ticks(data_arr,param_dict["cbar_small_ticks"]))
+    if param_dict["autoset_ticks"] == 1:
+        cbar.set_ticks(Auto_ticks(data_arr,param_dict["cbar_small_ticks"]))
     cbar.ax.tick_params(labelsize=param_dict["fontsize"]*0.8)
     cbar.set_label(param_dict["cbar_label"],size=param_dict["fontsize"])
 

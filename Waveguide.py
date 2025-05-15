@@ -79,8 +79,11 @@ class Waveguide():
                     mode = self.Mode(modeidx, neff, ng, loss, polarization, beta_ang)
                     Modes_info.append(mode)
         except FileNotFoundError:
-            print("ERROR: File "+info_file_name+" not found. Please check the filename, especially the wavelength range.")
-            return None
+            print("------------------------------------------------")
+            print("ERROR: File "+info_file_name+" not found")
+            print("Please check the filename, especially the wavelength range.")
+            print("------------------------------------------------")
+            raise FileNotFoundError
         return Modes_info
 
     # Load the field profile of a single component, i.e. Ex, Ey, Ez, Hx, Hy, Hz
@@ -103,8 +106,11 @@ class Waveguide():
             Field = self.Zero_Padding_of_Field_Profile(Field, Field_shape_padded)
             self.Field_shape = np.shape(Field)
         except FileNotFoundError:
-            print("ERROR: File "+filename+" not found. Please check the filename, especially the wavelength range.")
-            return None
+            print("------------------------------------------------")
+            print("ERROR: File "+filename+" not found.")
+            print("Please check the filename, especially the wavelength range.")
+            print("------------------------------------------------")
+            raise FileNotFoundError
         return Field
 
     # Pad zero. Lx_padded and Ly_padded in unit of num of points

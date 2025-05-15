@@ -49,7 +49,6 @@ class Data_analyzer():
                  filename_uncoupled, filename_coupled,
                  foldername_1, foldername_2, num_of_pts = 100,
                  filename_FDE_beta = "", filename_FDE_D = "",
-                 name_structure = "2D concentric rings",
                  plot_curve = True, save_D_in_csv = True, save_mode = "AS",
                  plot_profile = False, plot_log_scale = False,
                  save_foldername = "./results/"):
@@ -65,7 +64,6 @@ class Data_analyzer():
         self.filename_FDE_beta = filename_FDE_beta
         self.filename_FDE_D = filename_FDE_D
 
-        self.name_structure = name_structure
         self.plot_curve = plot_curve
         self.save_D_in_csv = save_D_in_csv
         self.save_mode = save_mode                          #save anti-sym or sym supermode
@@ -313,6 +311,7 @@ class Data_analyzer():
             print("ERROR: The length of the wavlength arr in the csv file does not match with the given parameter wavl_arr.")
             print("Please change num_of_pts accordingly or delete the csv file.")
             print("------------------------------------------------")
+            raise ValueError
             return
 
     # Interpolate the propagation constant data and calc the dispersion profile of FDE calculated modes
@@ -361,6 +360,7 @@ class Data_analyzer():
             print("ERROR: The length of wavl_arr doesn't match the length of beta_arr (CMT).")
             print("Please check the wavlength range of the data files and set wavl_arr accordingly.")
             print("----------------------------------------------------------------------")
+            raise ValueError
             return
 
         # Dispersion of Isolated WGs
@@ -418,19 +418,19 @@ class Data_analyzer():
                 'Supermode 2 (CMT) Interpolation',
                 'Supermode 1 (FDE)','Supermode 2 (FDE)',
                 'beta_iso_inner','beta_iso_outer'],
-                "X_label"       : r'wavelength($\mu m)$',
-                "Y_label"       : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
-                "title"         : r"Propagation constant of coupled modes of " + self.name_structure,
-                "autoset_yticks": 1,
-                "marker_list"   :["","",".",".","","","o","o"],
-                "linestyle_list":["dashed","dashdot","","","-","-","",""],
-                "colors_list"   :['mediumturquoise','skyblue',
-                                  'LightPink','crimson',
-                                  'LightPink','crimson',
-                                  'lightskyblue','dodgerblue']*2,
-                "autoset_yticks": 0,
-                "foldername"    : "./results/2D concentric rings/",
-                "comment"       : gap_info
+                "X_label"           : r'wavelength($\mu m)$',
+                "Y_label"           : r'$ \tilde{\beta}$ - $\bar{\beta}$(rad/rad)',
+                "title"             : r"Propagation constant of coupled modes",
+                "autoset_yticks"    : 1,
+                "marker_list"       :["","",".",".","","","o","o"],
+                "linestyle_list"    :["dashed","dashdot","","","-","-","",""],
+                "colors_list"       :['mediumturquoise','skyblue',
+                                    'LightPink','crimson',
+                                    'LightPink','crimson',
+                                    'lightskyblue','dodgerblue']*2,
+                "autoset_yticks"    : 0,
+                "foldername"        : self.save_foldername + "Propagation constant/",
+                "comment"           : gap_info
             }
             Plot_curve(Y_data,**param_dict)
 
@@ -478,7 +478,7 @@ class Data_analyzer():
                 "Y_legends"         : Y_legends,
                 "X_label"           : r'wavelength($\mu m$)',
                 "Y_label"           : r'$D(ps/nm/km)$',
-                "title"             : r"Dispersion of coupled modes of " + self.name_structure,
+                "title"             : r"Dispersion of coupled modes",
                 "xticks"            : xticks,
                 "xtickslabel"       : xtickslabels,
                 "marker_list"       : ["","","","","",""]*5,
@@ -486,7 +486,7 @@ class Data_analyzer():
                 "colors_list"       : colors_list,
                 "AD_region_color"   : True,
                 "autoset_yticks"    : 0,
-                "foldername"        : "./results/2D concentric rings/",
+                "foldername"        : self.save_foldername + "Dispersion/",
                 "comment"           : gap_info
                 # "Y_legends"         : ['Uncoupled Ring','Supermode 1','Supermode 2']*5,
                 # "comment"           : gap_info
@@ -524,7 +524,7 @@ class Data_analyzer():
                                 name1 = path_1,name2 = path_2,
                                 ModeIdx1 = 1, ModeIdx2 = 1,
                                 param_file_name = self.param_filename,
-                                save_foldername = self.save_foldername)
+                                save_foldername = self.save_foldername + "Supermodes profile/")
             Coupled_WG.Plot_field_profile(coeff_arr , field_name = 'Ex',
                                 title=r"Electric field profile when wavl = "+"{:.0f}".format(wavl_in_nm)+" nm",
                                 Plot_log=plot_log)

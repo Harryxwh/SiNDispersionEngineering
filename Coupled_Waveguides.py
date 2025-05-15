@@ -261,7 +261,7 @@ class Coupled_Waveguides():
                            save_name='field_profile_',
                            dpi=400):
         fonttype = "Helvetica"
-        fontsize = 18
+        fontsize = 10
         linewidth = 0.3
         # colormap = "jet"
         # colormap = "turbo"
@@ -336,7 +336,7 @@ class Coupled_Waveguides():
 
                 ax[plot_idx,idx].set_title(mode_name+name_list[idx]+'('+field_name+')',fontsize=fontsize*1.5)
                 cbar = fig.colorbar(im, ax=ax[plot_idx,idx], orientation='vertical',
-                                    label='', shrink=0.8, pad=0.02)
+                                    label='', shrink=0.8, pad=0.1)
                 cbar.set_ticks(np.linspace(np.max(field_list[idx]),
                                         np.min(field_list[idx]),
                                         cbar_num_of_pts))

@@ -1,8 +1,8 @@
 '''
 Main program for the simulation of two coupled microrings or bent waveguides
 
-Author: Weihao Xu
-Date: May. 11th, 2025
+Author  : Weihao Xu
+Date    : May. 11th, 2025
 
 '''
 import numpy as np
@@ -50,21 +50,24 @@ if __name__ == '__main__':
     ############################################################################################
     # SETTINGS for 3D concentric rings
 
-    # param_filename = "./config/Param_vertical.csv"
+    param_filename = "./config/Param_vertical.csv"
 
-    # wavl_arr = np.linspace(1400,1700,31)
+    wavl_arr = np.linspace(1400,1700,31)
 
-    # foldername1 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
-    # foldername2 = "../data/Mode Profiles/"+\
-    #                 "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    foldername1 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
+    foldername2 = "../data/Mode Profiles/"+\
+                    "Ring_vertical_L_2_8um_1400_1700_31wavls_1500x1000"
 
-    # working_dir = "./results/3D concentric rings/"
+    working_dir = "./results/3D concentric rings/"
     ############################################################################################
-    param_filename = "./config/Param_thick.csv"
-    foldername1 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
-    foldername2 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
-    wavl_arr = np.linspace(1550,1550,1)
+
+    # param_filename = "./config/Param_thick.csv"
+    # foldername1 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
+    # foldername2 = "../data/Mode Profiles/" + "Find_modes_of_single_ring_at_multi_wavls_radius_1000um_WGwidth_2800nm_WGthickness_700nm_mesh_2000X800"
+    # wavl_arr = np.linspace(1550,1550,1)
+
+
     ############################################################################################
     # Sweep gap between 2D concentric rings around a certian value, so the mode profiles can be seen as the same
     # if num_of_gaps is 1, the gap is fixed
@@ -74,9 +77,9 @@ if __name__ == '__main__':
     num_of_gaps_x = 1
     gap_arr_x     = np.linspace(start_gap_x,end_gap_x,num_of_gaps_x)
 
-    start_gap_y   = 0.1
-    end_gap_y     = 0.9
-    num_of_gaps_y = 5
+    start_gap_y   = 0.5
+    end_gap_y     = 2.5
+    num_of_gaps_y = 11
     gap_arr_y     = np.linspace(start_gap_y,end_gap_y,num_of_gaps_y)
 
     A,B = np.meshgrid(gap_arr_x,gap_arr_y)
@@ -85,11 +88,11 @@ if __name__ == '__main__':
     sweeper = Parameter_sweeper(wavl_arr,gap_arr,
                                 foldername_WG1 = foldername1,
                                 foldername_WG2 = foldername2,
-                                save_foldername = working_dir + "Supermodes attributes using CMT/",
-                                plot_profile = True,
-                                param_filename = param_filename, save_D_in_csv = False)
-    # sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts=100)
-    sweeper.Scan_gap(calc_needed= False, num_of_wavl_pts=500)
+                                save_foldername = working_dir,
+                                param_filename = param_filename, save_D_in_csv = True,
+                                plot_profile = False, plot_log_scale = False,)
+    sweeper.Scan_gap(calc_needed=True, num_of_wavl_pts = 200)
+    # sweeper.Scan_gap(calc_needed= False, num_of_wavl_pts=500)
     ############################################################################################
 '''
     ############################################################################################

@@ -145,6 +145,7 @@ def FSR_func_3D(m,reson_freq):
     return FSR
 
 # Numerical calculation of the dispersion curve based on FSR
+def Dispersion_3D(m,reson_freq):
     FSR = FSR_func_3D(m,reson_freq)
     return First_derivative_central_diff(FSR,m[1:-1])
 
@@ -180,25 +181,25 @@ def Resonant_freq_plot(vernier_param_arr, coupled_data_arr=[], coupled_data_labe
     M0 = 0
     Y_legends = []
 
-    # Resonant frequency of resonator 1
+    # Resonant frequency of resonator A
     Y_data = np.array(D1 * (m_arr - M0))
-    Y_legends.append(r"Resonator1 $\omega = \omega_0$+$(D_1-D_{ave})$(m-$M_0$)")
+    Y_legends.append(r"ResonatorA $\omega = \omega_0$+$(D_{1,A}-D_{1,\mathrm{ave}})$(m-$M_0$)")
     for m in range(1,Max_M_idx):
         Y = D1 * (m_arr - M0) + m*D_ave
         Y_data = np.c_[Y_data,Y]
-        Y_legends.append(r"Resonator1 $\omega$ = $\omega_0$+$(D_1-D_{ave})$(m-$M_0$)$\pm$"+str(m)+r"$D_{ave}$")
+        Y_legends.append(r"ResonatorA $\omega$ = $\omega_0$+$(D_{1,A}-D_{1,\mathrm{ave}})$(m-$M_0$)$\pm$"+str(m)+r"$D_{1,\mathrm{ave}}$")
         Y = D1 * (m_arr - M0) - m*D_ave
         Y_data = np.c_[Y_data,Y]
         Y_legends.append("")
 
-    # Resonant frequency of resonator 2
+    # Resonant frequency of resonator B
     Y = D2 * (m_arr - M0)
     Y_data = np.c_[Y_data,Y]
-    Y_legends.append(r"Resonator2 $\omega = \omega_0$+$(D_2-D_{ave})$(m-$M_0$)")
+    Y_legends.append(r"ResonatorB $\omega = \omega_0$+$(D_{1,B} - D_{1,\mathrm{ave}})$(m-$M_0$)")
     for m in range(1,Max_M_idx):
         Y = D2 * (m_arr - M0) +  m*D_ave
         Y_data = np.c_[Y_data,Y]
-        Y_legends.append(r"Resonator2 $\omega$ = $\omega_0$+$(D_2-D_{ave})$(m-$M_0$)$\pm$"+str(m)+r"$D_{ave}$")
+        Y_legends.append(r"ResonatorB $\omega$ = $\omega_0$+$(D_{1,B} - D_{1,\mathrm{ave}})$(m-$M_0$)$\pm$"+str(m)+r"$D_{1,\mathrm{ave}}$")
         Y = D2 * (m_arr - M0) -  m*D_ave
         Y_data = np.c_[Y_data,Y]
         Y_legends.append("")
@@ -324,7 +325,7 @@ def Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D
     yticks = np.arange(0,len(deltaLs_arr),5)
     param_dict = {
             "aspect"        : 5,
-            "figsize"       : (40,4.5),
+            "figsize"       : (10,4.5),
             "xlabel"        : r"$g_{co} (m^{-1})$",
             "ylabel"        : r"$\delta L_s (\mu m)$",
             "cbar_label"    : "Anomalous Dispersioin range (nm)",
@@ -333,7 +334,8 @@ def Optimize_3D_offset(m_arr_intp,L_str_A,L_str_B,L_bend,gL_arr,deltaLs_arr,g0,D
                                 r"$R_{tot}$="+"{:.4f}".format(Rtot),
             "xticks"        : xticks,
             "yticks"        : yticks,
-            "xtickslabel"   : ["{:.0f}".format(gL/Lco) for gL in gL_arr[xticks]],
+            "shrink"        : 0.5,
+            "xtickslabel"   : ["{:.0f}".format(gL / Lco) for gL in gL_arr[xticks]],
             "ytickslabel"   : ["{:.2f}".format(dLs /um) for dLs in deltaLs_arr[yticks]],
             "fontsize"      : 6,
             "foldername"    : "./results/3D offset racetracks/"
@@ -348,7 +350,8 @@ if __name__ == '__main__':
     Kappa_arr       = Load_kappa_data()
     Kappa_arr       = np.flip(Kappa_arr,axis=0)
     freq_arr        = Kappa_arr[:,0]
-    Rtot_arr        = np.linspace(1.0010,1.0100,91)
+    # Rtot_arr        = np.linspace(1.0010,1.0100,91)
+    Rtot_arr        = np.array([1.0015,1.005,1.010])
     # Rtot_arr        = np.linspace(1.0010,1.0100,10)
     # Rtot_arr        = np.linspace(1.0041,1.0041,1)
     gL_arr          = np.linspace(0.3,1.5,121)
@@ -414,8 +417,11 @@ if __name__ == '__main__':
         data_arr = np.c_[Y_p_2D,Y_m_2D,Y_p_3D,Y_m_3D]
         data_label_arr = ["","2D parallel structure",
                         "","3D offset structure"]*3
+
+        vernier_param_arr = (D1, D2, D_ave, M, Max_M_idx)
+
         text = r"$R_{tot}$ = $L_B/L_A$"+ " = {:.4f}".format(Rtot)+"\n"+\
-                r"$D_{ave}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n" +\
+                r"$D_{1,\mathrm{ave}}/(2\pi$) = "+"{:.2f} GHz".format(D_ave/(2*np.pi)*1e-9)+"\n" +\
                 "M = "+"{:.1f} ".format(M)+"\n"\
                 "3D offset structure:\n"+ \
                 r"$g_{co}$"+"= {:.2f} ".format(best_gL_3D/Lco)+r"$m^{-1}$" +"\n" +\

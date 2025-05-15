@@ -1,0 +1,1 @@
+wavelength,beta_1_coupled,beta_2_coupled,coeff_supermode_1,coeff_supermode_2
