@@ -1,4 +1,4 @@
-###############################################################################
+ ###############################################################################
 # This script is used to find the dispersion of the eigenmode of two horizontally coupled rings.
 # This is a direct calculation of the supermodes of coupled WGs
 # Since FDE is a 2D solver focused on the cross section, the result does not depend on the geometry in z direction.
@@ -15,26 +15,30 @@ um              = 1e-6;
 nm              = 1e-9;
 
 # Mesh settings
-mesh_cells_x    = 3000;
-mesh_cells_y    = 1000;
+mesh_cells_x    = 600;
+mesh_cells_y    = 200;
 
 material_core   = "Si3N4 (Silicon Nitride) - Luke";
 material_clad   = "SiO2 (Glass) - Palik";
 
-# Create the folder to store data
-format short;
-foldername = 'Find_Dispersion_of_2D_concentric_Rings'+num2str(/um)+'um_gap_'+num2str(gap/nm)+'um_to_'+num2str(gap_max/um)+'nm_OuterRingWidth_'+num2str(Lx_WG2/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
-system('if exist '+foldername+' rmdir /s /q '+foldername);
-system('mkdir '+foldername);
-folder_name     = "Dispersion_2D_concentric_rings" + "\\";
+# Inner Ring
+Lx_WG1 = 8*um; # width of the WG
+Ly_WG1 = 0.1*um; # thickness ofthe WG
 
 # Scanning the gap between the sidewalls of the two WGs
-gap_min         = 2.6   *um;
-gap_max         = 3.4   *um;
-num_sweep_pt    = 5;
+gap_min         = 2.8   *um;
+gap_max         = 2.8   *um;
+num_sweep_pt    = 1;
 gap_array       = linspace(gap_min,gap_max,num_sweep_pt);
 
 wavelength      = 1550*nm;
+
+# Create the folder to store data
+format short;
+foldername = 'Find_Dispersion_of_2D_concentric_Rings_gap_'+num2str(gap_min/nm)+'um_to_'+num2str(gap_max/nm)+'nm_InnerRingWidth_'+num2str(Lx_WG1/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
+system('if exist '+foldername+' rmdir /s /q '+foldername);
+system('mkdir '+foldername);
+filename_prefix     = "Dispersion_2D_concentric_rings_";
 
 for(gap = gap_array){
 
@@ -45,15 +49,11 @@ for(gap = gap_array){
     ?"gap = " + num2str(gap /um) +"um";
 
     # File to store the dispersion curve at given gap
-    D_filename  = folder_name+ "gapx_"+num2str(gap /um)+"um.txt";
+    D_filename  = filename_prefix + "gapx_" + num2str(gap /nm) + "nm.txt";
     if(fileexists(D_filename)){rm(D_filename);}
     write(D_filename,"Wavelength (microns), Dispersion (us/nm/km)");
 
     # Geometry
-    # Inner Ring
-    Lx_WG1 = 8*um; # width of the WG
-    Ly_WG1 = 0.1*um; # thickness ofthe WG
-    Lz_WG1 = 10*um; # length of the WG
 
     # Outer Ring
     # Calculate the width of the outer ring satisfying the phase matching condition
