@@ -38,7 +38,7 @@ format short;
 foldername = 'Find_Dispersion_of_2D_concentric_Rings_gap_'+num2str(gap_min/nm)+'um_to_'+num2str(gap_max/nm)+'nm_InnerRingWidth_'+num2str(Lx_WG1/nm)+'nm_mesh_'+num2str(mesh_cells_x)+'X'+num2str(mesh_cells_y);
 system('if exist '+foldername+' rmdir /s /q '+foldername);
 system('mkdir '+foldername);
-filename_prefix     = "Dispersion_2D_concentric_rings_";
+filename_prefix     = foldername + "\\" + "Dispersion_2D_concentric_rings_";
 
 for(gap = gap_array){
 
